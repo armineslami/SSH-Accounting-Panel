@@ -1,10 +1,11 @@
 <p align="center"><a href=""><img src="https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/public/img/icon-512x512.png" width="256" alt="Logo"></a></p>
 
-<div align="center">
-<h2>SSH Accounting Panel</h2>
+<h2 align="center">SSH Accounting Panel</h2>
+
+<p align="center">
 <a href=""><img src="https://img.shields.io/badge/v1.0.0-blue?label=release" alt="Latest Version"></a>
 <a href=""><img src="https://img.shields.io/badge/MIT-%2397ca00?label=licence" alt="License"></a>
-</div>
+</p>
 
 ## About
 
