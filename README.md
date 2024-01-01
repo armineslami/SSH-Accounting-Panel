@@ -4,7 +4,7 @@
 SSH Accounting Panel
 
 
-<p>
+<p style="margin-top: 16px;">
 <a href=""><img src="https://img.shields.io/badge/v1.0.0-blue?label=release" alt="Latest Version"></a>
 <a href=""><img src="https://img.shields.io/badge/MIT-%2397ca00?label=licence" alt="License"></a>
 </p>
