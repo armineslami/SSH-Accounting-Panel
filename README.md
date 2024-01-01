@@ -1,7 +1,7 @@
 <p align="center"><a href=""><img src="https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/public/img/icon-512x512.png" width="256" alt="Logo"></a></p>
 
 <p align="center">
-  <span style="font-size: 28px;">SSH Accounting Panel</span>
+  <span style="font-size: 48px;">SSH Accounting Panel</span>
 </p>
 
 <p align="center">
