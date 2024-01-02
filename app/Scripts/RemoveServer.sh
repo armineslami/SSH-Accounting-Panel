@@ -34,4 +34,6 @@ deluser ssh-accounting-panel-udp >/dev/null 2>&1
 systemctl disable ssh-accounting-panel-udp >/dev/null 2>&1
 systemctl stop ssh-accounting-panel-udp >/dev/null 2>&1
 
+rm -rf /etc/security/limits.conf >/dev/null 2>&1
+
 createResponse "1" "Server is removed."
