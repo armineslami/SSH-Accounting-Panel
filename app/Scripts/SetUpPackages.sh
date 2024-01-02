@@ -12,6 +12,9 @@ if [ -z "$udp_port" ]; then
     exit;
 fi
 
+mv /etc/security/limits.conf /etc/security/limits.conf.backup >/dev/null 2>&1
+touch /etc/security/limits.conf >/dev/null 2>&1
+
 ##############################
 #####  Install Packages  #####
 ##############################
