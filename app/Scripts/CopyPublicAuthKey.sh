@@ -11,6 +11,8 @@ if [[ -z $1 ]]; then
     if [ ! -f /root/.ssh/authorized_keys ]; then
         mkdir -p /root/.shh
         touch /root/.ssh/authorized_keys
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/authorized_keys
     fi
     cat /root/.ssh/ssh_accounting_panel.pub >> /root/.ssh/authorized_keys
 
