@@ -8,9 +8,9 @@
 project_display_name="SSH Accounting Panel"
 project_version="1.0.0"
 project_name="sap"
-project_name_on_github="master"
+project_name_on_github="SSH-Accounting-Panel-master"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
-root_path=$(openssl rand -base64 4 | cut -c1-5)
+root_path=$(cat /dev/urandom | tr -dc 'a-z' | head -c 5)
 cli_command="sap"
 
 # Colors
@@ -144,23 +144,24 @@ install() {
     unzip "$project_name.zip"
 
     # Rename project folder
-    sudo mv "$project_name_on_github" "$project_name"
+    mv -i "$project_name_on_github" "$project_name"
 
     # Delete the zipped file
-    sudo rm -f "$project_name.zip"
+    sudo rm -rf "/root/$project_name.zip"
 
     if [ ! -d /var/www ]; then
         sudo mkdir /var/www
     fi
-    # Go to apache directory
-    cd /var/www || exit
+
+    # Remove old folder inside the apache if it exists
+    rm -rf "/var/www/$project_name"
 
     # Move the project into apache directory
-    mv "$project_name"  /var/www/
+    mv -i "/root/$project_name"  /var/www/
 
     # Set the right permissions
     chown -R www-data:www-data "/var/www/$project_name"
-    chmod +x  "/var/www/$project_name/app/Scripts"
+    chmod -R 775  "/var/www/$project_name/app/Scripts"
 
     ######################
     ### Database Setup ###
@@ -182,7 +183,7 @@ install() {
             if [[ -n $db_password && $result != *"Access denied"* ]]; then
                 break
             else
-                message="The password is wrong, enter again: "
+                message="\nThe password is wrong, enter again: "
             fi
         done
     else
@@ -218,51 +219,64 @@ install() {
     # Create a database for the panel
     sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;" > /dev/null 2>&1
 
+    # Remove old cron job if it exists
+    cron_job="* * * * * cd /var/html/ssh-accounting-panel && php artisan schedule:run >> /dev/null 2>&1"
+    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
+        current_crontab=$(crontab -l 2>/dev/null)
+        new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
+        echo "$new_crontab" | crontab
+    fi
+
     # Prepare laravel
-    composer install --optimize-autoloader --no-dev
+    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
+    npm install
+    npm run build
+    php artisan key:generate
     php artisan config:cache
     php artisan event:cache
     php artisan route:cache
     php artisan view:cache
     php artisan optimize
-    php artisan key:generate
-    npm run build
+    php artisan migrate --force
+    php artisan db:seed --force
     sh app/Scripts/ServerCronJob.sh
-    php artisan migrate:refresh --seed
 
     ####################
     ### Apache Setup ###
     ####################
 
-    printf "${BLUE}\nSetting up the apache ...\n${NC}\n"
+    printf "${BLUE}\nSetting up the apache ...\n${NC}"
 
     apache_project_path="/var/www/$project_name"
     domain="your_domain.com"
     config_file="/etc/apache2/sites-available/$project_name.conf"
 
     # Get domain name
-    printf "${BLUE}Enter a domain for the panel if you've got one or leave it empty: ${NC}"
+    printf "${BLUE}\nEnter a domain for the panel if you've got one or leave it empty: ${NC}"
     read domain
 
     # Get port number
-    printf "${BLUE}Enter a port number for the panel [default: 3010]: ${NC}"
+    printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
     read port_num
-    port=${port_num:=!3010?}
-
-    # Remove www. from the beginning of domain if it exists
-    domain=$(echo "$domain" | sed 's/^www\.//')
-
-    # Set domain alias
-    domainAlias=""
-    if [[ -n $domain ]]; then
-        domainAlias="www.$domain"
-    fi
+    port=${port_num:=3010}
 
     # Create Apache configuration file
     cat >  "$config_file" << ENDOFFILE
 <VirtualHost *:$port>
-    ServerName $domain
-    ServerAlias $domainAlias
+ENDOFFILE
+
+    if [ -n "$domain" ]; then
+        # Remove www. from the beginning of domain if it exists
+        domain=$(echo "$domain" | sed 's/^www\.//')
+
+        # Set domain alias
+        domainAlias="www.$domain"
+
+        echo "    ServerName $domain" >> "$config_file"
+        echo "    ServerAlias $domainAlias" >> "$config_file"
+    fi
+
+    cat >> "$config_file" << ENDOFFILE
 
     DocumentRoot $apache_project_path/public
 
@@ -281,8 +295,14 @@ install() {
 </VirtualHost>
 ENDOFFILE
 
+    # Add the config to listen for the port only if it's not already set
+    grep -wq "Listen $port" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen $port' >> /etc/apache2/ports.conf"
+
     # Disable the default config
-    sudo a2dissite 000-default.conf
+    sudo a2dissite 000-default.conf > /dev/null 2>&1
+
+    # Remove the default config
+    rm /etc/apache2/sites-available/000-default.conf > /dev/null 2>&1
 
     # Enable the site and restart Apache
     sudo a2ensite "$project_name".conf
@@ -302,17 +322,22 @@ ENDOFFILE
     chmod +x /usr/local/bin/main.sh
 
     # The alias command
-    alias_command="alias $cli_command=\"usr/local/bin/main.sh\""
+    alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
 
     # Add the alias to the bash configuration file
-    echo "$alias_command" >> ~/.bashrc
+    grep -wq "alias sap" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
 
     # Apply the changes
-    . ~/.bashrc > /dev/null 2>&1
+    source ~/.bashrc > /dev/null 2>&1
+
+    # Get public ip address of the server is no domain is given
+    if [ -z "$domain" ]; then
+        domain=$(curl -s ipv4.icanhazip.com)
+    fi
 
     # Done
     printf "${GREEN}\nInstallation is completed.\n${NC}"
-    printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${root_path}.\n${NC}"
+    printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${root_path}\n${NC}"
     printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
     printf "${BLUE}\nFrom now on you can access the menu using '$cli_command' command in your terminal\n${NC}"
 }
@@ -379,7 +404,7 @@ ${GREEN}SAP menu${NC}
   ${GREEN}5.${NC} change port
 "
 
-    echo && read -p "please input a legal number[0-5]: " num
+    echo && read -p "please enter a legal number [0-5]: " num
 
     case "${num}" in
         0)
@@ -401,7 +426,8 @@ ${GREEN}SAP menu${NC}
             is_installed && set_port
             ;;
         *)
-            printf "${RED}Error: Please input a legal number[0-5].${NC}\n"
+            printf "${RED}\nError: Please enter a legal number [0-5]: \n${NC}\n"
+            show_menu
             ;;
     esac
 }
