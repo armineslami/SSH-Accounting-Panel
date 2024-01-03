@@ -7,11 +7,11 @@
 # Panel info
 project_display_name="SSH Accounting Panel"
 project_version="1.0.0"
-project_name="ssh-accounting-panel"
-project_branch_name="master"
+project_name="sap"
+project_name_on_github="master"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
 root_path=$(openssl rand -base64 4 | cut -c1-5)
-cli_command="spa"
+cli_command="sap"
 
 # Colors
 RED="\033[0;31m"
@@ -113,16 +113,6 @@ install() {
         exit 1
     fi
 
-    printf "${BLUE}\nInstalling packages is done.\n${NC}\n"
-
-    # Remove old source file if it exists
-    sudo rm -f "$project_name.zip" > /dev/null 2>&1
-
-    # If the project already exits, remove everything inside it's folder
-    sudo rm -rf "$project_name/*" > /dev/null 2>&1
-
-    printf "${BLUE}\nDownloading the project from the github ...\n${NC}\n"
-
     #############################
     ### Composer Installation ###
     #############################
@@ -137,6 +127,14 @@ install() {
     ### Project Clone ###
     #####################
 
+    # Remove old source file if it exists
+    sudo rm -f "/root/$project_name.zip" > /dev/null 2>&1
+
+    # If the project already exits, remove everything inside it's folder
+    sudo rm -rf "/root/$project_name/*" > /dev/null 2>&1
+
+    printf "${BLUE}\nDownloading the project from the github ...\n${NC}\n"
+
     # Download the source files
     wget -O "$project_name.zip" "$project_source_link"
 
@@ -148,14 +146,17 @@ install() {
     fi
 
     # Rename project folder
-    sudo mv "$project_name-$project_branch_name/*" "$project_name"/
+    sudo mv "$project_name_on_github/*" "$project_name"/
 
     # Delete the unzipped file
-    sudo rm -rf "$project_name-$project_branch_name/*"
+    sudo rm -rf "$project_name_on_github"
 
     # Delete the zipped file
     sudo rm -f "$project_name.zip"
 
+    if [ ! -d /var/www ]; then
+        sudo mkdir /var/www
+    fi
     # Go to apache directory
     cd /var/www || exit
 
@@ -318,7 +319,7 @@ ENDOFFILE
     printf "${GREEN}\nInstallation is completed.\n${NC}"
     printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${root_path}.\n${NC}"
     printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
-    printf "${BLUE}\nFrom now on you can access the menu using 'spa' command in your terminal\n${NC}"
+    printf "${BLUE}\nFrom now on you can access the menu using '$cli_command' command in your terminal\n${NC}"
 }
 
 uninstall() {
