@@ -32,19 +32,18 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 - Ubuntu (Recommended, Tested on v20)
 - CentOS
 
-## Install / Uninstall 
-
-To install or uninstall the panel, run the following commands on your server:
+## Install / Uninstall
 
 ### Install
+To install the panel, run the following command on your server:
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh)
 ```
 
 ### Uninstall
-
+To uninstall the panel run the following command on your server and from the menu choose uninstall option:
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/uninstall.sh)
+spa
 ```
 
 ## License
