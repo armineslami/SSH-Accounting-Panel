@@ -220,7 +220,7 @@ install() {
     sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;" > /dev/null 2>&1
 
     # Remove old cron job if it exists
-    cron_job="* * * * * cd /var/html/ssh-accounting-panel && php artisan schedule:run >> /dev/null 2>&1"
+    cron_job="* * * * * cd /var/www/sap && php artisan schedule:run >> /dev/null 2>&1"
     if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
         current_crontab=$(crontab -l 2>/dev/null)
         new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
@@ -290,8 +290,8 @@ ENDOFFILE
         Require all granted
     </Location>
 
-    ErrorLog \${APACHE_LOG_DIR}/ssh-accounting-panel_error.log
-    CustomLog \${APACHE_LOG_DIR}/ssh-accounting-panel_access.log combined
+    ErrorLog \${APACHE_LOG_DIR}/sap_error.log
+    CustomLog \${APACHE_LOG_DIR}/sap_access.log combined
 </VirtualHost>
 ENDOFFILE
 
