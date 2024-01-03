@@ -328,7 +328,7 @@ ENDOFFILE
     grep -wq "alias sap" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
 
     # Apply the changes
-    source ~/.bashrc > /dev/null 2>&1
+    source /root/.bashrc > /dev/null 2>&1
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
@@ -351,6 +351,12 @@ uninstall() {
         new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
         echo "$new_crontab" | crontab
     fi
+
+    apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
+    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+    temp_file=$(mktemp)
+    grep -v "Listen $apache_port" /etc/apache2/ports.conf > "$temp_file" && mv "$temp_file" /etc/apache2/ports.conf
+    rm "$temp_file" > /dev/null 2>&1
 
     rm -rf "/var/www/$project_name" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
@@ -378,6 +384,10 @@ show_config() {
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
     apache_root_path=$(grep -Po '<Location "\K[^"]+' "$apache_conf")
 
+    if [ -z "$apache_domain" ]; then
+        apache_domain=$(curl -s ipv4.icanhazip.com)
+    fi
+
     printf "
 ${GREEN}$project_display_name${NC}
 
@@ -392,11 +402,21 @@ before_show_menu
 }
 
 set_port() {
-    printf "${BLUE}Enter a port number for the panel: ${NC}"
-    read port
+    printf "${BLUE}\nEnter a port number for the panel: ${NC}"
+    read new_port
 
+    # Config file
     apache_conf="/etc/apache2/sites-available/$project_name.conf"
-    sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$port>/" "$apache_conf"
+
+    # Get the old port
+    old_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+
+    # Update the port in the config file
+    sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$new_port>/" "$apache_conf"
+
+    o_port="Listen $old_port"
+    n_port="Listen $new_port"
+    sudo sed -i "s/$o_port/$n_port/" /etc/apache2/ports.conf
 
     sudo a2ensite "$project_name".conf
     sudo systemctl restart apache2
@@ -407,7 +427,7 @@ set_port() {
 }
 
 before_show_menu() {
-    echo && echo -n -e "${YELLOW}Enter to return to the SAP menu: ${NC}" && read temp
+    echo && echo -n -e "${YELLOW}Hit enter to return to the menu: ${NC}" && read temp
     clear
     show_menu
 }
@@ -416,17 +436,17 @@ show_menu() {
     echo -e "
 ${GREEN}SAP menu${NC}
 
-  ${GREEN}0.${NC} exit
+  ${GREEN}0.${NC} Exit
 ————————————————
-  ${GREEN}1.${NC} install
-  ${GREEN}2.${NC} update
-  ${GREEN}3.${NC} uninstall
+  ${GREEN}1.${NC} Install
+  ${GREEN}2.${NC} Update
+  ${GREEN}3.${NC} Uninstall
 ————————————————
-  ${GREEN}4.${NC} show config
-  ${GREEN}5.${NC} change port
+  ${GREEN}4.${NC} Show config
+  ${GREEN}5.${NC} Change port
 "
 
-    echo && read -p "please enter a legal number [0-5]: " num
+    echo && read -p "Please enter a legal number [0-5]: " num
 
     case "${num}" in
         0)
