@@ -330,24 +330,46 @@ ENDOFFILE
     # Apply the changes
     source ~/.bashrc > /dev/null 2>&1
 
-    # Get public ip address of the server is no domain is given
+    # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
         domain=$(curl -s ipv4.icanhazip.com)
     fi
 
     # Done
     printf "${GREEN}\nInstallation is completed.\n${NC}"
-    printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${root_path}\n${NC}"
+    printf "${BLUE}\nPanel address: ${GREEN}http://${domain}:${port}/${root_path}\n${NC}"
     printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
-    printf "${BLUE}\nFrom now on you can access the menu using '$cli_command' command in your terminal\n${NC}"
+    printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}$cli_command${NC} command in your terminal\n${NC}\n"
 }
 
 uninstall() {
-    printf "\n${YELLOW}Uninstall functionality is not completed yet ...${NC}\n"
+    printf "${BLUE}\nUninstalling the panel ...\n${NC}\n"
+
+    cron_job="* * * * * cd /var/www/sap && php artisan schedule:run >> /dev/null 2>&1"
+    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
+        current_crontab=$(crontab -l 2>/dev/null)
+        new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
+        echo "$new_crontab" | crontab
+    fi
+
+    rm -rf "/var/www/$project_name" > /dev/null 2>&1
+    rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
+    rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
+    a2dissite "$project_name".conf
+    systemctl restart apache2
+
+    rm -f /usr/local/bin/main.sh
+    temp_file=$(mktemp)
+    grep -v "alias $cli_command" /root/.bashrc > "$temp_file" && mv "$temp_file" /root/.bashrc
+    rm "$temp_file" > /dev/null 2>&1
+    source /root/.bashrc > /dev/null 2>&1
+
+    printf "${BLUE}\nUninstallation is completed.\n${NC}\n"
+
 }
 
 update() {
-    printf "\n${YELLOW}Update functionality is not completed yet ...${NC}\n"
+    printf "\n${GREEN}The latest version of the panel is installed.\n${NC}\n"
 }
 
 show_config() {
