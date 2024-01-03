@@ -259,7 +259,7 @@ ENDOFFILE
     sudo a2dissite 000-default.conf
 
     # Enable the site and restart Apache
-    sudo a2ensite ssh-accounting-panel.conf
+    sudo a2ensite "$project_name".conf
 
     # Enable mod_rewrite for Laravel routing
     sudo a2enmod rewrite
