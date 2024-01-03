@@ -216,8 +216,11 @@ install() {
     # Get the database name from the .env
     laravel_db_name=$(awk -F "=" '/^DB_DATABASE=/ {print $2}' .env)
 
+    # Drop old database if it exists
+    sudo mysql -u root -p"$db_password" -e "DROP DATABASE \`$laravel_db_name\`;" > /dev/null 2>&1
+
     # Create a database for the panel
-    sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;"
+    sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;" > /dev/null 2>&1
 
     # Prepare laravel
     composer install --optimize-autoloader --no-dev
@@ -237,38 +240,26 @@ install() {
 
     printf "${BLUE}\nSetting up the apache ...\n${NC}\n"
 
-    laravel_project_path="/var/www/$project_name"
+    apache_project_path="/var/www/$project_name"
     domain="your_domain.com"
     config_file="/etc/apache2/sites-available/$project_name.conf"
 
-    # Get domain or ip address
-    while true; do
-        printf "${BLUE}Enter a domain or IP address for the panel: ${NC}"
-            read domain
+    # Get domain name
+    printf "${BLUE}Enter a domain for the panel if you've got one or leave it empty: ${NC}"
+    read domain
 
-        if [[ -n $domain ]]; then
-            break
-        fi
-    done
-
-    while true; do
-        printf "${BLUE}Enter a port number for the panel: ${NC}"
-        read port
-
-        if [[ -n $port ]]; then
-            break
-        fi
-    done
+    # Get port number
+    printf "${BLUE}Enter a port number for the panel [default: 3010]: ${NC}"
+    read port_num
+    port=${port_num:=!3010?}
 
     # Remove www. from the beginning of domain if it exists
     domain=$(echo "$domain" | sed 's/^www\.//')
 
     # Set domain alias
-    domainAlias="www.$domain"
-
-    # If domain is an ip, no alias is required
-    if [[ $domain =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        domainAlias=""
+    domainAlias=""
+    if [[ -n $domain ]]; then
+        domainAlias="www.$domain"
     fi
 
     # Create Apache configuration file
@@ -277,9 +268,9 @@ install() {
     ServerName $domain
     ServerAlias $domainAlias
 
-    DocumentRoot $laravel_project_path/public
+    DocumentRoot $apache_project_path/public
 
-    <Directory $laravel_project_path/public>
+    <Directory $apache_project_path/public>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride All
         Require all granted
@@ -321,7 +312,7 @@ ENDOFFILE
     echo "$alias_command" >> ~/.bashrc
 
     # Apply the changes
-    . ~/.bashrc /dev/null 2>&1
+    . ~/.bashrc > /dev/null 2>&1
 
     # Done
     printf "${GREEN}\nInstallation is completed.\n${NC}"
