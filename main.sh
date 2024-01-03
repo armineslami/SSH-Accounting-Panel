@@ -88,6 +88,8 @@ is_uninstalled() {
 }
 
 install() {
+    cd /root || exit
+
     local package_manager
     package_manager=$(get_package_manager_name)
 
@@ -141,15 +143,8 @@ install() {
     # Unzip the downloaded file
     unzip "$project_name.zip"
 
-    if [ ! -d "$project_name" ]; then
-        sudo mkdir "$project_name"
-    fi
-
     # Rename project folder
-    sudo mv "$project_name_on_github/*" "$project_name"/
-
-    # Delete the unzipped file
-    sudo rm -rf "$project_name_on_github"
+    sudo mv "$project_name_on_github" "$project_name"
 
     # Delete the zipped file
     sudo rm -f "$project_name.zip"
