@@ -10,6 +10,8 @@ project_version="1.0.0"
 project_name="ssh-accounting-panel"
 project_branch_name="master"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
+root_path=$(openssl rand -base64 4 | cut -c1-5)
+cli_command="spa"
 
 # Colors
 RED="\033[0;31m"
@@ -18,7 +20,7 @@ GREEN='\033[0;32m'
 NC="\033[0m" # No Color
 
 # Required packages
-packages="php php-cli php-mysql php-mbstring php-xml php-curl php-zip cron apache2 mariadb-server nodejs npm sshpass openssh-client openssh-server unzip jq curl"
+packages="php php-cli php-mysql php-mbstring php-xml php-curl openssl php-zip cron apache2 mariadb-server nodejs npm sshpass openssh-client openssh-server unzip jq curl"
 
 #################
 ### Functions ###
@@ -63,6 +65,28 @@ check_mysql_connection() {
     echo "$result"
 }
 
+is_installed() {
+    apache_config_file="/etc/apache2/sites-enabled/$project_name.conf"
+    if [ -f "$apache_config_file" ]; then
+        return 0 # installed
+    else
+        printf "${RED}\nYou must first install the panel\n${NC}\n"
+        before_show_menu
+        return 1 # no installed
+    fi
+}
+
+is_uninstalled() {
+    apache_config_file="/etc/apache2/sites-enabled/$project_name.conf"
+    if [ ! -f "$apache_config_file" ]; then
+        return 0 # not installed
+    else
+        printf "${RED}\nThe panel is already installed\n${NC}\n"
+        before_show_menu
+        return 1 # installed
+    fi
+}
+
 install() {
     local package_manager
     package_manager=$(get_package_manager_name)
@@ -71,7 +95,7 @@ install() {
     ### Package Installation ###
     ############################
 
-    printf "${BLUE}Installing required packages ...${NC}\n"
+    printf "${BLUE}\nInstalling required packages ...\n${NC}\n"
 
      # Install required packages based on OS
     if [ "$package_manager" = "yum" ]; then
@@ -85,11 +109,11 @@ install() {
         sudo DEBIAN_FRONTEND=interactive
     # couldn't find package manger of the OS
     else
-        printf "${RED}Error: Unsupported distribution or package manager!.${NC}\n"
+        printf "${RED}\nError: Unsupported distribution or package manager!.\n${NC}\n"
         exit 1
     fi
 
-    printf "${BLUE}Installing packages is done.${NC}\n"
+    printf "${BLUE}\nInstalling packages is done.\n${NC}\n"
 
     # Remove old source file if it exists
     sudo rm -f "$project_name.zip" > /dev/null 2>&1
@@ -97,7 +121,7 @@ install() {
     # If the project already exits, remove everything inside it's folder
     sudo rm -rf "$project_name/*" > /dev/null 2>&1
 
-    printf "${BLUE}Downloading the project from the github ...${NC}\n"
+    printf "${BLUE}\nDownloading the project from the github ...\n${NC}\n"
 
     #############################
     ### Composer Installation ###
@@ -126,13 +150,11 @@ install() {
     # Rename project folder
     sudo mv "$project_name-$project_branch_name/*" "$project_name"/
 
-    # Delete unzipped file
+    # Delete the unzipped file
     sudo rm -rf "$project_name-$project_branch_name/*"
 
-    # Delete downloaded file
+    # Delete the zipped file
     sudo rm -f "$project_name.zip"
-
-    printf "${BLUE}Moving project to apache directory ...${NC}\n"
 
     # Go to apache directory
     cd /var/www || exit
@@ -147,6 +169,8 @@ install() {
     ######################
     ### Database Setup ###
     ######################
+
+    printf "${BLUE}\nSetting up the database ...\n${NC}\n"
 
     # Try to login into mysql without a password
     result=$(check_mysql_connection)
@@ -177,6 +201,8 @@ install() {
     #####################
     ### Laravel Setup ###
     #####################
+
+    printf "${BLUE}\nSetting up the framework ...\n${NC}\n"
 
     # Go the project directory
     cd "/var/www/$project_name" || exit
@@ -209,6 +235,8 @@ install() {
     ### Apache Setup ###
     ####################
 
+    printf "${BLUE}\nSetting up the apache ...\n${NC}\n"
+
     laravel_project_path="/var/www/$project_name"
     domain="your_domain.com"
     config_file="/etc/apache2/sites-available/$project_name.conf"
@@ -232,13 +260,22 @@ install() {
         fi
     done
 
-    random_text=$(openssl rand -base64 4 | cut -c1-5)
+    # Remove www. from the beginning of domain if it exists
+    domain=$(echo "$domain" | sed 's/^www\.//')
+
+    # Set domain alias
+    domainAlias="www.$domain"
+
+    # If domain is an ip, no alias is required
+    if [[ $domain =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        domainAlias=""
+    fi
 
     # Create Apache configuration file
     cat >  "$config_file" << ENDOFFILE
 <VirtualHost *:$port>
     ServerName $domain
-    ServerAlias www.$domain
+    ServerAlias $domainAlias
 
     DocumentRoot $laravel_project_path/public
 
@@ -248,7 +285,9 @@ install() {
         Require all granted
     </Directory>
 
-    AliasMatch "^/(?!$random_text)" "/nonexistent_path"
+    <Location "/$root_path">
+        Require all granted
+    </Location>
 
     ErrorLog \${APACHE_LOG_DIR}/ssh-accounting-panel_error.log
     CustomLog \${APACHE_LOG_DIR}/ssh-accounting-panel_access.log combined
@@ -267,19 +306,122 @@ ENDOFFILE
     # Restart Apache
     sudo systemctl restart apache2
 
+    #######################################
+    ### Create an alias for bash script ###
+    #######################################
+
+    mv ~/main.sh /usr/local/bin/
+
+    chmod +x /usr/local/bin/main.sh
+
+    # The alias command
+    alias_command="alias $cli_command=\"usr/local/bin/main.sh\""
+
+    # Add the alias to the bash configuration file
+    echo "$alias_command" >> ~/.bashrc
+
+    # Apply the changes
+    . ~/.bashrc /dev/null 2>&1
+
     # Done
-    printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${random_text}.\n${NC}\n"
-    printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}\n"
-    printf "${GREEN}\nInstallation is completed.\n${NC}\n"
+    printf "${GREEN}\nInstallation is completed.\n${NC}"
+    printf "${BLUE}\nPanel address: ${GREEN}${domain}:${port}/${root_path}.\n${NC}"
+    printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
+    printf "${BLUE}\nFrom now on you can access the menu using 'spa' command in your terminal\n${NC}"
 }
 
-#######################
-### Install Process ###
-#######################
+uninstall() {
+    printf "\n${YELLOW}Uninstall functionality is not completed yet ...${NC}\n"
+}
+
+update() {
+    printf "\n${YELLOW}Update functionality is not completed yet ...${NC}\n"
+}
+
+show_config() {
+    apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
+    apache_domain=$(grep -E "^ *ServerName" "$apache_conf" | awk '{print $2}')
+    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+    apache_root_path=$(grep -Po '<Location "\K[^"]+' "$apache_conf")
+
+    printf "
+${GREEN}$project_display_name${NC}
+
+Version: ${BLUE}$project_version${NC}
+domain: ${BLUE}$apache_domain${NC}
+port: ${BLUE}$apache_port${NC}
+root path: ${BLUE}$apache_root_path${NC}
+
+"
+
+before_show_menu
+}
+
+set_port() {
+    printf "${BLUE}Enter a port number for the panel: ${NC}"
+    read port
+
+    apache_conf="/etc/apache2/sites-available/$project_name.conf"
+    sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$port>/" "$apache_conf"
+
+    sudo a2ensite "$project_name".conf
+    sudo systemctl restart apache2
+
+    printf "${GREEN}\nPanel Port changed to $port.\n${NC}"
+
+    before_show_menu
+}
+
+before_show_menu() {
+    echo && echo -n -e "${YELLOW}Enter to return to the SAP menu: ${NC}" && read temp
+    clear
+    show_menu
+}
+
+show_menu() {
+    echo -e "
+${GREEN}SAP menu${NC}
+
+  ${GREEN}0.${NC} exit
+————————————————
+  ${GREEN}1.${NC} install
+  ${GREEN}2.${NC} update
+  ${GREEN}3.${NC} uninstall
+————————————————
+  ${GREEN}4.${NC} show config
+  ${GREEN}5.${NC} change port
+"
+
+    echo && read -p "please input a legal number[0-5]: " num
+
+    case "${num}" in
+        0)
+            exit 0
+            ;;
+        1)
+            is_uninstalled && install
+            ;;
+        2)
+            is_installed && update
+            ;;
+        3)
+            is_installed && uninstall
+            ;;
+        4 )
+            is_installed && show_config
+            ;;
+        5)
+            is_installed && set_port
+            ;;
+        *)
+            printf "${RED}Error: Please input a legal number[0-5].${NC}\n"
+            ;;
+    esac
+}
 
 main() {
     # Let the user know that installing is started
-    printf "${BLUE}${project_display_name} v${project_version}${NC}\n"
+    printf "${GREEN}\n###########################\n\n${project_display_name} v${project_version}\n\n###########################\n${NC}\n"
 
     # Check if user has root access
     if [ "$(isRoot)" != "true" ]; then
@@ -287,7 +429,7 @@ main() {
     	exit 1
     fi
 
-    install
+    show_menu
 }
 
 main
