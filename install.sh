@@ -18,7 +18,7 @@ GREEN='\033[0;32m'
 NC="\033[0m" # No Color
 
 # Required packages
-packages="php php-mysql php-mbstring php-xml php-curl php-zip cron apache2 mariadb-server nodejs npm sshpass openssh-client openssh-server unzip jq curl"
+packages="php php-cli php-mysql php-mbstring php-xml php-curl php-zip cron apache2 mariadb-server nodejs npm sshpass openssh-client openssh-server unzip jq curl"
 
 #################
 ### Functions ###
@@ -52,6 +52,15 @@ install_packages() {
 
     #Install required packages
     sudo "$package_manager" -y install $packages
+}
+
+check_mysql_connection() {
+    if [ -z "$1" ]; then
+        result=$(mysql -u root -e "SELECT 1" 2>&1)
+    else
+        result=$(mysql -u root -p"$1" -e "SELECT 1" 2>&1)
+    fi
+    echo "$result"
 }
 
 install() {
@@ -89,6 +98,16 @@ install() {
     sudo rm -rf "$project_name/*" > /dev/null 2>&1
 
     printf "${BLUE}Downloading the project from the github ...${NC}\n"
+
+    #############################
+    ### Composer Installation ###
+    #############################
+
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    php composer-setup.php
+    php -r "unlink('composer-setup.php');"
+    sudo mv composer.phar /usr/local/bin/composer
 
     #####################
     ### Project Clone ###
@@ -129,23 +148,53 @@ install() {
     ### Database Setup ###
     ######################
 
-    printf "${BLUE}Enter a password for the root user of mysql service [default: !12345678?]: ${NC}"
-    read password
-    db_password=${password:=!12345678?}
+    # Try to login into mysql without a password
+    result=$(check_mysql_connection)
 
-    # Store the SQL command to set the password in a variable
-    sql_query="ALTER USER 'root'@'localhost' IDENTIFIED BY '${db_password}'; FLUSH PRIVILEGES;"
+    if [[ $result == *"Access denied"* ]]; then
+        # root user has a password
+        message="Enter the password of the 'root' user of mysql service: "
+        while true; do
+            printf "${BLUE}${message}${NC}"
+                read db_password
 
-    # Execute the SQL command
-    echo "${sql_query}" | sudo mysql -u root
+            result=$(check_mysql_connection "$db_password")
+            if [[ -n $db_password && $result != *"Access denied"* ]]; then
+                break
+            else
+                message="The password is wrong, enter again: "
+            fi
+        done
+    else
+        printf "${BLUE}Set a password for the 'root' user of mysql service [default: !12345678?]: ${NC}"
+        read password
+        db_password=${password:=!12345678?}
+
+        # Execute the SQL query
+        sudo mysql -u root -p"$db_password" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${db_password}'; FLUSH PRIVILEGES;"
+    fi
+
+    #####################
+    ### Laravel Setup ###
+    #####################
 
     # Go the project directory
     cd "/var/www/$project_name" || exit
 
-    # Prepare laravel
+    # Create a .env file using the sample file
     cp .env.example .env
+
+    # Set the DB_PASSWORD inside the .env
     sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${db_password}/" .env
-    composer dump-autoload --optimize
+
+    # Get the database name from the .env
+    laravel_db_name=$(awk -F "=" '/^DB_DATABASE=/ {print $2}' .env)
+
+    # Create a database for the panel
+    sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;"
+
+    # Prepare laravel
+    composer install --optimize-autoloader --no-dev
     php artisan config:cache
     php artisan event:cache
     php artisan route:cache
