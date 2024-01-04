@@ -66,7 +66,7 @@ check_mysql_connection() {
 }
 
 is_installed() {
-    apache_config_file="/etc/apache2/sites-enabled/$project_name.conf"
+    apache_config_file="/etc/apache2/sites-available/$project_name.conf"
     if [ -f "$apache_config_file" ]; then
         return 0 # installed
     else
@@ -77,7 +77,7 @@ is_installed() {
 }
 
 is_uninstalled() {
-    apache_config_file="/etc/apache2/sites-enabled/$project_name.conf"
+    apache_config_file="/etc/apache2/sites-available/$project_name.conf"
     if [ ! -f "$apache_config_file" ]; then
         return 0 # not installed
     else
@@ -334,8 +334,8 @@ ENDOFFILE
 
     # Done
     printf "${GREEN}\nInstallation is completed.\n${NC}"
-    printf "${BLUE}\nPanel address: ${GREEN}http://${domain}:${port}\n${NC}"
-    printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
+    printf "${BLUE}\nThe panel address: ${GREEN}http://${domain}:${port}\n${NC}"
+    printf "${BLUE}\nThe panel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
     printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}$cli_command${NC} command in your terminal\n${NC}\n"
 }
 
@@ -375,6 +375,33 @@ update() {
     printf "\n${GREEN}The latest version of the panel is installed.\n${NC}\n"
 }
 
+show_config() {
+    apache_conf="/etc/apache2/sites-available/$project_name.conf"
+    apache_domain=$(grep -E "^ *ServerName" "$apache_conf" | awk '{print $2}')
+    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+    is_running="${GREEN}YES${NC}"
+
+    if [ ! -f "/etc/apache2/sites-enabled/$project_name.conf" ]; then
+        is_running="${RED}NO${NC}"
+    fi
+
+    if [ -z "$apache_domain" ]; then
+        apache_domain=$(curl -s ipv4.icanhazip.com)
+    fi
+
+    printf "
+${GREEN}$project_display_name${NC}
+
+Version: ${GREEN}$project_version${NC}
+domain: ${GREEN}$apache_domain${NC}
+port: ${GREEN}$apache_port${NC}
+running: $is_running
+
+"
+
+before_show_menu
+}
+
 set_port() {
     while true; do
         printf "${BLUE}\nEnter a port number for the panel: ${NC}"
@@ -397,10 +424,10 @@ set_port() {
     n_port="Listen $new_port"
     sudo sed -i "s/$o_port/$n_port/" /etc/apache2/ports.conf
 
-    sudo a2ensite "$project_name".conf
+    sudo a2ensite "$project_name".conf > /dev/null 2>&1
     sudo systemctl restart apache2
 
-    printf "${GREEN}\nPanel port changed to $port.\n${NC}"
+    printf "${GREEN}\nThe panel port changed to $port.\n${NC}"
 
     before_show_menu
 }
@@ -427,37 +454,32 @@ set_domain() {
         fi
     fi
 
-    sudo a2ensite "$project_name".conf
+    sudo a2ensite "$project_name".conf > /dev/null 2>&1
     sudo systemctl restart apache2
 
     if [ -n "$new_domain" ]; then
-        printf "${GREEN}\nPanel domain changed to $new_domain.\n${NC}"
+        printf "${GREEN}\nThe panel domain changed to $new_domain.\n${NC}"
     else
-        printf "${GREEN}\nPanel domain removed.\n${NC}"
+        printf "${GREEN}\nThe panel domain removed.\n${NC}"
     fi
 
     before_show_menu
 }
 
-show_config() {
-    apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
-    apache_domain=$(grep -E "^ *ServerName" "$apache_conf" | awk '{print $2}')
-    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-
-    if [ -z "$apache_domain" ]; then
-        apache_domain=$(curl -s ipv4.icanhazip.com)
+toggle_server() {
+    if [ -f "/etc/apache2/sites-enabled/$project_name.conf" ]; then
+        # Stop the virtual host
+        sudo a2dissite "$project_name".conf > /dev/null 2>&1
+        printf "${GREEN}\nThe panel has stopped.\n${NC}"
+    else
+        # Start the virtual host
+        sudo a2ensite "$project_name".conf > /dev/null 2>&1
+        printf "${GREEN}\nThe panel has started.\n${NC}"
     fi
 
-    printf "
-${GREEN}$project_display_name${NC}
+    sudo systemctl restart apache2
 
-Version: ${BLUE}$project_version${NC}
-domain: ${BLUE}$apache_domain${NC}
-port: ${BLUE}$apache_port${NC}
-
-"
-
-before_show_menu
+    before_show_menu
 }
 
 before_show_menu() {
@@ -476,9 +498,10 @@ ${GREEN}SAP menu${NC}
   ${GREEN}2.${NC} Update
   ${GREEN}3.${NC} Uninstall
 ————————————————
-  ${GREEN}4.${NC} Change port
-  ${GREEN}5.${NC} Change domain
-  ${GREEN}6.${NC} Show   config
+  ${GREEN}4.${NC} Show   config
+  ${GREEN}5.${NC} Change port
+  ${GREEN}6.${NC} Change domain
+  ${GREEN}7.${NC} Start / Stop
 "
 
     echo && read -p "Please enter a valid number [0-6]: " num
@@ -496,17 +519,21 @@ ${GREEN}SAP menu${NC}
         3)
             is_installed && uninstall
             ;;
-        4 )
+        4)
+            is_installed && show_config
+            ;;
+        5)
             is_installed && set_port
             ;;
-        5 )
+        6)
             is_installed && set_domain
             ;;
-        6)
-           is_installed && show_config
+        7)
+            is_installed && toggle_server
             ;;
+
         *)
-            printf "${RED}\nError: Please enter a valid number [0-6]: \n${NC}\n"
+            printf "${RED}\nError: Please enter a valid number [0-7]: \n${NC}\n"
             show_menu
             ;;
     esac
