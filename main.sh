@@ -454,6 +454,9 @@ set_domain() {
         fi
     fi
 
+    sudo a2ensite "$project_name".conf
+    sudo systemctl restart apache2
+
     if [ -n "$new_domain" ]; then
         printf "${GREEN}\nPanel domain changed to $new_domain.\n${NC}"
     else
