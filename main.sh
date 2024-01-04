@@ -177,9 +177,10 @@ install() {
         message="Enter the password of the 'root' user of mysql service: "
         while true; do
             printf "${BLUE}${message}${NC}"
-                read db_password
+            read db_password
 
             result=$(check_mysql_connection "$db_password")
+
             if [[ -n $db_password && $result != *"Access denied"* ]]; then
                 break
             else
@@ -402,8 +403,13 @@ before_show_menu
 }
 
 set_port() {
-    printf "${BLUE}\nEnter a port number for the panel: ${NC}"
-    read new_port
+    while true; do
+        printf "${BLUE}\nEnter a port number for the panel: ${NC}"
+        read new_port
+        if [ -n "$new_port" ]; then
+            break
+        fi
+    done
 
     # Config file
     apache_conf="/etc/apache2/sites-available/$project_name.conf"
@@ -421,7 +427,38 @@ set_port() {
     sudo a2ensite "$project_name".conf
     sudo systemctl restart apache2
 
-    printf "${GREEN}\nPanel Port changed to $port.\n${NC}"
+    printf "${GREEN}\nPanel port changed to $port.\n${NC}"
+
+    before_show_menu
+}
+
+set_domain() {
+    printf "${BLUE}\nEnter a domain for the panel (can be empty): ${NC}"
+    read new_domain
+
+    # Config file
+    apache_conf="/etc/apache2/sites-available/$project_name.conf"
+
+    # If domain is empty remove the ServerName
+    if [ -z "$new_domain" ]; then
+        sudo sed -i "/ServerName/d" "$apache_conf"
+        exit 0
+    else
+        if grep -q "ServerName" "$apache_conf"; then
+            # Add a new ServerName because none is set
+            sudo sed -i "s/ServerName .*/ServerName $new_domain/" "$apache_conf"
+        else
+            # Update the ServerName because one is set
+            port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+            sudo sed -i "/<VirtualHost \*:$port>/a \    ServerName $new_domain" "$apache_conf"
+        fi
+    fi
+
+    if [ -n "$new_domain" ]; then
+        printf "${GREEN}\nPanel domain changed to $new_domain.\n${NC}"
+    else
+        printf "${GREEN}\nPanel domain removed.\n${NC}"
+    fi
 
     before_show_menu
 }
@@ -442,11 +479,12 @@ ${GREEN}SAP menu${NC}
   ${GREEN}2.${NC} Update
   ${GREEN}3.${NC} Uninstall
 ————————————————
-  ${GREEN}4.${NC} Show config
-  ${GREEN}5.${NC} Change port
+  ${GREEN}4.${NC} Change port
+  ${GREEN}5.${NC} Change domain
+  ${GREEN}6.${NC} Show   config
 "
 
-    echo && read -p "Please enter a legal number [0-5]: " num
+    echo && read -p "Please enter a legal number [0-6]: " num
 
     case "${num}" in
         0)
@@ -462,13 +500,16 @@ ${GREEN}SAP menu${NC}
             is_installed && uninstall
             ;;
         4 )
-            is_installed && show_config
-            ;;
-        5)
             is_installed && set_port
             ;;
+        5 )
+            is_installed && set_domain
+            ;;
+        6)
+           is_installed && show_config
+            ;;
         *)
-            printf "${RED}\nError: Please enter a legal number [0-5]: \n${NC}\n"
+            printf "${RED}\nError: Please enter a legal number [0-6]: \n${NC}\n"
             show_menu
             ;;
     esac
