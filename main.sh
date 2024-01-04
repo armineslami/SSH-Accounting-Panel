@@ -10,7 +10,7 @@ project_version="1.0.0"
 project_name="sap"
 project_name_on_github="SSH-Accounting-Panel-master"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
-root_path=$(cat /dev/urandom | tr -dc 'a-z' | head -c 5)
+#root_path=$(cat /dev/urandom | tr -dc 'a-z' | head -c 5)
 cli_command="sap"
 
 # Colors
@@ -287,10 +287,6 @@ ENDOFFILE
         Require all granted
     </Directory>
 
-    <Location "/$root_path">
-        Require all granted
-    </Location>
-
     ErrorLog \${APACHE_LOG_DIR}/sap_error.log
     CustomLog \${APACHE_LOG_DIR}/sap_access.log combined
 </VirtualHost>
@@ -338,7 +334,7 @@ ENDOFFILE
 
     # Done
     printf "${GREEN}\nInstallation is completed.\n${NC}"
-    printf "${BLUE}\nPanel address: ${GREEN}http://${domain}:${port}/${root_path}\n${NC}"
+    printf "${BLUE}\nPanel address: ${GREEN}http://${domain}:${port}\n${NC}"
     printf "${BLUE}\nPanel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
     printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}$cli_command${NC} command in your terminal\n${NC}\n"
 }
@@ -377,29 +373,6 @@ uninstall() {
 
 update() {
     printf "\n${GREEN}The latest version of the panel is installed.\n${NC}\n"
-}
-
-show_config() {
-    apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
-    apache_domain=$(grep -E "^ *ServerName" "$apache_conf" | awk '{print $2}')
-    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-    apache_root_path=$(grep -Po '<Location "\K[^"]+' "$apache_conf")
-
-    if [ -z "$apache_domain" ]; then
-        apache_domain=$(curl -s ipv4.icanhazip.com)
-    fi
-
-    printf "
-${GREEN}$project_display_name${NC}
-
-Version: ${BLUE}$project_version${NC}
-domain: ${BLUE}$apache_domain${NC}
-port: ${BLUE}$apache_port${NC}
-root path: ${BLUE}$apache_root_path${NC}
-
-"
-
-before_show_menu
 }
 
 set_port() {
@@ -466,6 +439,27 @@ set_domain() {
     before_show_menu
 }
 
+show_config() {
+    apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
+    apache_domain=$(grep -E "^ *ServerName" "$apache_conf" | awk '{print $2}')
+    apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+
+    if [ -z "$apache_domain" ]; then
+        apache_domain=$(curl -s ipv4.icanhazip.com)
+    fi
+
+    printf "
+${GREEN}$project_display_name${NC}
+
+Version: ${BLUE}$project_version${NC}
+domain: ${BLUE}$apache_domain${NC}
+port: ${BLUE}$apache_port${NC}
+
+"
+
+before_show_menu
+}
+
 before_show_menu() {
     echo && echo -n -e "${YELLOW}Hit enter to return to the menu: ${NC}" && read temp
     clear
@@ -487,7 +481,7 @@ ${GREEN}SAP menu${NC}
   ${GREEN}6.${NC} Show   config
 "
 
-    echo && read -p "Please enter a legal number [0-6]: " num
+    echo && read -p "Please enter a valid number [0-6]: " num
 
     case "${num}" in
         0)
@@ -512,7 +506,7 @@ ${GREEN}SAP menu${NC}
            is_installed && show_config
             ;;
         *)
-            printf "${RED}\nError: Please enter a legal number [0-6]: \n${NC}\n"
+            printf "${RED}\nError: Please enter a valid number [0-6]: \n${NC}\n"
             show_menu
             ;;
     esac
