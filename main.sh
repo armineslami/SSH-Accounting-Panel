@@ -358,10 +358,10 @@ uninstall() {
     rm -rf "/var/www/$project_name" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
-    a2dissite "$project_name".conf
+    a2dissite "$project_name".conf > /dev/null 2>&1
     systemctl restart apache2
 
-    rm -f /usr/local/bin/main.sh
+    rm -f /usr/local/bin/main.sh > /dev/null 2>&1
     temp_file=$(mktemp)
     grep -v "alias $cli_command" /root/.bashrc > "$temp_file" && mv "$temp_file" /root/.bashrc
     rm "$temp_file" > /dev/null 2>&1
