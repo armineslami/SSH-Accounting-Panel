@@ -37,7 +37,7 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 ### Install
 To install the panel, run the following command on your server:
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh)
+cd /root && bash <(curl -Ls https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh)
 ```
 
 ### Uninstall
