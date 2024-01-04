@@ -302,10 +302,10 @@ ENDOFFILE
     rm /etc/apache2/sites-available/000-default.conf > /dev/null 2>&1
 
     # Enable the site and restart Apache
-    sudo a2ensite "$project_name".conf
+    sudo a2ensite "$project_name".conf > /dev/null 2>&1
 
     # Enable mod_rewrite for Laravel routing
-    sudo a2enmod rewrite
+    sudo a2enmod rewrite > /dev/null 2>&1
 
     # Restart Apache
     sudo systemctl restart apache2
@@ -367,7 +367,7 @@ uninstall() {
     rm "$temp_file" > /dev/null 2>&1
     source /root/.bashrc > /dev/null 2>&1
 
-    printf "${BLUE}\nUninstallation is completed.\n${NC}\n"
+    printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 
 }
 
