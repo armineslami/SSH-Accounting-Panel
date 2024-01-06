@@ -237,7 +237,9 @@ install() {
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/scp' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/echo' | sudo EDITOR='tee -a' visudo &
-    clear
+    wait
+    sudo sed -i '/%sudo/s/^/#/' /etc/sudoers &
+    wait
 
     ######################
     ### Database Setup ###
@@ -458,6 +460,79 @@ uninstall() {
     source /root/.bashrc > /dev/null 2>&1
 
     rm -rf /root/.ssh/ssh_accounting_panel* > /dev/null 2>&1
+
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/adduser/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/useradd/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/deluser/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/sed/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/passwd/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/curl/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/kill/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/killall/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/pkill/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/rm/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/mv/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/cp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/touch/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/grep/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/chmod/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/crontab/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/nethogs/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/nethogs/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/local/sbin\/nethogs/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/service/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl restart apache2/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl start ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl stop ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl enable ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl disable ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/zip/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/usermod/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/ssh/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/sshpass/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/bash/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/apt-get/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/mkdir/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/cmake/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/cat/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/scp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/echo/d' /etc/sudoers &
+    wait
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 
