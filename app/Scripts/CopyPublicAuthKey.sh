@@ -23,5 +23,5 @@ else
     sshpass -p "$2" ssh-copy-id -p "$4" -i /root/.ssh/ssh_accounting_panel.pub "$1"@"$3" > /dev/null 2>&1
 
     # Test if SSH connection works with the key
-    ssh -q -o BatchMode=yes -o ConnectTimeout=5 -i /root/.ssh/ssh_accounting_panel -p "$4" "$1"@"$3" 'echo Connected' >/dev/null 2>&1 && (createResponse "1" "Successful") || (createResponse "0" "Failed to connected to the server")
+    ssh -q -o BatchMode=yes -o ConnectTimeout=5 -i /root/.ssh/ssh_accounting_panel -p "$4" "$1"@"$3" 'echo Connected' >/dev/null 2>&1 && (createResponse "1" "Successful") || (createResponse "0" "Failed to connect to the server")
 fi
