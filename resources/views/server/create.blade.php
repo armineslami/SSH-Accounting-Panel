@@ -42,7 +42,7 @@
 used to establish a SSH connection to the server. When you click the 'create' button,
 the public key of this app will be copied to your server in order to perform future operations like creating inbound,
 without requiring you to enter the password again. You can find this key on your server at " }}
-                        <b>{{  "'~/.ssh/ssh_accounting_panel.pub'." }}</b>
+                        <b>{{  "'/root/.ssh/ssh_accounting_panel.pub'." }}</b>
                         {{ "The password of your server will not be stored on the database. Then a folder named " }}
                         <b>{{  "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory to
 set up nethogs and one cron job to calculate each user bandwidth usage." }}
