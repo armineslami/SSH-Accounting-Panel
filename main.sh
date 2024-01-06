@@ -159,9 +159,86 @@ install() {
     # Move the project into apache directory
     mv -i "/root/$project_name"  /var/www/
 
-    # Set the right permissions
+    ###################
+    ### Permissions ###
+    ###################
+
     chown -R www-data:www-data "/var/www/$project_name"
     chmod -R 775  "/var/www/$project_name/app/Scripts"
+
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/adduser' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/useradd' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/deluser' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/sed' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/passwd' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/curl' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/kill' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/killall' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/pkill' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/rm' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/mv' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/touch' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/grep' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/chmod' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/crontab' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/nethogs' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/nethogs' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/local/sbin/nethogs' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/service' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl restart apache2' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl start ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl stop ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl enable ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl disable ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/zip' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/usermod' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/ssh' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/sshpass' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/bash' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/apt-get' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/mkdir' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cmake' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cat' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/scp' | sudo EDITOR='tee -a' visudo &
+    with
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/echo' | sudo EDITOR='tee -a' visudo &
+    with
+    clear
 
     ######################
     ### Database Setup ###
@@ -310,9 +387,9 @@ ENDOFFILE
     # Restart Apache
     sudo systemctl restart apache2
 
-    #######################################
-    ### Create an alias for bash script ###
-    #######################################
+    #########################
+    ### Bash Script Alias ###
+    #########################
 
     mv ~/main.sh /usr/local/bin/
 
@@ -326,6 +403,12 @@ ENDOFFILE
 
     # Apply the changes
     source /root/.bashrc > /dev/null 2>&1
+
+    ###############
+    ### SSH Key ###
+    ###############
+
+    ssh-keygen -q -t rsa -b 4096 -N "" -C "$project_name" -f /root/.ssh/ssh_accounting_panel
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
@@ -359,13 +442,15 @@ uninstall() {
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
     a2dissite "$project_name".conf > /dev/null 2>&1
-    systemctl restart apache2
+    sudo systemctl restart apache2
 
     rm -f /usr/local/bin/main.sh > /dev/null 2>&1
     temp_file=$(mktemp)
     grep -v "alias $cli_command" /root/.bashrc > "$temp_file" && mv "$temp_file" /root/.bashrc
     rm "$temp_file" > /dev/null 2>&1
     source /root/.bashrc > /dev/null 2>&1
+
+    rm -rf /root/.ssh/ssh_accounting_panel* > /dev/null 2>&1
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 
