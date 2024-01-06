@@ -97,7 +97,7 @@ install() {
     ### Package Installation ###
     ############################
 
-    printf "${BLUE}\nInstalling required packages ...\n${NC}\n"
+    printf "${GREEN}\nInstalling required packages ...\n${NC}\n"
 
      # Install required packages based on OS
     if [ "$package_manager" = "yum" ]; then
@@ -135,7 +135,7 @@ install() {
     # If the project already exits, remove everything inside it's folder
     sudo rm -rf "/root/$project_name/*" > /dev/null 2>&1
 
-    printf "${BLUE}\nDownloading the project from the github ...\n${NC}\n"
+    printf "${GREEN}\nDownloading the project from the github ...\n${NC}\n"
 
     # Download the source files
     wget -O "$project_name.zip" "$project_source_link"
@@ -245,7 +245,7 @@ install() {
     ### Database Setup ###
     ######################
 
-    printf "${BLUE}\nSetting up the database ...\n${NC}\n"
+    printf "${GREEN}\nSetting up the database ...\n${NC}\n"
 
     # Try to login into mysql without a password
     result=$(check_mysql_connection)
@@ -278,7 +278,7 @@ install() {
     ### Laravel Setup ###
     #####################
 
-    printf "${BLUE}\nSetting up the framework ...\n${NC}\n"
+    printf "${GREEN}\nSetting up the framework ...\n${NC}\n"
 
     # Go the project directory
     cd "/var/www/$project_name" || exit
@@ -324,7 +324,7 @@ install() {
     ### Apache Setup ###
     ####################
 
-    printf "${BLUE}\nSetting up the apache ...\n${NC}"
+    printf "${GREEN}\nSetting up the apache ...\n${NC}"
 
     apache_project_path="/var/www/$project_name"
     domain="your_domain.com"
@@ -428,7 +428,7 @@ ENDOFFILE
     printf "${GREEN}\nInstallation is completed.\n${NC}"
     printf "${BLUE}\nThe panel address: ${GREEN}http://${domain}:${port}\n${NC}"
     printf "${BLUE}\nThe panel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
-    printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}$cli_command${NC} command in your terminal\n${NC}\n"
+    printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}${cli_command}${NC} command in your terminal\n${NC}\n"
 }
 
 uninstall() {
