@@ -408,7 +408,15 @@ ENDOFFILE
     ### SSH Key ###
     ###############
 
+    if [ ! -d /root/.ssh ]; then
+        mkdir /root/.ssh
+    fi
+
     ssh-keygen -q -t rsa -b 4096 -N "" -C "$project_name" -f /root/.ssh/ssh_accounting_panel
+
+    chmod 700 ~/.ssh > /dev/null 2>&1
+    chmod 600 ~/.ssh/authorized_keys > /dev/null 2>&1
+
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
