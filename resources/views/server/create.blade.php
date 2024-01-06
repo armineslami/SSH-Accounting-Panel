@@ -34,7 +34,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        {{ __("Create a new server so you add inbounds to it.") }}
+                        {{ __("Create a new server so you can add an inbounds into it.") }}
                     </p>
 
                     <p class="mt-4 text-gray-900 dark:text-gray-100">
