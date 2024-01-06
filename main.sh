@@ -217,27 +217,26 @@ install() {
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl disable ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/zip' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/usermod' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/ssh' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/sshpass' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/bash' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/apt-get' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/mkdir' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cmake' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cat' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/scp' | sudo EDITOR='tee -a' visudo &
-    with
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/echo' | sudo EDITOR='tee -a' visudo &
-    with
     clear
 
     ######################
