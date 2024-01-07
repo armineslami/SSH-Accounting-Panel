@@ -259,8 +259,10 @@ install() {
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/echo' | sudo EDITOR='tee -a' visudo &
     wait
-    sudo sed -i '/%sudo/s/^/#/' /etc/sudoers &
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/ssh-keygen' | sudo EDITOR='tee -a' visudo &
     wait
+#    sudo sed -i '/%sudo/s/^/#/' /etc/sudoers &
+#    wait
 
     ######################
     ### Database Setup ###
@@ -413,7 +415,9 @@ ENDOFFILE
     ### Bash Script Alias ###
     #########################
 
-    mv main.sh /usr/local/bin/
+    mv main.sh /usr/local/bin/ > /dev/null 2>&1
+
+    rm main.sh > /dev/null 2>&1
 
     chmod +x /usr/local/bin/main.sh
 
@@ -434,6 +438,8 @@ ENDOFFILE
 
     mkdir -p /var/www/.ssh > /dev/null 2>&1
 
+    touch /var/www/.ssh/known_hosts > /dev/null 2>&1
+
     ssh-keygen -q -t rsa -b 4096 -N "" -C "$project_name" -f "/var/www/$project_name/storage/keys/ssh_accounting_panel" > /dev/null 2>&1
 
     chown -R www-data:www-data "/var/www/$project_name/storage/keys"
@@ -441,6 +447,12 @@ ENDOFFILE
 
     chown -R www-data:www-data "/var/www/$project_name/storage/keys/*"
     chmod 700 "/var/www/$project_name/storage/keys/*"
+
+    chown -R www-data:www-data /var/www/.ssh
+    chmod -R 700  /var/www/.ssh
+
+    chown -R www-data:www-data /var/www/.ssh/known_hosts
+    chmod -R 700  /var/www/.ssh/known_hosts
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
@@ -466,11 +478,10 @@ uninstall() {
 
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-    temp_file=$(mktemp)
-    grep -v "Listen $apache_port" /etc/apache2/ports.conf > "$temp_file" && mv "$temp_file" /etc/apache2/ports.conf
-    rm "$temp_file" > /dev/null 2>&1
+    sed -i "/Listen $apache_port/d" test.conf
 
     a2dissite "$project_name".conf > /dev/null 2>&1
+
     rm -rf "/var/www/$project_name" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
@@ -485,6 +496,7 @@ uninstall() {
 
     rm -rf /var/www/ssh-accounting-panel > /dev/null 2>&1
     rm -rf /var/www/.cache > /dev/null 2>&1
+    rm -rf /var/www/.ssh/known_hosts > /dev/null 2>&1
     rm /etc/systemd/system/ssh-accounting-panel-udp.service > /dev/null 2>&1
 
     deluser ssh-accounting-panel-udp >/dev/null 2>&1
@@ -562,6 +574,8 @@ uninstall() {
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/scp/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/echo/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/ssh-keygen/d' /etc/sudoers &
     wait
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
