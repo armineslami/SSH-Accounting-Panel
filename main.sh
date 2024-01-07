@@ -87,6 +87,8 @@ is_uninstalled() {
 }
 
 install() {
+    current_directory=$(pwd)
+
     cd /root || exit
 
     local package_manager
@@ -413,23 +415,6 @@ ENDOFFILE
     # Restart Apache
     sudo systemctl restart apache2
 
-    #########################
-    ### Bash Script Alias ###
-    #########################
-
-    mv main.sh /usr/local/bin/ > /dev/null 2>&1
-
-    chmod +x /usr/local/bin/main.sh
-
-    # The alias command
-    alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
-
-    # Add the alias to the bash configuration file
-    grep -wq "alias $cli_command" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
-
-    # Apply the changes
-    source /root/.bashrc > /dev/null 2>&1
-
     ###############
     ### SSH Key ###
     ###############
@@ -456,6 +441,25 @@ ENDOFFILE
 
     chown -R www-data:www-data /var/www/.ssh/known_hosts
     chmod -R 700  /var/www/.ssh/known_hosts
+
+    #########################
+    ### Bash Script Alias ###
+    #########################
+
+    cd "$current_directory" || exit;
+
+    mv main.sh /usr/local/bin/ > /dev/null 2>&1
+
+    chmod +x /usr/local/bin/main.sh
+
+    # The alias command
+    alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
+
+    # Add the alias to the bash configuration file
+    grep -wq "alias $cli_command" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
+
+    # Apply the changes
+    source /root/.bashrc > /dev/null 2>&1
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
