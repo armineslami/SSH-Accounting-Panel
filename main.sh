@@ -321,13 +321,15 @@ install() {
     # Create a database for the panel
     sudo mysql -u root -p"$db_password" -e "CREATE DATABASE \`$laravel_db_name\`;" > /dev/null 2>&1
 
-    # Remove old cron job if it exists
+    # Define the cron job command
     cron_job="* * * * * cd /var/www/sap && php artisan schedule:run >> /dev/null 2>&1"
-    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
-        current_crontab=$(crontab -l 2>/dev/null)
-        new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
-        echo "$new_crontab" | crontab
+
+    # Check if the cron job already exists in the user's crontab
+    if ! crontab -u www-data -l 2>/dev/null | grep -Fq "$cron_job"; then
+        # If the cron job doesn't exist, append it to the user's crontab
+        (crontab -u www-data -l 2>/dev/null; echo "$cron_job") | crontab -u www-data -
     fi
+
 
     # Prepare laravel
     COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
@@ -470,12 +472,15 @@ ENDOFFILE
 uninstall() {
     printf "${BLUE}\nUninstalling the panel ...\n${NC}\n"
 
+    # Define the cron job command to remove
     cron_job="* * * * * cd /var/www/sap && php artisan schedule:run >> /dev/null 2>&1"
-    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
-        current_crontab=$(crontab -l 2>/dev/null)
-        new_crontab=$(echo "$current_crontab" | grep -Fv "$cron_job")
-        echo "$new_crontab" | crontab
+
+    # Check if the cron job exists in the user's crontab
+    if crontab -u www-data -l 2>/dev/null | grep -Fq "$cron_job"; then
+        # If the cron job exists, remove it from the user's crontab
+        crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
     fi
+
 
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
