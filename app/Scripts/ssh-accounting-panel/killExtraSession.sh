@@ -17,8 +17,8 @@ for username in $user_list; do
     # Count the number of sessions
     num_sessions=$(echo "$session_pids" | wc -w)
 
-    # Get the session limit for the user from /etc/security/limits.conf
-    session_limit=$(grep "$username.*maxlogins" /etc/security/limits.conf | awk '{print $NF}')
+    # Get the session limit for the user
+    session_limit=$(grep "$username.*maxlogins" ~/ssh-accounting-panel/limits.conf | awk '{print $NF}')
 
     if [ -z "$session_limit" ] || [ -z "$num_sessions" ]; then
         continue
@@ -37,7 +37,7 @@ for username in $user_list; do
         done
 
         # Lock the user
-        usermod -L "$username";
+        sudo usermod -L "$username";
 
         # Unlock the user after 50 seconds (run it in the background)
         # !! 50 seconds because the cron job is running this file every 60 seconds !!
