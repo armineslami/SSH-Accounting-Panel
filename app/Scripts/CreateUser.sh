@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# Get the distribution of the OS
-linux_dist() {
-    if [ -x "$(command -v yum)" ]; then
-        echo "CentOS/RHEL"
-    elif [ -x "$(command -v apt-get)" ]; then
-        echo "Debian/Ubuntu"
-    else
-        echo "Unsupported"
-    fi
-}
-
 # Create a json string
 createResponse() {
     json_string="{ \"code\": \"$1\", \"message\": \"$2\" }";
@@ -21,21 +10,13 @@ createResponse() {
 ###  Create User  ###
 #####################
 
-if [ linux_dist = "CentOS/RHEL" ]; then
-    sudo adduser --shell /usr/sbin/nologin "$USERNAME" > /dev/null 2>&1
-#elif [ linux_dist = "Debian/Ubuntu" ]; then
-else
-    sudo adduser --shell /usr/sbin/nologin --no-create-home --disabled-password --gecos "" "$USERNAME" > /dev/null 2>&1
-#else
-#    echo "$(createResponse "0" "Unsupported OS")"
-#    exit
-fi
+sudo adduser --shell /usr/sbin/nologin --no-create-home --disabled-password --gecos "" "$USERNAME" > /dev/null 2>&1
 
 #####################
 ###  Set Password ###
 #####################
 
-echo "$USERNAME":"$PASSWORD" | chpasswd > /dev/null 2>&1
+echo "$USERNAME":"$PASSWORD" | sudo chpasswd > /dev/null 2>&1
 
 #####################
 ###  Expire Date  ###
@@ -58,7 +39,7 @@ fi
 ###################
 
 # Limit the active ssh logins. If user is already limited, delete the rule line and add a new rule.
-file_name="/etc/security/limits.conf"
+file_name=~/ssh-accounting-panel/limits.conf
 line_number=$(grep -nw "$USERNAME" "$file_name" | cut -d':' -f1)
 if [ -n "$line_number" ]; then
     # Remove the rule line for this user
@@ -66,7 +47,7 @@ if [ -n "$line_number" ]; then
 fi
 
 #Add limitation rule
-echo "$USERNAME  hard    maxlogins   $MAX_LOGIN" >> $file_name
+echo "$USERNAME maxlogins $MAX_LOGIN" >> $file_name
 
 # Done
 createResponse "1" "Successful"

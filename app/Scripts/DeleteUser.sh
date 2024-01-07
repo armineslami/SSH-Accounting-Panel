@@ -16,10 +16,10 @@ fi
 sudo pkill -KILL -u "$USERNAME" > /dev/null 2>&1
 
 # Delete the user
-deluser "$USERNAME" > /dev/null 2>&1
+sudo deluser "$USERNAME" > /dev/null 2>&1
 
 # Remove max login rule
-file_name="/etc/security/limits.conf"
+file_name=~/ssh-accounting-panel/limits.conf
 line_number=$(grep -nw "$USERNAME" "$file_name" | cut -d':' -f1)
 
 if [ -n "$line_number" ]; then

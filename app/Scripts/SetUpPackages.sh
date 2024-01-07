@@ -6,6 +6,7 @@ createResponse() {
 }
 
 udp_port=$1
+export HOME=~
 
 if [ -z "$udp_port" ]; then
     createResponse "0" "Failed to get udp port"
@@ -19,68 +20,65 @@ touch /etc/security/limits.conf >/dev/null 2>&1
 #####  Install Packages  #####
 ##############################
 
-if [ -x "$(command -v yum)" ]; then
-    # CentOS/RHEL
-    sudo yum -y update
-    sudo yum -y -q install nethogs golang bc coreutils cmake git >/dev/null 2>&1
-
-elif [ -x "$(command -v apt-get)" ]; then
+if [ -x "$(command -v apt-get)" ]; then
     # Debian/Ubuntu
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
-    sudo apt-get -y install nethogs golang bc coreutils cmake git >/dev/null 2>&1
-    sudo DEBIAN_FRONTEND=interactive >/dev/null 2>&1
+    DEBIAN_FRONTEND=noninteractive apt-get -y update > /dev/null 2>&1
+    apt-get -y install nethogs golang bc coreutils cmake git >/dev/null 2>&1
+    DEBIAN_FRONTEND=interactive >/dev/null 2>&1
+else
+    createResponse "0" "Unsupported OS"
 fi
 
 #############################
 #####  Nethogs Cron Job #####
 #############################
 
-cd /root/ssh-accounting-panel > /dev/null 2>&1 || exit
+cd ~/ssh-accounting-panel > /dev/null 2>&1 || exit
 
-sudo chmod +x nethogs.sh
+chmod +x nethogs.sh > /dev/null 2>&1
 
 #wget -O hogs.go https://raw.githubusercontent.com/boopathi/nethogs-parser/master/hogs.go >/dev/null 2>&1
 
-sudo go build -o hogs hogs.go
+go build -o hogs hogs.go > /dev/null 2>&1
 
 #sudo rm -f hogs.go
 
 cron_job="*/5 * * * * sh $(pwd)/nethogs.sh"
 
 if ! crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
-    (crontab -l ; echo "$cron_job") | crontab
+    (crontab -l 2>/dev/null; echo "$cron_job") | crontab
 fi
 
-sudo sh "$(pwd)/nethogs.sh"
+sh "$(pwd)/nethogs.sh"
 
 ########################################
 #####  Kill Extra Session Cron Job #####
 ########################################
 
-sudo chmod +x killExtraSession.sh
+chmod +x killExtraSession.sh
 
 cron_job="*/1 * * * * sh $(pwd)/killExtraSession.sh"
 
 if ! crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
-    (crontab -l ; echo "$cron_job") | crontab
+    (crontab -l 2>/dev/null; echo "$cron_job") | crontab
 fi
 
-sudo sh "$(pwd)/killExtraSession.sh"
+sh "$(pwd)/killExtraSession.sh"
 
 ###########################
 #####  BadVPN For UDP #####
 ###########################
 
-git clone https://github.com/ambrop72/badvpn.git /root/badvpn >/dev/null 2>&1
+git clone https://github.com/ambrop72/badvpn.git ~/ssh-accounting-panel/badvpn >/dev/null 2>&1
 
-mkdir /root/badvpn/badvpn-build >/dev/null 2>&1
+mkdir -p ~/ssh-accounting-panel/badvpn/badvpn-build >/dev/null 2>&1
 
-if [ ! -d "/root/badvpn/badvpn-build" ]; then
+if [ ! -d ~/ssh-accounting-panel/badvpn/badvpn-build ]; then
     createResponse "0" "Failed to create required directory for badvpn"
     exit;
 fi
 
-cd  /root/badvpn/badvpn-build > /dev/null 2>&1 || exit
+cd  ~/ssh-accounting-panel/badvpn/badvpn-build > /dev/null 2>&1 || exit
 
 temp_output=$(mktemp)
 

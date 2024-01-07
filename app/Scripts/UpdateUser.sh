@@ -10,7 +10,7 @@ createResponse() {
 ###  Set Password ###
 #####################
 
-echo "$USERNAME":"$PASSWORD" | chpasswd > /dev/null 2>&1
+echo "$USERNAME":"$PASSWORD" | sudo chpasswd > /dev/null 2>&1
 
 #####################
 ###  Expire Date  ###
@@ -35,7 +35,7 @@ fi
 ###################
 
 # Update the max login rule
-file_name="/etc/security/limits.conf"
+file_name=~/ssh-accounting-panel/limits.conf
 line_number=$(grep -nw "$USERNAME" "$file_name" | cut -d':' -f1)
 if [ -n "$line_number" ]; then
     # Remove the rule line for this user
@@ -43,7 +43,7 @@ if [ -n "$line_number" ]; then
 fi
 
 #Add limitation rule
-echo "$USERNAME  hard    maxlogins   $MAX_LOGIN" >> $file_name
+echo "$USERNAME maxlogins $MAX_LOGIN" >> $file_name
 
 # Done
 createResponse "1" "Successful"
