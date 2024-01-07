@@ -12,7 +12,6 @@ class BaseController extends Controller
         $json = json_decode($response, true);
 
         if (!$response || !isset($json['code']) || $json['code'] === '0') {
-            echo "WTF => $to";
             return Redirect::route($to, $id)->with([
                 'status' => $status,
                 'message' => $json['message'] ?? null
