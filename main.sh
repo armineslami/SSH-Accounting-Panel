@@ -445,8 +445,11 @@ ENDOFFILE
     chown -R www-data:www-data "/var/www/$project_name/storage/keys"
     chmod 700 "/var/www/$project_name/storage/keys"
 
-    chown -R www-data:www-data "/var/www/$project_name/storage/keys/*"
-    chmod 700 "/var/www/$project_name/storage/keys/*"
+    chown -R www-data:www-data "/var/www/$project_name/storage/keys/ssh_accounting_panel"
+    chown -R www-data:www-data "/var/www/$project_name/storage/keys/ssh_accounting_panel.pub"
+
+    chmod 700 "/var/www/$project_name/storage/keys/ssh_accounting_panel"
+    chmod 700 "/var/www/$project_name/storage/keys/ssh_accounting_panel.pub"
 
     chown -R www-data:www-data /var/www/.ssh
     chmod -R 700  /var/www/.ssh
