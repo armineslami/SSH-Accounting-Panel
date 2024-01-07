@@ -273,7 +273,7 @@ install() {
 
     if [[ $result == *"Access denied"* ]]; then
         # root user has a password
-        message="Enter the password of the 'root' user of mysql service: "
+        message="Enter the password of the 'root' user of the mysql service: "
         while true; do
             printf "${BLUE}${message}${NC}"
             read db_password
@@ -287,7 +287,7 @@ install() {
             fi
         done
     else
-        printf "${BLUE}Set a password for the 'root' user of mysql service [default: !12345678?]: ${NC}"
+        printf "${BLUE}Set a password for the 'root' user of the mysql service [default: !12345678?]: ${NC}"
         read password
         db_password=${password:=!12345678?}
 
@@ -352,7 +352,7 @@ install() {
     config_file="/etc/apache2/sites-available/$project_name.conf"
 
     # Get domain name
-    printf "${BLUE}\nEnter a domain for the panel if you've got one or leave it empty: ${NC}"
+    printf "${BLUE}\nEnter a domain for the panel or leave it empty: ${NC}"
     read domain
 
     # Get port number
@@ -470,10 +470,11 @@ uninstall() {
     grep -v "Listen $apache_port" /etc/apache2/ports.conf > "$temp_file" && mv "$temp_file" /etc/apache2/ports.conf
     rm "$temp_file" > /dev/null 2>&1
 
+    a2dissite "$project_name".conf > /dev/null 2>&1
     rm -rf "/var/www/$project_name" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
-    a2dissite "$project_name".conf > /dev/null 2>&1
+
     sudo systemctl restart apache2
 
     rm -f /usr/local/bin/main.sh > /dev/null 2>&1
