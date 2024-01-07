@@ -27,10 +27,9 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 - Set default settings for inbounds
 - Set UDPGW port on your servers
 
-## Supporting OS
+## Supported OS
 
 - Ubuntu (Recommended, Tested on v20)
-- CentOS
 
 ## Install / Uninstall
 
