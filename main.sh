@@ -466,7 +466,7 @@ ENDOFFILE
     printf "${GREEN}\nInstallation is completed.\n${NC}"
     printf "${BLUE}\nThe panel address: ${GREEN}http://${domain}:${port}\n${NC}"
     printf "${BLUE}\nThe panel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
-    printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}${cli_command}${NC} command in your terminal\n${NC}\n"
+    printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}${cli_command}${BLUE} command in your terminal\n${NC}\n"
 }
 
 uninstall() {
