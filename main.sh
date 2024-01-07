@@ -439,8 +439,8 @@ ENDOFFILE
     chown -R www-data:www-data "/var/www/$project_name/storage/keys"
     chmod 700 "/var/www/$project_name/storage/keys"
 
-    chown -R www-data:www-data "/var/www/$project_name/storage/keys/ssh_accounting_panel*"
-    chmod 700 "/var/www/$project_name/storage/keys/ssh_accounting_panel*"
+    chown -R www-data:www-data "/var/www/$project_name/storage/keys/*"
+    chmod 700 "/var/www/$project_name/storage/keys/*"
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
