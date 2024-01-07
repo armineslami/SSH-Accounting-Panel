@@ -481,7 +481,7 @@ uninstall() {
 
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-    sed -i "/Listen $apache_port/d" test.conf
+    sed -i "/Listen $apache_port/d" "$apache_conf"
 
     a2dissite "$project_name".conf > /dev/null 2>&1
 
@@ -492,9 +492,8 @@ uninstall() {
     sudo systemctl restart apache2
 
     rm -f /usr/local/bin/main.sh > /dev/null 2>&1
-    temp_file=$(mktemp)
-    grep -v "alias $cli_command" /root/.bashrc > "$temp_file" && mv "$temp_file" /root/.bashrc
-    rm "$temp_file" > /dev/null 2>&1
+
+    sed -i "/alias $cli_command/d" /root/.bashrc
     source /root/.bashrc > /dev/null 2>&1
 
     rm -rf /var/www/ssh-accounting-panel > /dev/null 2>&1
