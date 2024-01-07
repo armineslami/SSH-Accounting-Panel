@@ -17,6 +17,7 @@ cli_command="sap"
 RED="\033[0;31m"
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
 NC="\033[0m" # No Color
 
 # Required packages
@@ -38,9 +39,7 @@ isRoot() {
 
 # Checks for OS package manager
 get_package_manager_name() {
-    if [ -x "$(command -v yum)" ]; then
-        echo "yum"
-    elif [ -x "$(command -v apt-get)" ]; then
+    if [ -x "$(command -v apt-get)" ]; then
         echo "apt-get"
     else
         echo "Unsupported"
@@ -100,11 +99,7 @@ install() {
     printf "${GREEN}\nInstalling required packages ...\n${NC}\n"
 
      # Install required packages based on OS
-    if [ "$package_manager" = "yum" ]; then
-        # CentOS/RHEL
-        sudo "$package_manager" -y update
-        install_packages "$package_manager"
-    elif [ "$package_manager" = "apt-get"  ]; then
+    if [ "$package_manager" = "apt-get"  ]; then
         # Debian/Ubuntu
         sudo DEBIAN_FRONTEND=noninteractive "$package_manager" -y update
         install_packages "$package_manager"
@@ -159,12 +154,36 @@ install() {
     # Move the project into apache directory
     mv -i "/root/$project_name"  /var/www/
 
+    # Create a directory to copy nethogs and cron jobs into it
+    mkdir /var/www/ssh-accounting-panel
+
+    # Make a directory for go lang
+    mkdir /var/www/.cache
+
+    # Create a file for badvpn service in case the current server be used for as a inbound server
+    touch /etc/systemd/system/ssh-accounting-panel-udp.service
+
+    # Create a file to store inbounds limits
+    touch /var/www/ssh-accounting-panel/limits.conf
+
     ###################
     ### Permissions ###
     ###################
 
     chown -R www-data:www-data "/var/www/$project_name"
-    chmod -R 775  "/var/www/$project_name/app/Scripts"
+    chmod -R 700  "/var/www/$project_name/app/Scripts"
+
+    chown -R www-data:www-data /var/www/ssh-accounting-panel
+    chmod -R 700  /var/www/ssh-accounting-panel
+
+    chown -R www-data:www-data /var/www/.cache
+    chmod -R 700  /var/www/.cache
+
+    chown -R www-data:www-data /var/www/ssh-accounting-panel/limits.conf
+    chmod -R 700 /var/www/ssh-accounting-panel/limits.conf
+
+    chown root:www-data /etc/systemd/system/ssh-accounting-panel-udp.service
+    chmod 770 /etc/systemd/system/ssh-accounting-panel-udp.service
 
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/adduser' | sudo EDITOR='tee -a' visudo &
     wait
@@ -175,6 +194,8 @@ install() {
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/sed' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/passwd' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/chpasswd' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/curl' | sudo EDITOR='tee -a' visudo &
     wait
@@ -392,7 +413,7 @@ ENDOFFILE
     ### Bash Script Alias ###
     #########################
 
-    mv ~/main.sh /usr/local/bin/
+    mv main.sh /usr/local/bin/
 
     chmod +x /usr/local/bin/main.sh
 
@@ -400,7 +421,7 @@ ENDOFFILE
     alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
 
     # Add the alias to the bash configuration file
-    grep -wq "alias sap" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
+    grep -wq "alias $cli_command" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
 
     # Apply the changes
     source /root/.bashrc > /dev/null 2>&1
@@ -409,15 +430,17 @@ ENDOFFILE
     ### SSH Key ###
     ###############
 
-    if [ ! -d /root/.ssh ]; then
-        mkdir /root/.ssh
-    fi
+    printf "${GREEN}\nCreating ssh keys ...\n${NC}"
 
-    ssh-keygen -q -t rsa -b 4096 -N "" -C "$project_name" -f /root/.ssh/ssh_accounting_panel
+    mkdir -p /var/www/.ssh > /dev/null 2>&1
 
-    chmod 700 ~/.ssh > /dev/null 2>&1
-    chmod 600 ~/.ssh/authorized_keys > /dev/null 2>&1
+    ssh-keygen -q -t rsa -b 4096 -N "" -C "$project_name" -f "/var/www/$project_name/storage/keys/ssh_accounting_panel" > /dev/null 2>&1
 
+    chown -R www-data:www-data "/var/www/$project_name/storage/keys"
+    chmod 700 "/var/www/$project_name/storage/keys"
+
+    chown -R www-data:www-data "/var/www/$project_name/storage/keys/ssh_accounting_panel*"
+    chmod 700 "/var/www/$project_name/storage/keys/ssh_accounting_panel*"
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
@@ -459,7 +482,11 @@ uninstall() {
     rm "$temp_file" > /dev/null 2>&1
     source /root/.bashrc > /dev/null 2>&1
 
-    rm -rf /root/.ssh/ssh_accounting_panel* > /dev/null 2>&1
+    rm -rf /var/www/ssh-accounting-panel > /dev/null 2>&1
+    rm -rf /var/www/.cache > /dev/null 2>&1
+    rm /etc/systemd/system/ssh-accounting-panel-udp.service > /dev/null 2>&1
+
+    deluser ssh-accounting-panel-udp >/dev/null 2>&1
 
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/adduser/d' /etc/sudoers &
     wait
@@ -470,6 +497,8 @@ uninstall() {
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/sed/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/passwd/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/chpasswd/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/curl/d' /etc/sudoers &
     wait
@@ -497,7 +526,7 @@ uninstall() {
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/nethogs/d' /etc/sudoers &
     wait
-    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/local/sbin\/nethogs/d' /etc/sudoers &
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/local\/sbin\/nethogs/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/service/d' /etc/sudoers &
     wait
@@ -535,7 +564,6 @@ uninstall() {
     wait
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
-
 }
 
 update() {
