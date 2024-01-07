@@ -417,8 +417,6 @@ ENDOFFILE
 
     mv main.sh /usr/local/bin/ > /dev/null 2>&1
 
-    rm main.sh > /dev/null 2>&1
-
     chmod +x /usr/local/bin/main.sh
 
     # The alias command
