@@ -471,6 +471,9 @@ ENDOFFILE
     printf "${BLUE}\nThe panel address: ${GREEN}http://${domain}:${port}\n${NC}"
     printf "${BLUE}\nThe panel credentials:\n\nusername: ${GREEN}admin${BLUE}\npassword: ${GREEN}admin\n${NC}"
     printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}${cli_command}${BLUE} command in your terminal\n${NC}\n"
+
+    # Remove the script
+    rm main.sh > /dev/null 2>&1
 }
 
 uninstall() {
@@ -484,7 +487,6 @@ uninstall() {
         # If the cron job exists, remove it from the user's crontab
         crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
     fi
-
 
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
