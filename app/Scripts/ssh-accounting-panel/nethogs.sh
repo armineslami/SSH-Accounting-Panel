@@ -16,4 +16,4 @@ if [ -n "$nethogs_pids" ]; then
     done
 fi
 
-nohup /usr/sbin/nethogs -t -a 2>&1 | grep 'sshd:' > "$output" 2>&1 &
+sudo nohup /usr/sbin/nethogs -t -a 2>&1 | grep 'sshd:' > "$output" 2>&1 &

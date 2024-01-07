@@ -263,6 +263,8 @@ install() {
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/ssh-keygen' | sudo EDITOR='tee -a' visudo &
     wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/nohup' | sudo EDITOR='tee -a' visudo &
+    wait
 #    sudo sed -i '/%sudo/s/^/#/' /etc/sudoers &
 #    wait
 
@@ -587,6 +589,8 @@ uninstall() {
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/echo/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/ssh-keygen/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/nohup/d' /etc/sudoers &
     wait
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
