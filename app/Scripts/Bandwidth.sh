@@ -10,7 +10,7 @@ get_users() {
 }
 
 user_stats() {
-    cd /root/ssh-accounting-panel || exit
+    cd ~/ssh-accounting-panel || exit
 
     json='{ "code": "1", "message": "success", "users": {'
 
