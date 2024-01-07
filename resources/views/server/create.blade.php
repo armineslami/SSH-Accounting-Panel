@@ -39,20 +39,16 @@
 
                     <p class="mt-4 text-gray-900 dark:text-gray-100">
                         {{ "If the server you are creating is not the same server of this app, these information will be
-used to establish a SSH connection to the server. When you click the 'create' button,
-the public key of this app will be copied to your server in order to perform future operations like creating inbound,
-without requiring you to enter the password again. You can find this key on your server at " }}
-                        <b>{{  "'/root/.ssh/ssh_accounting_panel.pub'." }}</b>
-                        {{ "The password of your server will not be stored on the database. Then a folder named " }}
-                        <b>{{  "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory to
-set up nethogs and one cron job to calculate each user bandwidth usage." }}
+used to establish a SSH connection to the remote server. When you click the 'create' button,
+the public key of this app will be copied to your remote server in order to perform future operations like creating inbound,
+without requiring you to enter the password again. This way the password of your server will not be stored on the database.
+Then a folder named " }}<b>{{ "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory which includes
+multiple files required by this panel." }}
                     </p>
-
                     <p class="text-gray-900 dark:text-gray-100">
-                        {{ "So creating a server may take some time to finish and if you want to make this process shorter,
-you can install these packages on your server manually:" }}
+                        {{ "⚠️ Adding a server may take some time to finish and if you want to make this process shorter,
+you can update packages list and then install the following packages on your server manually:" }}
                     </p>
-
                     <p class="mt-2 font-bold text-gray-900 dark:text-gray-100">
                         {{ "nethogs golang bc coreutils cmake git" }}
                     </p>
