@@ -22,7 +22,7 @@ result=""
 
 if [ -n "$server_username" ] && [ -n "$server_ip" ] && [ -n "$server_port" ]; then
     # Copy files to the server
-    scp -r -i ../storage/keys/ssh_accounting_panel -P "$server_port" "$panel_files_address" "$server_username"@"$server_ip":/root/ > /dev/null 2>&1
+    sudo scp -r -i ../storage/keys/ssh_accounting_panel -P "$server_port" "$panel_files_address" "$server_username"@"$server_ip":/root/ > /dev/null 2>&1
 
     # If scp was successful, exit status would be 0
     if [ $? != 0 ]; then
@@ -31,7 +31,7 @@ if [ -n "$server_username" ] && [ -n "$server_ip" ] && [ -n "$server_port" ]; th
     fi
 
     # Run the SetUpPackages script on the remote server
-    result=$(ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" "$server_udp_port" 2>&1)
+    result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" "$server_udp_port" 2>&1)
 else
     # Copy files to root directory
     cp -r "$panel_files_address" ~
