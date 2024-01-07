@@ -132,11 +132,11 @@ if [ "$server_ip" != "$public_ip" ] || [[ -z "$public_ip" ]]; then
     elif [ "$action" = "SetUpServer" ]; then
         result=$(bash -s < "$script" "$server_udp_port" "$script_dir" "$server_username" "$server_ip" "$server_port" 2>&1)
     elif [ "$action" = "RemoveServer" ]; then
-            result=$(ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
+            result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
     elif [ "$action" = "Bandwidth" ]; then
-        result=$(ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
+        result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
     else
-        result=$(ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "export USERNAME='$username'; export PASSWORD='$password'; export IS_ACTIVE='$is_active'; export MAX_LOGIN='$max_login'; export ACTIVE_DAYS='$active_days'; export TRAFFIC_LIMIT='$traffic_limit'; bash -s" < "$script" 2>&1)
+        result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "export USERNAME='$username'; export PASSWORD='$password'; export IS_ACTIVE='$is_active'; export MAX_LOGIN='$max_login'; export ACTIVE_DAYS='$active_days'; export TRAFFIC_LIMIT='$traffic_limit'; bash -s" < "$script" 2>&1)
     fi
 else
     # Server is local
