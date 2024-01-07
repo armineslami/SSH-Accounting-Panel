@@ -1,7 +1,7 @@
 #!/bin/bash
 
 timestamp=`date +%Y-%m-%d-%H-%M`
-output=/root/ssh-accounting-panel/logs/$timestamp.log
+output=$HOME/ssh-accounting-panel/logs/$timestamp.log
 
 nethogs_pids=$(pgrep nethogs)
 
