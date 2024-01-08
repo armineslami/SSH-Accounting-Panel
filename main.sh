@@ -21,7 +21,8 @@ YELLOW='\033[1;33m'
 NC="\033[0m" # No Color
 
 # Required packages
-packages="php php-cli php-mysql php-mbstring php-xml php-curl openssl php-zip cron apache2 mariadb-server nodejs npm sshpass openssh-client openssh-server unzip jq curl"
+packages="php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php mariadb-server sshpass openssh-client openssh-server unzip jq curl"
+node_packages="nodejs npm"
 
 #################
 ### Functions ###
@@ -44,15 +45,6 @@ get_package_manager_name() {
     else
         echo "Unsupported"
     fi
-}
-
-# Installs required packages
-install_packages() {
-    #Get the package manager name from the input
-    local package_manager=$1
-
-    #Install required packages
-    sudo "$package_manager" -y install $packages
 }
 
 check_mysql_connection() {
@@ -104,7 +96,12 @@ install() {
     if [ "$package_manager" = "apt-get"  ]; then
         # Debian/Ubuntu
         sudo DEBIAN_FRONTEND=noninteractive "$package_manager" -y update
-        install_packages "$package_manager"
+        sudo "$package_manager" install -y software-properties-common
+        sudo add-apt-repository ppa:ondrej/php -y
+        sudo "$package_manager" update -y
+        sudo "$package_manager" -y install "$packages"
+        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+        sudp "$package_manager" -y install "$node_packages"
         sudo DEBIAN_FRONTEND=interactive
     # couldn't find package manger of the OS
     else
