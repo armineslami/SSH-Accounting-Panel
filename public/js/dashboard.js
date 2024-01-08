@@ -11,17 +11,20 @@ function getSystemInfo() {
             if (systemInfo) {
                 cpuBar.animate(systemInfo.cpuUsage / 100);
                 memoryBar.animate(
-                    (systemInfo.memoryUsage * 100) / systemInfo.memory / 100
+                    systemInfo.memoryUsage === "0" || systemInfo.memory === "0" ?
+                        0 : (systemInfo.memoryUsage * 100) / systemInfo.memory / 100
                 );
                 swapBar.animate(
-                    (systemInfo.swapUsage * 100) / systemInfo.swap / 100
+                    systemInfo.swapUsage === "0" || systemInfo.swap === "0" ?
+                        0 : (systemInfo.swapUsage * 100) / systemInfo.swap / 100
                 );
                 const diskInfo = convertDiskToMB(
                     systemInfo.disk,
                     systemInfo.diskUsage
                 );
                 diskBar.animate(
-                    (diskInfo.diskUsage * 100) / diskInfo.diskSize / 100
+                    diskInfo.diskUsage === "0" || diskInfo.diskSize === "0" ?
+                        0 : (diskInfo.diskUsage * 100) / diskInfo.diskSize / 100
                 );
                 // document.getElementById("cpuUsage").innerText = Math.round(
                 //     systemInfo.cpuUsage
