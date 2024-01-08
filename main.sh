@@ -12,6 +12,7 @@ project_name_on_github="SSH-Accounting-Panel-master"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
 #root_path=$(cat /dev/urandom | tr -dc 'a-z' | head -c 5)
 cli_command="sap"
+is_none_tls="no"
 
 # Colors
 RED="\033[0;31m"
@@ -45,6 +46,44 @@ get_package_manager_name() {
     else
         echo "Unsupported"
     fi
+}
+
+check_for_none_lts() {
+    description=$(lsb_release -d)
+
+    if [[ ! $description == *"LTS"* ]]; then
+        printf "${YELLOW}\nYour server os distribution is not LTS and installation may fail. Continue? y/n [default: y]: ${NC}"
+        read answer
+        continue=${answer:="y"}
+
+        if [ "$continue" != "y" ]; then
+            exit 1;
+        fi
+
+        is_none_tls="yes"
+    fi
+}
+
+add_support_for_ondrej_repo_in_none_tls_dist() {
+        # Get the current distribution codename
+        codename=$(lsb_release -c -s)
+
+        source_list=""
+
+        if [ "$codename" == "lunar" ]; then
+            source_list=/etc/apt/sources.list.d/ondrej-ubuntu-php-lunar.list
+        elif [ "$codename" == "mantic" ]; then
+            source_list=/etc/apt/sources.list.d/ondrej-ubuntu-php-mantic.list
+        fi
+
+        # Replace 'lunar' with 'jammy' in the file
+        sudo sed -i 's/lunar/jammy/g' "$source_list" > /dev/null 2>&1
+        sudo touch /etc/apt/preferences.d/ondrejphp
+        sudo tee /etc/apt/preferences.d/ondrejphp >/dev/null <<EOF
+Package: libgd3
+Pin: release n=lunar
+Pin-Priority: 900
+EOF
 }
 
 check_mysql_connection() {
@@ -83,6 +122,8 @@ install() {
 
     cd /root || exit
 
+    check_for_none_lts
+
     local package_manager
     package_manager=$(get_package_manager_name)
 
@@ -98,10 +139,13 @@ install() {
         sudo DEBIAN_FRONTEND=noninteractive "$package_manager" -y update
         sudo "$package_manager" install -y software-properties-common
         sudo add-apt-repository ppa:ondrej/php -y
+        if [ "$is_none_tls" == "yes" ]; then
+            add_support_for_ondrej_repo_in_none_tls_dist
+        fi
         sudo "$package_manager" update -y
         sudo "$package_manager" -y install "$packages"
         curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-        sudp "$package_manager" -y install "$node_packages"
+        sudo "$package_manager" -y install "$node_packages"
         sudo DEBIAN_FRONTEND=interactive
     # couldn't find package manger of the OS
     else
@@ -353,7 +397,7 @@ install() {
     printf "${GREEN}\nSetting up the apache ...\n${NC}"
 
     apache_project_path="/var/www/$project_name"
-    domain="your_domain.com"
+    domain=""
     config_file="/etc/apache2/sites-available/$project_name.conf"
 
     # Get domain name
@@ -375,10 +419,10 @@ ENDOFFILE
         domain=$(echo "$domain" | sed 's/^www\.//')
 
         # Set domain alias
-        domainAlias="www.$domain"
+        domain_alias="www.$domain"
 
         echo "    ServerName $domain" >> "$config_file"
-        echo "    ServerAlias $domainAlias" >> "$config_file"
+        echo "    ServerAlias $domain_alias" >> "$config_file"
     fi
 
     cat >> "$config_file" << ENDOFFILE
@@ -720,9 +764,9 @@ ${GREEN}SAP menu${NC}
   ${GREEN}2.${NC} Update
   ${GREEN}3.${NC} Uninstall
 ————————————————
-  ${GREEN}4.${NC} Show   config
-  ${GREEN}5.${NC} Change port
-  ${GREEN}6.${NC} Change domain
+  ${GREEN}4.${NC} Show   Config
+  ${GREEN}5.${NC} Change Port
+  ${GREEN}6.${NC} Change Domain
   ${GREEN}7.${NC} Start / Stop
 "
 
