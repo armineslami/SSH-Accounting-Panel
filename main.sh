@@ -810,6 +810,7 @@ install_ssl_certificate() {
     sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "/etc/apache2/sites-available/$project_name-http.conf"
     if [ "$current_port" != 80 ]; then
         # If current port is not 80, active an virtual host that listens on port 80 so certbot can verify
+        grep -wq "Listen 80" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen 80' >> /etc/apache2/ports.conf"
         a2ensite "$project_name-http".conf > /dev/null 2>&1
     fi
 
