@@ -539,6 +539,22 @@ uninstall() {
         crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
     fi
 
+    cron_job="*/5 * * * * sh /var/www/ssh-accounting-panel/nethogs.sh"
+
+    # Check if the cron job exists in the user's crontab
+    if crontab -u www-data -l 2>/dev/null | grep -Fq "$cron_job"; then
+        # If the cron job exists, remove it from the user's crontab
+        crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
+    fi
+
+    cron_job="*/1 * * * * sh /var/www/ssh-accounting-panel/killExtraSession.sh"
+
+    # Check if the cron job exists in the user's crontab
+    if crontab -u www-data -l 2>/dev/null | grep -Fq "$cron_job"; then
+        # If the cron job exists, remove it from the user's crontab
+        crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
+    fi
+
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
     sed -i "/Listen $apache_port/d" "$apache_conf"
