@@ -33,7 +33,7 @@
                         <span class="font-bold">Uptime: </span><span class="font-light" id="upTime">-</span>
                     </span>
                     <span class="w-full sm:w-auto mr-2 mb-2 p-2 text-gray-100 bg-rose-400 dark:bg-rose-600 rounded">
-                        <span class="font-bold">Inbounds Count: </span><span class="font-light">{{ $inboundCount }}</span>
+                        <span class="font-bold">Inbounds: </span><span class="font-light">{{ $inboundCount }}</span>
                     </span>
                     <span class="w-full sm:w-auto mr-2 mb-2 p-2 text-gray-100 bg-orange-400 dark:bg-orange-600 rounded">
                         <span class="font-bold">Version: </span><span class="font-light">{{ config("app.version") }}</span>
