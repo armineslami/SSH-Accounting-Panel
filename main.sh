@@ -548,6 +548,8 @@ uninstall() {
     rm -rf "/var/www/$project_name" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-available/$project_name.conf" > /dev/null 2>&1
     rm -f "/etc/apache2/sites-enabled/$project_name.conf" > /dev/null 2>&1
+    rm -f "/etc/apache2/sites-available/$project_name-http.conf" > /dev/null 2>&1
+    rm -f "/etc/apache2/sites-enabled/$project_name-http.conf" > /dev/null 2>&1
 
     sudo systemctl restart apache2
 
