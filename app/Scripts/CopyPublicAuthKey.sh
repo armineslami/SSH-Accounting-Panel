@@ -14,7 +14,7 @@ if [[ -n $1 ]]; then
 
     # Copy the key to the server
     # -o StrictHostKeyChecking=no
-    sudo cat ssh_accounting_panel.pub | sudo sshpass -p "$2" ssh -p "$4" "$1"@"$3" "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" > /dev/null 2>&1
+    sudo cat ssh_accounting_panel.pub | sudo sshpass -p "$2" ssh -o StrictHostKeyChecking=accept-new -p "$4" "$1"@"$3" "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" > /dev/null 2>&1
 
     # Test if SSH connection works with the key
     # -o StrictHostKeyChecking=no
