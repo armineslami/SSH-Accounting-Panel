@@ -539,6 +539,11 @@ uninstall() {
         crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
     fi
 
+    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
+        # If the cron job exists, remove it from the user's crontab
+        crontab -l 2>/dev/null | grep -Fv "$cron_job" | crontab
+    fi
+
     cron_job="*/5 * * * * sh /var/www/ssh-accounting-panel/nethogs.sh"
 
     # Check if the cron job exists in the user's crontab
@@ -811,7 +816,7 @@ install_ssl_certificate() {
             printf "${YELLOW}\nYou can not use port ${ssl_port}\n${NC}"
         elif [ "$current_port" != "$ssl_port" ]; then
             if netstat -tuln | grep -q ":$ssl_port\b"; then
-                printf "${YELLOW}\nPort ${ssl_port} is in use. Choose another port\n${NC}"
+                printf "${YELLOW}\nPort ${ssl_port} is in use. Choose another port${NC}"
             else
                 break;
             fi
