@@ -26,10 +26,11 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 - Set expire date for inbounds
 - Set default settings for inbounds
 - Set UDPGW port on your servers
+- Add SSL certificate to your domain
 
 ## Supported OS
 
-- Ubuntu (Recommended, Tested on v20)
+- Ubuntu LTS (Tested on v20.04)
 
 ## Install / Uninstall
 

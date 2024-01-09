@@ -22,7 +22,7 @@ YELLOW='\033[1;33m'
 NC="\033[0m" # No Color
 
 # Required packages
-packages="php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php mariadb-server sshpass openssh-client openssh-server unzip jq curl"
+packages="php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools"
 node_packages="nodejs npm"
 
 #################
@@ -405,9 +405,17 @@ install() {
     read domain
 
     # Get port number
-    printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
-    read port_num
-    port=${port_num:=3010}
+    while true; do
+        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
+        read port_num
+        port=${port_num:=3010}
+
+        if netstat -tuln | grep -q ":$port\b"; then
+            printf "${YELLOW}\nPort ${port} is in use. Choose another port.\n${NC}\n"
+        else
+            break;
+        fi
+    done
 
     # Create Apache configuration file
     cat >  "$config_file" << ENDOFFILE
@@ -748,6 +756,113 @@ toggle_server() {
     before_show_menu
 }
 
+install_ssl_certificate() {
+    printf "${BLUE}\nTo install SSL certificate, port 80 must be open and available. Do you confirm?: [y/n] [default: y]: ${NC}"
+    read answer
+    continue=${answer:="y"}
+
+    if [ "$continue" != "y" ]; then
+        exit 1;
+    fi
+
+    panel_conf="/etc/apache2/sites-available/$project_name.conf"
+
+    # Get the current port
+    current_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$panel_conf")
+
+    domain=$(grep -E "^ *ServerName" "$panel_conf" | awk '{print $2}')
+
+    if [ -z "$domain" ]; then
+        printf "${RED}\nThere is no doamin set for the panel. You should first set a domain\n${NC}\n"
+        before_show_menu
+        return 1
+    fi
+
+    # Remove www. from the beginning of domain if it exists
+    domain=$(echo "$domain" | sed 's/^www\.//')
+    domain_alias="www.$domain"
+
+    printf "${GREEN}\nCreating SSL certificate ...\n${NC}"
+
+    while true; do
+        printf "${BLUE}\nEnter a port for ssl: [default: 443]: ${NC}"
+        read port
+        ssl_port=${port:=443}
+
+        if [ "$ssl_port" == 80 ] || [ "$ssl_port" == 8080 ]; then
+            printf "${YELLOW}\nYou can not use port ${ssl_port}\n${NC}"
+        elif [ "$current_port" != "$ssl_port" ]; then
+            if netstat -tuln | grep -q ":$ssl_port\b"; then
+                printf "${YELLOW}\nPort ${ssl_port} is in use. Choose another port\n${NC}"
+            else
+                break;
+            fi
+        else
+            # Add ssl for current port
+            break;
+        fi
+    done
+
+    # Add a new config to listen on port 80 so certbot can renew ssl certificate
+    sudo cp -f "/etc/apache2/sites-available/$project_name.conf" "/etc/apache2/sites-available/$project_name-http.conf"
+    sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:80>/" "/etc/apache2/sites-available/$project_name-http.conf"
+    if [ "$current_port" != 80 ]; then
+        # If current port is not 80, active an virtual host that listens on port 80 so certbot can verify
+        a2ensite "$project_name-http".conf > /dev/null 2>&1
+    fi
+
+    sudo ufw allow 'Apache Full'
+    sudo ufw delete allow 'Apache'
+
+    output=$(sudo certbot certonly --apache --force-renewal -d "$domain" -d "$domain_alias" 2>&1 & wait $!)
+
+    if ! echo "$output" | grep -q "Congratulations"; then
+        printf "${RED}\nFailed to create SSL certificate\n${NC}\n"
+        rm -rf "/etc/apache2/sites-available/$project_name-http.conf"
+        a2dissite "$project_name-http".conf > /dev/null 2>&1
+        before_show_menu
+        return 1
+    fi
+
+    # Get directory name of created certificate
+    directory_name=$(echo "$output" | grep -oP '(?<=/live/)[^/]+(?=/fullchain.pem)')
+
+    cert_path="/etc/letsencrypt/live/$directory_name/fullchain.pem"
+    key_path="/etc/letsencrypt/live/$directory_name/privkey.pem"
+
+    printf "${GREEN}\nInstalling SSL certificate ... \n${NC}"
+
+    # Remove </VirtualHost> from the end of the file, append SSL configuration, and add </VirtualHost> back
+    sudo sed -i -e '/<\/VirtualHost>$/d' "$panel_conf"
+    sudo tee -a "$panel_conf" >/dev/null <<EOF
+
+    # SSL Configuration
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    SSLCertificateFile $cert_path
+    SSLCertificateKeyFile $key_path
+</VirtualHost>
+EOF
+
+    # Update the port in the config file
+    sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$ssl_port>/" "$panel_conf"
+
+    if [ "$current_port" != 80 ]; then
+        o_port="Listen $current_port"
+        n_port="Listen $ssl_port"
+        sudo sed -i "s/$o_port/$n_port/" /etc/apache2/ports.conf
+    else
+        grep -wq "Listen $ssl_port" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen $ssl_port' >> /etc/apache2/ports.conf"
+    fi
+
+    a2ensite "$project_name-http".conf > /dev/null 2>&1
+    sudo a2enmod ssl > /dev/null 2>&1
+    sudo systemctl restart apache2 > /dev/null 2>&1
+
+    printf "${GREEN}\nSSL cretificate is now installed.\n${NC}\n"
+
+    before_show_menu
+}
+
 before_show_menu() {
     echo && echo -n -e "${YELLOW}Hit enter to return to the menu: ${NC}" && read temp
     clear
@@ -768,6 +883,7 @@ ${GREEN}SAP menu${NC}
   ${GREEN}5.${NC} Change Port
   ${GREEN}6.${NC} Change Domain
   ${GREEN}7.${NC} Start / Stop
+  ${GREEN}8.${NC} Install SSL Certificate
 "
 
     echo && read -p "Please enter a valid number [0-6]: " num
@@ -797,7 +913,9 @@ ${GREEN}SAP menu${NC}
         7)
             is_installed && toggle_server
             ;;
-
+        8)
+            is_installed && install_ssl_certificate
+            ;;
         *)
             printf "${RED}\nError: Please enter a valid number [0-7]: \n${NC}\n"
             show_menu
