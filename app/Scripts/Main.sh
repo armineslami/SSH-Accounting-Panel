@@ -123,6 +123,10 @@ script_dir=$(cd "$(dirname "$0")" && pwd)
 # Get script absolute path
 script="$script_dir/$action.sh"
 
+# Get path to ssh key
+root_dir=$(cd "$(dirname "$script_dir")/.." && pwd)
+ssh_accounting_panel_key_dir="$root_dir/storage/keys/ssh_accounting_panel"
+
 # Check if given server ip is the same of current server that this script is running on
 if [ "$server_ip" != "$public_ip" ] || [[ -z "$public_ip" ]]; then
     # Run the script on the remote server
@@ -134,7 +138,7 @@ if [ "$server_ip" != "$public_ip" ] || [[ -z "$public_ip" ]]; then
     elif [ "$action" = "RemoveServer" ]; then
             result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
     elif [ "$action" = "Bandwidth" ]; then
-        result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
+        result=$(sudo ssh -i "$ssh_accounting_panel_key_dir" -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" 2>&1)
     else
         result=$(sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "export USERNAME='$username'; export PASSWORD='$password'; export IS_ACTIVE='$is_active'; export MAX_LOGIN='$max_login'; export ACTIVE_DAYS='$active_days'; export TRAFFIC_LIMIT='$traffic_limit'; bash -s" < "$script" 2>&1)
     fi
