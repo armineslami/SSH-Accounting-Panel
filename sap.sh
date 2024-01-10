@@ -503,7 +503,7 @@ ENDOFFILE
     chmod +x /usr/local/bin/sap.sh
 
     # The alias command
-    alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
+    alias_command="alias $cli_command=\"/usr/local/bin/sap.sh\""
 
     # Add the alias to the bash configuration file
     grep -wq "alias $cli_command" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
