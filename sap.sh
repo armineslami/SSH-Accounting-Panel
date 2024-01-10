@@ -958,8 +958,6 @@ ${GREEN}SAP menu${NC}
 }
 
 main() {
-    clear
-
     # Let the user know that installing is started
     printf "${GREEN}\n###########################\n\n${project_display_name} v${project_version}\n\n###########################\n${NC}\n"
 
