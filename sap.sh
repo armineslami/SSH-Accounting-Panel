@@ -8,9 +8,7 @@
 project_display_name="SSH Accounting Panel"
 project_version="1.0.0"
 project_name="sap"
-project_name_on_github="SSH-Accounting-Panel-master"
-project_source_link="https://github.com/armineslami/SSH-Accounting-Panel/archive/refs/heads/master.zip"
-#root_path=$(cat /dev/urandom | tr -dc 'a-z' | head -c 5)
+project_source_link="https://github.com/armineslami/SSH-Accounting-Panel.git"
 cli_command="sap"
 is_none_tls="no"
 
@@ -167,25 +165,27 @@ install() {
     ### Project Clone ###
     #####################
 
-    # Remove old source file if it exists
-    sudo rm -f "/root/$project_name.zip" > /dev/null 2>&1
-
-    # If the project already exits, remove everything inside it's folder
-    sudo rm -rf "/root/$project_name/*" > /dev/null 2>&1
-
     printf "${GREEN}\nDownloading the project from the github ...\n${NC}\n"
 
-    # Download the source files
-    wget -O "$project_name.zip" "$project_source_link"
+    # Remove old project in /root if it exists
+    sudo rm -rf "$project_name" > /dev/null 2>&1
 
-    # Unzip the downloaded file
-    unzip "$project_name.zip"
+    # Create a directory for the project
+    mkdir -p "$project_name" > /dev/null 2>&1
 
-    # Rename project folder
-    mv -i "$project_name_on_github" "$project_name"
+    # Go to the directory
+    cd sap || exit;
 
-    # Delete the zipped file
-    sudo rm -rf "/root/$project_name.zip"
+    # Clone the project
+    git init
+    git config --global --add safe.directory /root/sap
+    git remote add origin "$project_source_link"
+    git pull origin master
+
+    # Create a file that holds the sha of latest commit
+    curl -s "https://api.github.com/repos/armineslami/SSH-Accounting-Panel/commits/master" | jq -r .sha > version.info
+
+    cd ..
 
     if [ ! -d /var/www ]; then
         sudo mkdir /var/www
