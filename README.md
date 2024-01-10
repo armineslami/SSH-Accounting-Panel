@@ -38,13 +38,13 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 ### Install
 To install the panel, run the following command on your server:
 ```
-wget -O sap.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh && sudo bash sap.sh
+wget -O sap.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/sap.sh && sudo bash sap.sh
 ```
 
 ### Uninstall
 To uninstall the panel run the following command on your server and from the menu choose uninstall option:
 ```
-spa
+sap
 ```
 
 ## License
