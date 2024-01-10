@@ -388,7 +388,6 @@ install() {
     php artisan optimize
     php artisan migrate --force
     php artisan db:seed --force
-    sh app/Scripts/ServerCronJob.sh
 
     ####################
     ### Apache Setup ###
@@ -537,11 +536,6 @@ uninstall() {
     if crontab -u www-data -l 2>/dev/null | grep -Fq "$cron_job"; then
         # If the cron job exists, remove it from the user's crontab
         crontab -u www-data -l 2>/dev/null | grep -Fv "$cron_job" | crontab -u www-data -
-    fi
-
-    if crontab -l 2>/dev/null | grep -Fq "$cron_job"; then
-        # If the cron job exists, remove it from the user's crontab
-        crontab -l 2>/dev/null | grep -Fv "$cron_job" | crontab
     fi
 
     cron_job="*/5 * * * * sh /var/www/ssh-accounting-panel/nethogs.sh"
