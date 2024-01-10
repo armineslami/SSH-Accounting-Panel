@@ -933,6 +933,9 @@ EOF
         n_port="Listen $ssl_port"
         sudo sed -i "s/$o_port/$n_port/" /etc/apache2/ports.conf
     else
+        # Remove old port
+        sed -i "/Listen $current_port/d" /etc/apache2/ports.conf
+        # Add new port
         grep -wq "Listen $ssl_port" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen $ssl_port' >> /etc/apache2/ports.conf"
     fi
 
