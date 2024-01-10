@@ -26,6 +26,7 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 - Set expire date for inbounds
 - Set default settings for inbounds
 - Set UDPGW port on your servers
+- Set a domain and port
 - Add SSL certificate to your domain
 
 ## Supported OS
@@ -37,7 +38,7 @@ This panel gives you the ability to create ssh accounts on your linux server to 
 ### Install
 To install the panel, run the following command on your server:
 ```
-wget -O main.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh && sudo bash main.sh
+wget -O sap.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/main.sh && sudo bash sap.sh
 ```
 
 ### Uninstall
