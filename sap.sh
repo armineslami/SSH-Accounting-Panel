@@ -528,6 +528,15 @@ ENDOFFILE
 }
 
 uninstall() {
+    printf "${YELLOW}\nAre you sure that you want to uninstall the panel? [y/n] [default: n]: ${NC}"
+    read answer
+    is_user_sure=${answer:="n"}
+
+    if [ "$is_user_sure" != "y" ]; then
+        before_show_menu
+        return 1
+    fi
+
     printf "${BLUE}\nUninstalling the panel ...\n${NC}\n"
 
     # Define the cron job command to remove
