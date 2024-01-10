@@ -9,6 +9,7 @@ project_display_name="SSH Accounting Panel"
 project_version="1.0.0"
 project_name="sap"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel.git"
+project_latest_commit_link="https://api.github.com/repos/armineslami/SSH-Accounting-Panel/commits/master"
 cli_command="sap"
 is_none_tls="no"
 
@@ -183,7 +184,7 @@ install() {
     git pull origin master
 
     # Create a file that holds the sha of latest commit
-    curl -s "https://api.github.com/repos/armineslami/SSH-Accounting-Panel/commits/master" | jq -r .sha > version.info
+    curl -s "$project_latest_commit_link" | jq -r .sha > version.info
 
     cd ..
 
@@ -949,7 +950,7 @@ main() {
 
     # Check if user has root access
     if [ "$(isRoot)" != "true" ]; then
-    	printf "${RED}Error: You must run this script as root!.${NC}\n"
+    	printf "${RED}Error: You must run this script as root!${NC}\n"
     	exit 1
     fi
 
