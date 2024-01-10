@@ -664,7 +664,22 @@ uninstall() {
 }
 
 update() {
-    printf "\n${GREEN}The latest version of the panel is installed.\n${NC}\n"
+    cd "/var/www/$project_name" || exist;
+
+    current_sha=$(cat version.info)
+    latest_sha=$(curl -s "$project_latest_commit_link" | jq -r .sha)
+
+    if [ "$current_sha" = "$latest_sha" ]; then
+        printf "\n${GREEN}The panel is up to date\n${NC}\n"
+        before_show_menu
+        return 1
+    fi
+
+    wget -O sap.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/sap.sh && sudo bash sap.sh update
+}
+
+update_panel() {
+    printf "\n${GREEN}The panel updated to v$project_version\n${NC}\n"
 }
 
 show_config() {
@@ -954,10 +969,16 @@ main() {
     	exit 1
     fi
 
-    show_menu
+    action="$1"
+
+    if [ "$action" = "" ]; then
+        clear
+        show_menu
+    elif [ "$action" = "update" ]; then
+        update_panel
+    else
+        printf "${RED}Error: Invalid action${NC}\n"
+    fi
 }
 
-main
-
-
-
+main "$@"
