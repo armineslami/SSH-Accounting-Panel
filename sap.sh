@@ -566,7 +566,7 @@ uninstall() {
 
     apache_conf="/etc/apache2/sites-enabled/$project_name.conf"
     apache_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-    sed -i "/Listen $apache_port/d" "$apache_conf"
+    sed -i "/Listen $apache_port/d" /etc/apache2/ports.conf
 
     a2dissite "$project_name".conf > /dev/null 2>&1
 
