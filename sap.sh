@@ -759,23 +759,24 @@ set_port() {
     while true; do
         printf "${BLUE}\nEnter a port number for the panel: ${NC}"
         read new_port
-        if [ -n "$new_port" ]; then
-            break
+
+        if netstat -tuln | grep -q ":$new_port\b"; then
+            printf "${YELLOW}\nPort ${new_port} is in use. Choose another port.\n${NC}\n"
+        elif [ -z "$new_port" ]; then
+            continue;
+        else
+            break;
         fi
     done
 
     # Config file
     apache_conf="/etc/apache2/sites-available/$project_name.conf"
 
-    # Get the old port
-    old_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
-
     # Update the port in the config file
     sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$new_port>/" "$apache_conf"
 
-    o_port="Listen $old_port"
-    n_port="Listen $new_port"
-    sudo sed -i "s/$o_port/$n_port/" /etc/apache2/ports.conf
+    # Add the new port to the ports.conf only if it's not already there
+    grep -wq "Listen $new_port" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen $new_port' >> /etc/apache2/ports.conf"
 
     sudo a2ensite "$project_name".conf > /dev/null 2>&1
     sudo systemctl restart apache2
