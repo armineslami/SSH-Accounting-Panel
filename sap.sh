@@ -761,10 +761,10 @@ set_port() {
         printf "${BLUE}\nEnter a port number for the panel: ${NC}"
         read new_port
 
-        if netstat -tuln | grep -q ":$new_port\b"; then
-            printf "${YELLOW}\nPort ${new_port} is in use. Choose another port.\n${NC}\n"
-        elif [ -z "$new_port" ]; then
+        if [ -z "$new_port" ]; then
             continue;
+        elif netstat -tuln | grep -q ":$new_port\b"; then
+            printf "${YELLOW}\nPort ${new_port} is in use. Choose another port.\n${NC}"
         else
             break;
         fi
