@@ -724,6 +724,7 @@ update_panel() {
 
     cd /root || exit;
     mv -f sap.sh /usr/local/bin/ > /dev/null 2>&1
+    chmod +x /usr/local/bin/sap.sh
 
     printf "\n${GREEN}The panel updated to v$project_version\n${NC}\n"
 }
