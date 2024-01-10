@@ -498,9 +498,9 @@ ENDOFFILE
 
     cd "$current_directory" || exit;
 
-    mv main.sh /usr/local/bin/ > /dev/null 2>&1
+    mv sap.sh /usr/local/bin/ > /dev/null 2>&1
 
-    chmod +x /usr/local/bin/main.sh
+    chmod +x /usr/local/bin/sap.sh
 
     # The alias command
     alias_command="alias $cli_command=\"/usr/local/bin/main.sh\""
@@ -523,7 +523,7 @@ ENDOFFILE
     printf "${BLUE}\nFrom now on you can access the menu using ${GREEN}${cli_command}${BLUE} command in your terminal\n${NC}\n"
 
     # Remove the script
-    rm main.sh > /dev/null 2>&1
+    rm sap.sh > /dev/null 2>&1
 }
 
 uninstall() {
@@ -568,7 +568,7 @@ uninstall() {
 
     sudo systemctl restart apache2
 
-    rm -f /usr/local/bin/main.sh > /dev/null 2>&1
+    rm -f /usr/local/bin/sap.sh > /dev/null 2>&1
 
     sed -i "/alias $cli_command/d" /root/.bashrc
     source /root/.bashrc > /dev/null 2>&1
