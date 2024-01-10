@@ -65,7 +65,8 @@ class InboundController extends BaseController
             username: $request->username,
             password: $request->user_password,
             is_active: $request->is_active,
-            traffic_limit: $request->traffic_limit ?: null,
+            traffic_limit: $request->traffic_limit ?? null,
+            remaining_traffic: $request->traffic_limit ?? null,
             max_login: $request->max_login,
             server_ip: $request->server_ip,
             expires_at: $request->active_days ? Carbon::now()->addDays($request->active_days) : null
@@ -78,6 +79,15 @@ class InboundController extends BaseController
     {
         $validated_inbound = $request->validated();
         $validated_inbound['expires_at'] = Utils::convertActiveDaysToExpireAtDate($request->active_days);
+        if ($validated_inbound['traffic_limit'] < $validated_inbound['remaining_traffic']) {
+            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
+        }
+        else if (isset($validated_inbound['traffic_limit']) && !isset($validated_inbound['remaining_traffic'])) {
+            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
+        }
+        else if (isset($validated_inbound['remaining_traffic']) && !isset($validated_inbound['traffic_limit'])) {
+            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
+        }
 
         $inbound    = InboundRepository::byId($id);
         $server     = ServerRepository::byAddress($request->server_ip);

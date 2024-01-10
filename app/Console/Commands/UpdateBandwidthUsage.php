@@ -68,15 +68,15 @@ class UpdateBandwidthUsage extends Command
 
                     // Update the remaining traffic limit of the inbound
                     $remainingTraffic = $inbound->traffic_limit - $bandwidth;
-                    $inbound->traffic_limit = $remainingTraffic > 0 ? $remainingTraffic : 0;
-                    $inbound->is_active = $inbound->traffic_limit > 0 ? '1' : '0';
+                    $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
+                    $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
                     $inbound->save();
 
 //                    echo "Bandwidth usage is " . $bandwidth . " GB for user '" . $inbound->username
-//                        . "' and remaining is: " . $inbound->traffic_limit . " GB.";
+//                        . "' and remaining is: " . $inbound->remaining_traffic . " GB.";
 
                     // Deactivate the inbound if the remaining traffic is <= 0
-                    if ($inbound->traffic_limit <= 0) {
+                    if ($inbound->remaining_traffic <= 0) {
                         $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
                         $server = ServerRepository::byAddress($inbound->server_ip);
                         Utils::executeShellCommand(

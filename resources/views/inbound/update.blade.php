@@ -81,17 +81,24 @@
                         </div>
 
                         <div>
-                            <x-input-label for="traffic_limit" :value="__('*Remaining Traffic (GB, Blank = ∞)')"/>
+                            <x-input-label for="max_login" :value="__('*Max Login')"/>
+                            <x-text-input id="max_login" name="max_login" type="text" class="mt-1 block w-full"
+                                          :value="old('max_login', $inbound->max_login)" required autofocus/>
+                            <x-input-error class="mt-2" :messages="$errors->get('max_login')"/>
+                        </div>
+
+                        <div>
+                            <x-input-label for="traffic_limit" :value="__('*Traffic Limit (GB, Blank = ∞)')"/>
                             <x-text-input id="traffic_limit" name="traffic_limit" type="text" class="mt-1 block w-full"
                                           :value="old('traffic_limit', $inbound->traffic_limit)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('traffic_limit')"/>
                         </div>
 
                         <div>
-                            <x-input-label for="max_login" :value="__('*Max Login')"/>
-                            <x-text-input id="max_login" name="max_login" type="text" class="mt-1 block w-full"
-                                          :value="old('max_login', $inbound->max_login)" required autofocus/>
-                            <x-input-error class="mt-2" :messages="$errors->get('max_login')"/>
+                            <x-input-label for="remaining_traffic" :value="__('*Remaining Traffic (GB, Blank = ∞)')"/>
+                            <x-text-input id="remaining_traffic" name="remaining_traffic" type="text" class="mt-1 block w-full"
+                                          :value="old('remaining_traffic', $inbound->remaining_traffic)" autofocus/>
+                            <x-input-error class="mt-2" :messages="$errors->get('remaining_traffic')"/>
                         </div>
 
                         <div>

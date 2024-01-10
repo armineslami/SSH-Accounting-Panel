@@ -60,6 +60,15 @@ class Inbound extends Model
     public function setTrafficLimitAttribute($value)
     {
         // Modify the value before saving it
-        $this->attributes['traffic_limit'] = number_format($value, 2);
+        $this->attributes['traffic_limit'] = isset($value) ? number_format($value, 2) : null;
+    }
+
+    /**
+     * The mutator for the 'remaining_traffic' attribute
+     */
+    public function setRemainingTrafficAttribute($value)
+    {
+        // Modify the value before saving it
+        $this->attributes['remaining_traffic'] = isset($value) ? number_format($value, 2) : null;
     }
 }

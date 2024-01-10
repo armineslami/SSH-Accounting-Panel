@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('username')->unique();
             $table->string('password');
             $table->float('traffic_limit')->default(0)->nullable();
-            $table->integer('remaining_traffic')->default(0)->nullable();
+            $table->float('remaining_traffic')->default(0)->nullable();
             $table->integer('max_login')->default(1);
             $table->enum('is_active', ['0', '1'])->default('1');
             $table->string('server_ip');

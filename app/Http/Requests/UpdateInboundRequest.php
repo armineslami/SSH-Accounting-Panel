@@ -27,6 +27,7 @@ class UpdateInboundRequest extends FormRequest
             'user_password' => 'required|string|min:5|max:255',
             'is_active' => 'required|numeric|in:0,1',
             'traffic_limit' => 'nullable|numeric|min:0|max:1000',
+            'remaining_traffic' => 'nullable|numeric|min:0|max:1000',
             'max_login' => 'required|numeric|min:1|max:1000',
             'active_days' => 'nullable|numeric|min:0|max:3650',
             'server_ip' => 'required|ipv4|',

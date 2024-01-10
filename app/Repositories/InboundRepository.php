@@ -23,13 +23,16 @@ class InboundRepository implements InboundRepositoryInterface
         return Inbound::count();
     }
 
-    public static function create(string $username, string $password, string $is_active, float $traffic_limit = null, int $max_login, string $server_ip, string $expires_at = null): Inbound
+    public static function create(string $username, string $password, string $is_active, float $traffic_limit = null,
+                                  float $remaining_traffic = null, int $max_login, string $server_ip,
+                                  string $expires_at = null): Inbound
     {
         return Inbound::create([
             "username" => $username,
             "password" => $password,
             "is_active" => $is_active,
             "traffic_limit" => $traffic_limit,
+            'remaining_traffic' => $remaining_traffic,
             "max_login" => $max_login,
             "server_ip" => $server_ip,
             "expires_at" => $expires_at
