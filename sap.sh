@@ -499,7 +499,7 @@ ENDOFFILE
 
     cd "$current_directory" || exit;
 
-    mv sap.sh /usr/local/bin/ > /dev/null 2>&1
+    mv -f sap.sh /usr/local/bin/ > /dev/null 2>&1
 
     chmod +x /usr/local/bin/sap.sh
 
@@ -684,10 +684,47 @@ update() {
         return 1
     fi
 
+    cd /root || exit;
     wget -O sap.sh https://raw.githubusercontent.com/armineslami/SSH-Accounting-Panel/master/sap.sh && sudo bash sap.sh update
 }
 
 update_panel() {
+    printf "${BLUE}\nUpdating the panel ...\n${NC}\n"
+
+    cd "/var/www/$project_name" || exist;
+
+    # Check if 'origin' remote exists
+    if ! git remote get-url origin | grep -q "$project_source_link"; then
+        git remote add origin "$project_source_link"
+    fi
+
+    # Pull from git
+    git pull origin master
+
+    # Update laravel framework
+    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
+
+    npm install
+    npm run build
+
+    php artisan config:clear
+    php artisan event:clear
+    php artisan route:clear
+    php artisan view:clear
+
+    php artisan config:cache
+    php artisan event:cache
+    php artisan route:cache
+    php artisan view:cache
+    php artisan optimize
+
+    # Create a file that holds the sha of latest commit
+    rm -f version.info > /dev/null 2>&1
+    curl -s "$project_latest_commit_link" | jq -r .sha > version.info
+
+    cd /root || exit;
+    mv -f sap.sh /usr/local/bin/ > /dev/null 2>&1
+
     printf "\n${GREEN}The panel updated to v$project_version\n${NC}\n"
 }
 
@@ -967,9 +1004,6 @@ ${GREEN}SAP menu${NC}
 }
 
 main() {
-    # Let the user know that installing is started
-    printf "${GREEN}\n###########################\n\n${project_display_name} v${project_version}\n\n###########################\n${NC}\n"
-
     # Check if user has root access
     if [ "$(isRoot)" != "true" ]; then
     	printf "${RED}Error: You must run this script as root!${NC}\n"
@@ -980,6 +1014,8 @@ main() {
 
     if [ "$action" = "" ]; then
         clear
+        # Let the user know that installing is started
+        printf "${GREEN}\n###########################\n\n${project_display_name} v${project_version}\n\n###########################\n${NC}\n"
         show_menu
     elif [ "$action" = "update" ]; then
         update_panel
