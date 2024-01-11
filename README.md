@@ -14,7 +14,9 @@ SSH Accounting Panel
 
 ## About
 
-This panel gives you the ability to create ssh accounts on your linux server to use them for tunneling.
+This panel provides you an easy way to create ssh accounts on your servers and use them for tunneling.
+You can either create accounts on your local machine or on the remote servers. The panel also provides you
+a cli command called `sap` to interact with it trough the terminal.
 
 ## Features
 
