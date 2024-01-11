@@ -698,6 +698,8 @@ update_panel() {
         git remote add origin "$project_source_link"
     fi
 
+    git config --global --add safe.directory "/var/www/$project_name" > /dev/null 2>&1
+
     # Pull from git
     git pull origin master
 
