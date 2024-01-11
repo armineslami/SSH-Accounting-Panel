@@ -67,7 +67,7 @@ class UpdateBandwidthUsage extends Command
                     $bandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
 
                     // Update the remaining traffic limit of the inbound
-                    $remainingTraffic = $inbound->traffic_limit - $bandwidth;
+                    $remainingTraffic = $inbound->remaining_traffic - $bandwidth;
                     $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
                     $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
                     $inbound->save();
