@@ -45,14 +45,6 @@ without requiring you to enter the password again. This way the password of your
 Then a folder named " }}<b>{{ "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory which includes
 multiple files required by this panel." }}
                     </p>
-                    <p class="text-justify text-gray-900 dark:text-gray-100">
-                        {{ "⚠️ Adding a server may take some time to finish and if you want to make this process shorter,
-you can update packages list and then install the following packages on your server manually:" }}
-                    </p>
-                    <p class="mt-2 font-bold text-gray-900 dark:text-gray-100">
-                        {{ "nethogs golang bc coreutils cmake git" }}
-                    </p>
-
                 </header>
 
                 {{-- <form id="send-verification" method="post" action="{{ route('verification.send') }}">
@@ -106,6 +98,14 @@ you can update packages list and then install the following packages on your ser
                             <x-input-error class="mt-2" :messages="$errors->get('udp_port')"/>
                         </div>
                     </div>
+
+                    <p class="text-justify text-sm text-gray-900 dark:text-gray-100">
+                        {{ "⚠️ Adding a server may take some time to finish and if you want to make this process shorter,
+you can update packages list and then install the following packages on your server manually:" }}
+                    </p>
+                    <span class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                        {{ "nethogs golang bc coreutils cmake git" }}
+                    </span>
 
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">

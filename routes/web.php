@@ -36,7 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/servers/{id}', [ServerController::class, 'destroy'])->name('servers.destroy');
 
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
-    Route::patch('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::patch('/settings/inbound', [SettingController::class, 'updateInbound'])->name('settings.updateInbound');
+    Route::patch('/settings/telegram', [SettingController::class, 'updateTelegram'])->name('settings.updateTelegram');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 //    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

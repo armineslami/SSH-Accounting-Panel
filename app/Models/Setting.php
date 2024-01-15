@@ -15,6 +15,7 @@ class Setting extends Model
         'inbound_traffic_limit',
         'inbound_active_days',
         'inbound_max_login',
-//        'inbound_server_ips'
+        'bot_token',
+        'bot_port',
     ];
 }

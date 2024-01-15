@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class UpdateSettingsRequest extends FormRequest
+class UpdateTelegramSettingsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,8 @@ class UpdateSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'inbound_traffic_limit' => 'nullable|numeric|min:0|max:1000',
-            'inbound_active_days' => 'nullable|numeric|min:0|max:365',
-            'inbound_max_login' => 'required|numeric|min:0|max:1000'
+            'bot_token' => 'nullable|string|required_with:bot_port',
+            'bot_port' => 'nullable|required_with:bot_token|numeric|in:443,8443,80,88'
         ];
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Telegram\Buttons\Buttons;
 use Illuminate\Support\Facades\Route;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,25 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+Route::post('/<token>/webhook', function () {
+//    $updates = Telegram::commandsHandler(true);
+    $updates = Telegram::getWebhookUpdate();
+
+    $command = $updates->message->text;
+
+    if ($command === "/start") {
+        Telegram::triggerCommand("start", $updates);
+    }
+    elseif (
+        $command === Buttons::LOGIN ||
+        $command === "/login" ||
+        preg_match('/^([a-zA-Z0-9]+):([a-zA-Z0-9!@#$%^&*()\-=_+{}|:"<>?\[\]\\\;\',.\/]+)$/', $command)) {
+        Telegram::triggerCommand("login", $updates);
+    }
+    else {
+        Telegram::triggerCommand("help", $updates);
+    }
+});
+
+
