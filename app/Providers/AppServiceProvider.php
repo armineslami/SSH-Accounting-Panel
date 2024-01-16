@@ -24,9 +24,11 @@ class AppServiceProvider extends ServiceProvider
     }
 
     private function setTelegramBotToken(): void {
-        $settings = Setting::first();
-        if ($settings) {
-            config(["telegram.bots.sap.token" => $settings->bot_token]);
+        if (!app()->runningInConsole()) {
+            $settings = Setting::first();
+            if ($settings) {
+                config(["telegram.bots.sap.token" => $settings->bot_token]);
+            }
         }
     }
 }
