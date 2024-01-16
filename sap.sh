@@ -719,6 +719,7 @@ update_panel() {
     php artisan route:cache
     php artisan view:cache
     php artisan optimize
+    php artisan migrate
 
     # Create a file that holds the sha of latest commit
     rm -f version.info > /dev/null 2>&1
