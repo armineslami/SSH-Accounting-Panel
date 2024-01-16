@@ -906,13 +906,16 @@ install_ssl_certificate() {
 
     output=$(sudo certbot certonly --apache --force-renewal -d "$domain" -d "$domain_alias" 2>&1 & wait $!)
 
-    if ! echo "$output" | grep -q "Congratulations"; then
+    if ! echo "$output" | grep -q -E "Congratulations|Successfully received certificate"; then
         printf "${RED}\nFailed to create SSL certificate\n${NC}\n"
+        printf "${RED}\n${output}${NC}\n"
         rm -rf "/etc/apache2/sites-available/$project_name-http.conf"
         a2dissite "$project_name-http".conf > /dev/null 2>&1
         before_show_menu
         return 1
     fi
+
+    printf "${BLUE}\n${output}${NC}\n"
 
     # Get directory name of created certificate
     directory_name=$(echo "$output" | grep -oP '(?<=/live/)[^/]+(?=/fullchain.pem)')
