@@ -3,6 +3,7 @@
 namespace App\Telegram\Commands;
 
 use App\Models\Inbound;
+use App\Repositories\ServerRepository;
 use App\Telegram\Keyboards\Keyboard;
 use App\Utils\Utils;
 use Telegram\Bot\Actions;
@@ -35,12 +36,14 @@ class LoginCommand extends Command
                 return;
             }
 
+            $server  = ServerRepository::byAddress($inbound->server_ip);
             $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
 
             $this->replyWithMessage([
                 'text' => "❗ *Account Info* ❗️
 \n👤 *Username*: $inbound->username
 \n🌐 *Server*: $inbound->server_ip
+\n🅿️ *UDP Port*: $server->udp_port
 \n🔋 *Active*: " . ($inbound->is_active == "1" ? "👍🏻" : "👎🏻")
 ."\n\n🚦 *Traffic Limit*: " . (!isset($inbound->traffic_limit) ? "♾️" : ($inbound->traffic_limit - $inbound->remaining_traffic)."G / " . $inbound->traffic_limit. "G")
 ."\n\n⏳ *Remaining Days*: " . ($inbound->active_days == "" ? "♾️" : $inbound->active_days)
@@ -76,5 +79,4 @@ class LoginCommand extends Command
     private function getInbound($username, $password): Inbound|null  {
         return Inbound::where("username", $username)->where("password", $password)->first();
     }
-
 }
