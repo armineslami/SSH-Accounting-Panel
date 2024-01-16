@@ -19,25 +19,7 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 //     return $request->user();
 // });
 
-Route::post('/<token>/webhook', function () {
-//    $updates = Telegram::commandsHandler(true);
-    $updates = Telegram::getWebhookUpdate();
-
-    $command = $updates->message->text;
-
-    if ($command === "/start") {
-        Telegram::triggerCommand("start", $updates);
-    }
-    elseif (
-        $command === Buttons::LOGIN ||
-        $command === "/login" ||
-        preg_match('/^([a-zA-Z0-9]+):([a-zA-Z0-9!@#$%^&*()\-=_+{}|:"<>?\[\]\\\;\',.\/]+)$/', $command)) {
-        Telegram::triggerCommand("login", $updates);
-    }
-    else {
-        Telegram::triggerCommand("help", $updates);
-    }
-});
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+Route::post('/<token>/webhook', TelegramController::class)->name('telegram');
 
 
