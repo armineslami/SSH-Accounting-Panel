@@ -775,8 +775,14 @@ set_port() {
     # Config file
     apache_conf="/etc/apache2/sites-available/$project_name.conf"
 
+    # Get current port
+    current_port=$(grep -Po '(?<=<VirtualHost \*:)\d+' "$apache_conf")
+
     # Update the port in the config file
     sed -i "s/<VirtualHost \*:.*>/<VirtualHost *:$new_port>/" "$apache_conf"
+
+    # Remove current port listen
+    sed -i "/Listen $current_port/d" /etc/apache2/ports.conf
 
     # Add the new port to the ports.conf only if it's not already there
     grep -wq "Listen $new_port" /etc/apache2/ports.conf || sudo bash -c "echo 'Listen $new_port' >> /etc/apache2/ports.conf"
