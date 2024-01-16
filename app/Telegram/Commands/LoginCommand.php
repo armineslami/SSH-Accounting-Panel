@@ -43,6 +43,7 @@ class LoginCommand extends Command
                 'text' => "❗ *Account Info* ❗️
 \n👤 *Username*: $inbound->username
 \n🌐 *Server*: $inbound->server_ip
+\n🅿️ *Port*: $server->port
 \n🅿️ *UDP Port*: $server->udp_port
 \n🔋 *Active*: " . ($inbound->is_active == "1" ? "👍🏻" : "👎🏻")
 ."\n\n🚦 *Traffic Limit*: " . (!isset($inbound->traffic_limit) ? "♾️" : ($inbound->traffic_limit - $inbound->remaining_traffic)."G / " . $inbound->traffic_limit. "G")
