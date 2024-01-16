@@ -25,7 +25,7 @@ class StartCommand extends Command
 
         $this->replyWithMessage([
             'text' => "Hi ". ($firstName ?? $username ?? "") ." 👋🏻\n\nI'm ". $botName ." bot 🤖
-To get start choose one of the buttons below👇🏻",
+To get started choose one of the buttons below👇🏻",
             'reply_markup' => Keyboard::simpleMarkupKeyboard()
         ]);
     }
