@@ -38,5 +38,6 @@ Route::post('/<token>/webhook', function () {
         Telegram::triggerCommand("help", $updates);
     }
 });
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
 

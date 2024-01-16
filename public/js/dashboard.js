@@ -5,7 +5,7 @@ let disk = undefined;
 
 function getSystemInfo() {
     axios
-        .get("/dashboard")
+        .get("/api/dashboard")
         .then((response) => {
             const systemInfo = response.data.systemInfo;
             if (systemInfo) {

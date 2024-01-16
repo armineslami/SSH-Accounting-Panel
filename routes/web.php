@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::get('/inbounds/create', [InboundController::class, 'create'])->name('inbounds.create');
     Route::get('/inbounds/search/', [InboundController::class, 'search'])->name('inbounds.search');
