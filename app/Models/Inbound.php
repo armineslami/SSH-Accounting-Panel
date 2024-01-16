@@ -53,6 +53,13 @@ class Inbound extends Model
         'is_active' => '1'
     ];
 
+    /**
+     * The mutator for the 'username' attribute
+     */
+    public function setUsernameAttribute($value)
+    {
+           $this->attributes['username'] = strtolower($value);
+    }
 
     /**
      * The mutator for the 'traffic_limit' attribute
