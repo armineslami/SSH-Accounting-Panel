@@ -700,6 +700,9 @@ update_panel() {
 
     git config --global --add safe.directory "/var/www/$project_name" > /dev/null 2>&1
 
+    # Discard local changes
+    git reset --hard
+
     # Pull from git
     git pull origin master
 
@@ -719,7 +722,7 @@ update_panel() {
     php artisan route:cache
     php artisan view:cache
     php artisan optimize
-    php artisan migrate
+    php artisan migrate --force
 
     # Create a file that holds the sha of latest commit
     rm -f version.info > /dev/null 2>&1
