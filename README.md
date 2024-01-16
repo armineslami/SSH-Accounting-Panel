@@ -30,6 +30,7 @@ a cli command called `sap` to interact with it trough the terminal.
 - Set UDPGW port on your servers
 - Set a domain and port
 - Add SSL certificate to your domain
+- Telegram bot support
 
 ## Supported OS
 
