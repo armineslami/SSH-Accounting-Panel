@@ -712,6 +712,9 @@ update_panel() {
     npm install
     npm run build
 
+    # Update the APP_VERSION in .env
+    sed -i "s/^\(APP_VERSION=\).*/\1$project_version/" .env
+
     php artisan config:clear
     php artisan event:clear
     php artisan route:clear
@@ -723,9 +726,6 @@ update_panel() {
     php artisan view:cache
     php artisan optimize
     php artisan migrate --force
-
-    # Update the APP_VERSION in .env
-    sed -i "s/^\(APP_VERSION=\).*/\1$project_version/" .env
 
     # Create a file that holds the sha of latest commit
     rm -f version.info > /dev/null 2>&1
