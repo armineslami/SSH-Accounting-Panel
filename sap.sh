@@ -724,6 +724,9 @@ update_panel() {
     php artisan optimize
     php artisan migrate --force
 
+    # Update the APP_VERSION in .env
+    sed -i "s/^\(APP_VERSION=\).*/\1$project_version/" .env
+
     # Create a file that holds the sha of latest commit
     rm -f version.info > /dev/null 2>&1
     curl -s "$project_latest_commit_link" | jq -r .sha > version.info
