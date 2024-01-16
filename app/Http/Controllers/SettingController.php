@@ -28,7 +28,10 @@ class SettingController extends Controller
     public function updateTelegram(UpdateTelegramSettingsRequest $request)//: RedirectResponse
     {
         $host = "https://" . $request->getHost();
+        $token = $request->bot_token;
         $port = $request->bot_port;
+
+        config(['telegram.bots.sap.token' => $token]);
 
         $url = env("APP_ENV", "")  === "local" ?
             env("TELEGRAM_WEBHOOK_ADDRESS"). "/api/<token>/webhook" :
