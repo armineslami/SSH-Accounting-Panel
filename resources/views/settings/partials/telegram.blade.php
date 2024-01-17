@@ -1,4 +1,6 @@
-<section class="p-8 mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+<section
+    id="telegram"
+    class="p-8 mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Telegram') }}
@@ -19,7 +21,7 @@
                     <x-input-label for="bot_token" :value="__('Token')"/>
                     <x-text-input id="bot_token" name="bot_token" type="text" class="mt-1 block w-full"
                                   :value="old('bot_token', $settings->bot_token)" autofocus/>
-                    <x-input-error class="mt-2" :messages="$errors->get('bot_token')"/>
+                    <x-input-error id="bot_token_error" class="mt-2" :messages="$errors->get('bot_token')"/>
                 </div>
 
                 <div class="lg:col-span-1">
@@ -46,7 +48,7 @@
                             88
                         </option>
                     </x-select-input>
-                    <x-input-error class="mt-2" :messages="$errors->get('bot_port')"/>
+                    <x-input-error id="bot_port_error" class="mt-2" :messages="$errors->get('bot_port')"/>
                 </div>
             </div>
 
@@ -72,3 +74,11 @@
         </div>
     </form>
 </section>
+<script>
+    const botTokenErrorElement = document.getElementById('bot_token_error');
+    const botPortErrorElement = document.getElementById('bot_port_error');
+    if (botTokenErrorElement || botPortErrorElement) {
+        const telegram = document.getElementById('telegram');
+        telegram.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+</script>
