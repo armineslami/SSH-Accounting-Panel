@@ -25,8 +25,10 @@ class SettingController extends Controller
         return Redirect::route('settings.edit')->with('status', 'settings-updated');
     }
 
-    public function updateTelegram(UpdateTelegramSettingsRequest $request)//: RedirectResponse
+    public function updateTelegram(UpdateTelegramSettingsRequest $request): RedirectResponse
     {
+        $request->validated();
+
         $host = "https://" . $request->getHost();
         $token = $request->bot_token;
         $port = $request->bot_port;
