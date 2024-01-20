@@ -18,6 +18,8 @@ class Kernel extends ConsoleKernel
         $schedule->command("app:update-bandwidth-usage")
             ->everyThirtyMinutes()
             ->runInBackground();
+
+        $schedule->command("app:backup-to-dropbox")->daily();
     }
 
     /**

@@ -3,11 +3,13 @@
 namespace App\Interfaces;
 
 use App\Models\Inbound;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface InboundRepositoryInterface
 {
     public static function byId($id): ?Inbound;
+    public static function all(): Collection;
     public static function paginate($count = 20): LengthAwarePaginator;
     public static function count(): int;
     public static function create(string $username, string $password, string $is_active, float $traffic_limit = null,

@@ -17,5 +17,10 @@ class Setting extends Model
         'inbound_max_login',
         'bot_token',
         'bot_port',
+        'dropbox_client_id',
+        'dropbox_client_secret',
+        'dropbox_token',
+        'dropbox_refresh_token',
+        'dropbox_token_expire_date'
     ];
 }

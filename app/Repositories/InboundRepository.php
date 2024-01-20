@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\InboundRepositoryInterface;
 use App\Models\Inbound;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class InboundRepository implements InboundRepositoryInterface
@@ -11,6 +12,11 @@ class InboundRepository implements InboundRepositoryInterface
     public static function byId($id): ?Inbound
     {
         return Inbound::find($id);
+    }
+
+    public static function all(): Collection
+    {
+        return Inbound::all();
     }
 
     public static function paginate($count = 20): LengthAwarePaginator

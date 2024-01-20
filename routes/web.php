@@ -37,6 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::patch('/settings/inbound', [SettingController::class, 'updateInbound'])->name('settings.updateInbound');
     Route::patch('/settings/telegram', [SettingController::class, 'updateTelegram'])->name('settings.updateTelegram');
+    Route::patch('/settings/dropbox/link', [SettingController::class, 'linkDropbox'])->name('settings.dropbox.link');
+    Route::get('/settings/dropbox/callback', [SettingController::class, 'callbackDropbox'])->name('settings.dropbox.callback');
+    Route::patch('/settings/dropbox/unlink', [SettingController::class, 'unlinkDropbox'])->name('settings.dropbox.unlink');
+    Route::patch('/settings/backup/download', [SettingController::class, 'downloadBackup'])->name('settings.backup.download');
+    Route::post('/settings/backup/import', [SettingController::class, 'importBackup'])->name('settings.backup.import');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 //    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
