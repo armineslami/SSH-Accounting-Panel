@@ -16,6 +16,10 @@
         @method('post')
         <div class="">
             <div class="w-full">
+                <p class="mt-4 mb-4 text-justify text-gray-900 dark:text-gray-100">
+                    When import is done, make sure each inbound server ip, points to one of your
+                    current servers.
+                </p>
                 <div>
                     <x-file-input name="backup_file" accept=".zip"  />
                     <x-input-error id="backup_file_error" class="mt-2" :messages="$errors->get('backup_file')" />

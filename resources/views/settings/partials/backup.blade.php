@@ -1,6 +1,6 @@
 <section
     id="backup"
-    class="p-8 mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+    class="relative p-8 mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Backup') }}
@@ -20,8 +20,8 @@
                 use the button below to download the latest backup.
             </p>
 
-            <div class="flex items-center gap-4 mt-6">
-                <div class="ms-auto">
+            <div class="flex items-center gap-4 mt-16">
+                <div class="ms-auto absolute bottom-8 right-8">
                     <x-primary-button>{{ __('Download') }}</x-primary-button>
                 </div>
             </div>
