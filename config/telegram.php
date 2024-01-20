@@ -1,9 +1,9 @@
 <?php
 
-use App\Telegram\Commands\StartCommand;
-use App\Telegram\Commands\LoginCommand;
-use App\Telegram\ProxyHttpClient;
-use App\Telegram\Commands\HelpCommand;
+use App\Services\Telegram\Commands\HelpCommand;
+use App\Services\Telegram\Commands\LoginCommand;
+use App\Services\Telegram\Commands\StartCommand;
+use App\Services\Telegram\Http\ProxyHttpClient;
 
 return [
     /*

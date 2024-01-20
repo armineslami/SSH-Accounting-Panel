@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Telegram\Commands;
+namespace App\Services\Telegram\Commands;
 
-use App\Telegram\Keyboards\Keyboard;
+use App\Services\Telegram\Keyboards\Keyboard;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Laravel\Facades\Telegram;

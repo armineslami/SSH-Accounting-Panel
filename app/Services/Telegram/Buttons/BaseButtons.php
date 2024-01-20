@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Telegram\Buttons;
+namespace App\Services\Telegram\Buttons;
 
 final class BaseButtons
 {

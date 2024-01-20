@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\SettingRepository;
-use App\Telegram\Buttons\Buttons;
+use App\Services\Telegram\Buttons\Buttons;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramController extends Controller
