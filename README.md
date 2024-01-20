@@ -31,6 +31,7 @@ a cli command called `sap` to interact with it trough the terminal.
 - Set a domain and port
 - Add SSL certificate to your domain
 - Telegram bot support
+- Dropbox daily backup support
 
 ## Supported OS
 
