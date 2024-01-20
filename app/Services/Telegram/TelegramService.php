@@ -13,13 +13,13 @@ class TelegramService
         $this->error = null;
     }
 
-    public function bot(string $token, int $port, string $host): bool
+    public function bot(string $token = null, int $port= null, string $host = null): bool
     {
-        $this->putTokenIntoConfig($token);
-
-        $webhookUrl = $this->createWebhookUrl($host, $port);
-
         if ($token && $port) {
+
+            $this->putTokenIntoConfig($token);
+            $webhookUrl = $this->createWebhookUrl($host, $port);
+
             try {
                 return $this->setWebhook($webhookUrl);
             } catch (Exception $e) {
@@ -34,7 +34,8 @@ class TelegramService
             }
         }
 
-        return true;
+        // Token, port or both are null, so consider the request as remove webhook demand
+        return $this->removeWebhook();
     }
 
     /**
@@ -46,6 +47,11 @@ class TelegramService
             "url" => $url
 //           "certificate" => "/etc/letsencrypt/live/sap/fullchain.pem"
         ]);
+    }
+
+    public function removeWebhook(): bool
+    {
+        return Telegram::removeWebhook();
     }
 
     protected function putTokenIntoConfig($token): void
