@@ -42,26 +42,28 @@ class SettingController extends Controller
         $isWebhookSet = false;
         $error = null;
 
-        try {
-            $isWebhookSet = Telegram::setWebhook([
-                "url" => $url
+        if ($token && $port) {
+            try {
+                $isWebhookSet = Telegram::setWebhook([
+                    "url" => $url
 //           "certificate" => "/etc/letsencrypt/live/sap/fullchain.pem"
-            ]);
-        } catch (\Exception $e) {
-            if (str_contains($e->getMessage(), "Timeout was reached")) {
-                $error = "Timeout was reached. Make sure telegram is not banned in your server region.";
+                ]);
+            } catch (\Exception $e) {
+                if (str_contains($e->getMessage(), "Timeout was reached")) {
+                    $error = "Timeout was reached. Make sure telegram is not banned in your server region.";
+                }
             }
-        }
 
-        if (!$isWebhookSet) {
-            return Redirect::route('settings.edit')->with([
-                'status' => 'settings-not-updated',
-                'message' => $error
-            ]);
+            if (!$isWebhookSet) {
+                return Redirect::route('settings.edit')->with([
+                    'status' => 'telegram-not-updated',
+                    'message' => $error
+                ]);
+            }
         }
 
         SettingRepository::update(SettingRepository::first(), $request->validated());
 
-        return Redirect::route('settings.edit')->with('status', 'settings-updated');
+        return Redirect::route('settings.edit')->with('status', 'telegram-updated');
     }
 }
