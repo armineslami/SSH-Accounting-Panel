@@ -74,23 +74,28 @@ class DropboxService
 
     public static function decodeState(string $state): DropboxState|null
     {
-        $csrfToken = null;
-        $clientId = null;
-        $clientSecret = null;
+        $needle = "|";
+        $splitPos = strpos($state, $needle);
 
-        $splitPos = strpos($state, "|");
+        // If "|" is not found, check for "%7C"
+        if ($splitPos === false) {
+            $needle = "%7C";
+            $splitPos = strpos($state, $needle);
+        }
 
         if ($splitPos !== false) {
             $csrfToken = substr($state, 0, $splitPos);
             $urlState = substr($state, $splitPos + 1);
 
-            $splitPos = strpos($urlState, "|");
+            $splitPos = strpos($urlState, $needle);
 
             $clientId = substr($urlState, 0, $splitPos);
             $clientSecret = substr($urlState, $splitPos + 1);
+
+            return new DropboxState($csrfToken, $clientId, $clientSecret);
         }
 
-        return new DropboxState($csrfToken, $clientId, $clientSecret);
+        return null;
     }
 
     public static function refreshDropboxToken(string $clientId, string $clientSecret, string $refreshToken): AccessToken|null
