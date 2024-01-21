@@ -10,18 +10,16 @@ use App\Http\Requests\UpdateInboundSettingsRequest;
 use App\Http\Requests\UpdateTelegramSettingsRequest;
 use App\Repositories\InboundRepository;
 use App\Repositories\SettingRepository;
-use App\Utils\Utils;
+use App\Services\Backup\BackupService;
+use App\Services\Dropbox\DropboxService;
+use App\Services\Telegram\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
-use Kunnu\Dropbox\Dropbox;
-use Kunnu\Dropbox\DropboxApp;
-use Kunnu\Dropbox\Exceptions\DropboxClientException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class SettingController extends Controller
 {
@@ -46,36 +44,17 @@ class SettingController extends Controller
         $token = $request->bot_token;
         $port = $request->bot_port;
 
-        config(['telegram.bots.sap.token' => $token]);
+        $telegramService = new TelegramService();
+        $isBotSet = $telegramService->bot($token, $port, $host);
 
-        $url = env("APP_ENV", "") === "local" ?
-            env("TELEGRAM_WEBHOOK_ADDRESS") . "/api/<token>/webhook" :
-            $host . ":" . $port . "/api/<token>/webhook";
-
-        $isWebhookSet = false;
-        $error = null;
-
-        if ($token && $port) {
-            try {
-                $isWebhookSet = Telegram::setWebhook([
-                    "url" => $url
-//           "certificate" => "/etc/letsencrypt/live/sap/fullchain.pem"
-                ]);
-            } catch (\Exception $e) {
-                if (str_contains($e->getMessage(), "Timeout was reached")) {
-                    $error = "Timeout was reached. Make sure telegram is not banned in your server region.";
-                }
-            }
-
-            if (!$isWebhookSet) {
-                return Redirect::route('settings.edit')->with([
-                    'status' => 'telegram-not-updated',
-                    'message' => $error
-                ]);
-            }
+        if (!$isBotSet) {
+            return Redirect::route('settings.edit')->with([
+                'status' => 'telegram-not-updated',
+                'message' => $telegramService->error()
+            ]);
         }
 
-        SettingRepository::update(SettingRepository::first(), $request->validated());
+        SettingRepository::update(SettingRepository::first(), $request->all());
 
         return Redirect::route('settings.edit')->with('status', 'telegram-updated');
     }
@@ -84,37 +63,27 @@ class SettingController extends Controller
     {
         $request->validated();
 
-        //Configure Dropbox Application
-        $app = new DropboxApp($request->dropbox_client_id, $request->dropbox_client_secret);
+        $dropboxService = new DropboxService(
+            $request->dropbox_client_id, $request->dropbox_client_secret
+        );
 
-        //Configure Dropbox service
-        try {
-            $dropbox = new Dropbox($app);
-        } catch (DropboxClientException $e) {
-            $message = json_decode($e->getMessage(), true);
-            $error = $message['error_description'] ?? ($message["error"] ?? $e->getMessage());
+        $dropbox = $dropboxService->getDropbox();
+
+        if (!$dropbox) {
             return Redirect::route('settings.edit')->with([
                 "status" => "dropbox-not-linked",
-                "message" => $error
+                "message" => $dropboxService->error()
             ]);
         }
 
-        $authHelper = $dropbox->getAuthHelper();
+        $authUrl = $dropboxService->authUrl($dropbox);
 
-        //Callback URL
-        $callbackUrl = route("settings.dropbox.callback");
-
-        // Additional user provided parameters to pass in the request
-        $params = [];
-
-        // Url State - Additional User provided state data
-        $urlState = $request->dropbox_client_id . "|" . $request->dropbox_client_secret;
-
-        // Token Access Type
-        $tokenAccessType = "offline";
-
-        //Fetch the Authorization/Login URL
-        $authUrl = $authHelper->getAuthUrl($callbackUrl, $params, $urlState, $tokenAccessType);
+        if (!$authUrl) {
+            return Redirect::route('settings.edit')->with([
+                "status" => "dropbox-not-linked",
+                "message" => $dropboxService->error()
+            ]);
+        }
 
         return redirect($authUrl);
     }
@@ -126,39 +95,30 @@ class SettingController extends Controller
         $code   = $request->code;
         $state  = $request->state;
 
-        $states = $this->decodeDropboxState($state);
-        $csrfToken = $states['csrf_token'];
-        $clientId = $states['client_id'];
-        $clientSecret = $states['client_secret'];
+        $dropboxState = DropboxService::decodeState($state);
 
-        // Configure Dropbox Application
-        $app = new DropboxApp(clientId: $clientId, clientSecret: $clientSecret);
+        $csrfToken      = $dropboxState->getCsrf();
+        $clientId       = $dropboxState->getClientId();
+        $clientSecret   = $dropboxState->getClientSecret();
 
-        // Configure Dropbox service
-        try {
-            $dropbox = new Dropbox($app);
-        } catch (DropboxClientException $e) {
-            $message = json_decode($e->getMessage(), true);
-            $error = $message['error_description'] ?? ($message["error"] ?? $e->getMessage());
+        $dropboxService = new DropboxService($clientId, $clientSecret);
+        $dropbox        = $dropboxService->getDropbox();
+
+        if (!$dropbox) {
             return Redirect::route('settings.edit')->with([
                 "status" => "dropbox-not-linked",
-                "message" => $error
+                "message" => $dropboxService->error()
             ]);
         }
 
-        $authHelper = $dropbox->getAuthHelper();
-        $authHelper->getPersistentDataStore()->set('state', $csrfToken);
-        $callbackUrl = route("settings.dropbox.callback");
+        $accessToken = $dropboxService->token(
+            dropbox: $dropbox, csrf: $csrfToken, code: $code, state: $state
+        );
 
-        // Fetch the AccessToken
-        try {
-            $accessToken = $authHelper->getAccessToken($code, $state, $callbackUrl);
-        } catch (DropboxClientException $e) {
-            $message = json_decode($e->getMessage(), true);
-            $error = $message['error_description'] ?? ($message["error"] ?? $e->getMessage());
+        if (!$accessToken) {
             return Redirect::route('settings.edit')->with([
                 "status" => "dropbox-not-linked",
-                "message" => $error
+                "message" => $dropboxService->error()
             ]);
         }
 
@@ -184,7 +144,7 @@ class SettingController extends Controller
         // Dropbox expires tokens every 4 hours. To be sure nothing goes wrong and since
         //expire time is not accurate, refresh the token every 3 hours.
         if (Carbon::now()->diffInHours($tokenExpireTime) >= 3) {
-            $newAccessToken = Utils::refreshDropboxToken(
+            $newAccessToken = DropboxService::refreshDropboxToken(
                 clientId: $settings->dropbox_client_id,
                 clientSecret: $settings->dropbox_client_secret,
                 refreshToken: $settings->dropbox_refresh_token
@@ -203,34 +163,22 @@ class SettingController extends Controller
             $dropboxToken = $newAccessToken->getToken();
         }
 
-        // Configure Dropbox Application
-        $app = new DropboxApp($clientId, $clientSecret, $dropboxToken);
+        $dropboxService = new DropboxService($clientId, $clientSecret, $dropboxToken);
+        $dropbox        = $dropboxService->getDropbox();
 
-        // Configure Dropbox service
-        try {
-            $dropbox = new Dropbox($app);
-
-        } catch (DropboxClientException $e) {
-            $message = json_decode($e->getMessage(), true);
-            $error = $message['error']['.tag'] ?: ($message['error'] ?? $e->getMessage());
+        if (!$dropbox) {
             return Redirect::route('settings.edit')->with([
-                'status' => 'dropbox-not-unlinked',
-                'message' => $error
+                "status" => "dropbox-not-unlinked",
+                "message" => $dropboxService->error()
             ]);
         }
 
-        // DropboxAuthHelper
-        $authHelper = $dropbox->getAuthHelper();
+        $isUnlinked = $dropboxService->unlink($dropbox);
 
-        // Revoke the access
-        try {
-            $authHelper->revokeAccessToken();
-        } catch (DropboxClientException $e) {
-            $message = json_decode($e->getMessage(), true);
-            $error = $message['error']['.tag'] ?: $message['error'];
+        if (!$isUnlinked) {
             return Redirect::route('settings.edit')->with([
-                'status' => 'dropbox-not-unlinked',
-                'message' => $error
+                "status" => "dropbox-not-unlinked",
+                "message" => $dropboxService->error()
             ]);
         }
 
@@ -245,34 +193,9 @@ class SettingController extends Controller
         return Redirect::route('settings.edit')->with('status', 'dropbox-unlinked');
     }
 
-    private function decodeDropboxState(string $state): array
-    {
-        $csrfToken = null;
-        $client_id = null;
-        $client_secret = null;
-
-        $splitPos = strpos($state, "|");
-
-        if ($splitPos !== false) {
-            $csrfToken = substr($state, 0, $splitPos);
-            $urlState = substr($state, $splitPos + 1);
-
-            $splitPos = strpos($urlState, "|");
-
-            $client_id = substr($urlState, 0, $splitPos);
-            $client_secret = substr($urlState, $splitPos + 1);
-        }
-
-        return [
-            "csrf_token" => $csrfToken,
-            "client_id" => $client_id,
-            "client_secret" => $client_secret
-        ];
-    }
-
     public function downloadBackup(): BinaryFileResponse
     {
-        $backup = Utils::createBackup();
+        $backup = BackupService::createBackup();
 
         return response()->download(
             $backup->get("path"),
@@ -284,7 +207,7 @@ class SettingController extends Controller
     {
         $backup = $request->file('backup_file');
 
-        $files = Utils::extractBackup($backup);
+        $files = BackupService::extractBackup($backup);
 
         if (is_null($files)) {
             return Redirect::route('settings.edit')->with([

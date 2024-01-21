@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Repositories\SettingRepository;
-use App\Utils\Utils;
+use App\Services\Backup\BackupService;
+use App\Services\Dropbox\DropboxService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -45,7 +46,7 @@ class BackupToDropbox extends Command
             return;
 
         if (Carbon::now()->diffInHours($dropboxExpireDate) >= 3) {
-            $newAccessToken = Utils::refreshDropboxToken(
+            $newAccessToken = DropboxService::refreshDropboxToken(
                 clientId: $clientId,
                 clientSecret: $clientSecret,
                 refreshToken: $dropboxRefreshToken
@@ -70,7 +71,7 @@ class BackupToDropbox extends Command
             return;
         }
 
-        $backup = Utils::createBackup();
+        $backup = BackupService::createBackup();
 
         $dropboxFile = new DropboxFile($backup->get("path"));
         $dropboxPath = "/" . $backup->get("name");

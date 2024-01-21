@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Telegram\Keyboards;
+namespace App\Services\Telegram\Keyboards;
 
-use App\Telegram\Buttons\BaseButtons;
+use App\Services\Telegram\Buttons\BaseButtons;
 use Telegram\Bot\Keyboard\Keyboard as TelegramSdkKeyboard;
 
 class Keyboard

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Telegram\Commands;
+namespace App\Services\Telegram\Commands;
 
 use App\Models\Inbound;
 use App\Repositories\ServerRepository;
-use App\Telegram\Keyboards\Keyboard;
+use App\Services\Telegram\Keyboards\Keyboard;
 use App\Utils\Utils;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Commands\Command;
@@ -46,7 +46,7 @@ class LoginCommand extends Command
 \n🅿️ *Port*: $server->port
 \n🅿️ *UDP Port*: $server->udp_port
 \n🔋 *Active*: " . ($inbound->is_active == "1" ? "👍🏻" : "👎🏻")
-."\n\n🚦 *Traffic Limit*: " . (!isset($inbound->traffic_limit) ? "♾️" : ($inbound->traffic_limit - $inbound->remaining_traffic)."G / " . $inbound->traffic_limit. "G")
+."\n\n🚦 *Traffic*: " . (!isset($inbound->traffic_limit) ? "♾️" : ($inbound->traffic_limit - $inbound->remaining_traffic)."G / " . $inbound->traffic_limit. "G")
 ."\n\n⏳ *Remaining Days*: " . ($inbound->active_days == "" ? "♾️" : $inbound->active_days)
 ."\n\n📱 *Max Device*: $inbound->max_login",
                 'reply_markup' => Keyboard::simpleMarkupKeyboard(),
