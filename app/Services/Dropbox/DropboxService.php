@@ -77,12 +77,6 @@ class DropboxService
         $needle = "|";
         $splitPos = strpos($state, $needle);
 
-        // If "|" is not found, check for "%7C"
-        if ($splitPos === false) {
-            $needle = "%7C";
-            $splitPos = strpos($state, $needle);
-        }
-
         if ($splitPos !== false) {
             $csrfToken = substr($state, 0, $splitPos);
             $urlState = substr($state, $splitPos + 1);

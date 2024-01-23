@@ -11,7 +11,7 @@ class InboundRepository implements InboundRepositoryInterface
 {
     public static function byId($id): ?Inbound
     {
-        return Inbound::find($id);
+        return Inbound::with("server")->find($id)->first();
     }
 
     public static function all(): Collection
@@ -21,7 +21,7 @@ class InboundRepository implements InboundRepositoryInterface
 
     public static function paginate($count = 20): LengthAwarePaginator
     {
-        return Inbound::paginate($count);
+        return Inbound::with("server")->paginate($count);
     }
 
     public static function count(): int
@@ -58,7 +58,10 @@ class InboundRepository implements InboundRepositoryInterface
     public static function search(?string $query): LengthAwarePaginator
     {
         return Inbound::where("username", 'LIKE', '%' . $query . '%')
-            ->orWhere("server_ip", 'LIKE', '%' . $query . '%')
+            ->orWhereHas('server', function ($serverQuery) use ($query) {
+                $serverQuery->where('name', 'LIKE', '%' . $query . '%')
+                    ->orWhere('address', 'LIKE', '%' . $query . '%');
+            })
             ->paginate();
     }
 }

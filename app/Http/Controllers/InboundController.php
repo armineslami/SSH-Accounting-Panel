@@ -91,7 +91,6 @@ class InboundController extends BaseController
 
         $inbound    = InboundRepository::byId($id);
         $server     = ServerRepository::byAddress($request->server_ip);
-        $oldServer  = ServerRepository::byAddress($inbound->server_ip);
         $action     = $inbound && $inbound->server_ip != $request->server_ip ? "CreateUser" : "UpdateUser";
 
         try {
@@ -102,9 +101,8 @@ class InboundController extends BaseController
              */
             if ($request->delete_from_old_server === '1') {
                 $action = "CreateUser";
-
                 $result = Utils::executeShellCommand(
-                    "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$oldServer->address." -server_port ".$oldServer->port." -server_username ".$oldServer->username
+                    "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$inbound->server->address." -server_port ".$inbound->server->port." -server_username ".$inbound->server->username
                 );
 
                 $redirect = $this->redirectIfFailed(to: 'inbounds.update', status: 'inbound-not-updated', response: $result, id: $id);
@@ -136,11 +134,10 @@ class InboundController extends BaseController
     public function destroy(int $id): RedirectResponse
     {
         $inbound = InboundRepository::byId($id);
-        $server  = ServerRepository::byAddress($inbound->server_ip);
 
         try {
             $result = Utils::executeShellCommand(
-                "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$server->address." -server_port ".$server->port." -server_username ".$server->username
+                "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$inbound->server->address." -server_port ".$inbound->server->port." -server_username ".$inbound->server->username
             );
 
             $redirect = $this->redirectIfFailed(to: 'inbounds.update', status: 'inbound-not-deleted', response: $result, id: $id);

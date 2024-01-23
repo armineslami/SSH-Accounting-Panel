@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Inbound extends Model
 {
@@ -52,6 +53,14 @@ class Inbound extends Model
         'max_login' => 1,
         'is_active' => '1'
     ];
+
+    /**
+     * Get the server associated with the inbound.
+     */
+    public function server(): BelongsTo
+    {
+        return $this->belongsTo(Server::class, 'server_ip', 'address');
+    }
 
     /**
      * The mutator for the 'username' attribute

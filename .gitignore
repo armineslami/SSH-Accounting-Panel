@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/.DS_Store
 /storage/*.key
 /storage/keys/*
 /vendor
@@ -18,3 +19,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+.DS_Store
+
