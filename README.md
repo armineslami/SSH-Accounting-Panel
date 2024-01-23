@@ -5,7 +5,7 @@ SSH Accounting Panel
 <br/>
 <br/>
 <p>
-<a href=""><img src="https://img.shields.io/badge/v2.1.1-blue?label=release" alt="Latest Version"></a>
+<a href=""><img src="https://img.shields.io/badge/v2.1.2-blue?label=release" alt="Latest Version"></a>
 <a href=""><img src="https://img.shields.io/badge/MIT-%2397ca00?label=licence" alt="License"></a>
 </p>
 </h2>
@@ -16,7 +16,7 @@ SSH Accounting Panel
 
 This panel provides you an easy way to create ssh accounts on your servers and use them for tunneling.
 You can either create accounts on your local machine or on the remote servers. The panel also provides you
-a cli command called `sap` to interact with it trough the terminal.
+a cli command called `sap` to interact with it through the terminal.
 
 ## Features
 
