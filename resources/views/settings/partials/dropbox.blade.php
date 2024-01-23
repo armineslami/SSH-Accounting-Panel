@@ -38,8 +38,8 @@
 
             </div>
 
-            <div class="mt-4 text-justify text-sm text-gray-900 dark:text-gray-100">
-                <p class="mb-2">⚠️ To enable dropbox auto daily backup, first install SSL certificate and then visit
+            <div class="mt-4 text-sm text-gray-900 dark:text-gray-100">
+                <p class="mb-2 text-justify">⚠️ To enable dropbox auto daily backup, first install SSL certificate and then visit
                     <a class="text-indigo-500" href="https://www.dropbox.com/developers/apps/create" target="_blank">
                         Dropbox Developers Panel
                     </a>
@@ -48,7 +48,7 @@
                 </p>
                 <ul>
                     <li><b>Permission:</b> files.content.write</li>
-                    <li><b>Redirect URIs:</b> {{ route('settings.dropbox.callback') }}</li>
+                    <li><b>Redirect URIs:</b> <span class="break-words">{{ route('settings.dropbox.callback') }}</span></li>
                 </ul>
             </div>
 
