@@ -7,7 +7,7 @@
             <form class="my-auto mt-2 md:mt-0" method="get" action="{{ route('inbounds.search') }}" >
                 @csrf
                 @method('get')
-                <x-text-input class="w-full text-md" name="query" type="text" placeholder="Search for inbound by username or server" :value="isset($query) ? $query : null" />
+                <x-text-input class="w-full text-md" name="query" type="text" placeholder="Search for inbound by username, server name or ip" :value="isset($query) ? $query : null" />
             </form>
         </div>
     </x-slot>
@@ -54,7 +54,7 @@
                                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('inbounds.index', ['id' => $inbound->id])}}'">
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $loop->index + 1 + ($inbounds->currentPage() - 1) * $inbounds->perPage() }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $inbound->username }}</td>
-                                        <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $inbound->server_ip }}</td>
+                                        <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->server_ip) ? "-" : $inbound->server->name }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 {{ $inbound->is_active == 1 ? 'text-green-500 dark:green-slate-400' : 'text-red-500 dark:red-slate-400' }} ">{{ $inbound->is_active == 1 ? __("YES") : __("NO") }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->traffic_limit) ? "∞" : $inbound->traffic_limit }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->remaining_traffic) ? "∞" : $inbound->remaining_traffic }}</td>

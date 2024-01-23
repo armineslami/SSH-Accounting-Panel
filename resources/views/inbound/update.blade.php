@@ -96,7 +96,8 @@
 
                         <div>
                             <x-input-label for="remaining_traffic" :value="__('*Remaining Traffic (GB, Blank = ∞)')"/>
-                            <x-text-input id="remaining_traffic" name="remaining_traffic" type="text" class="mt-1 block w-full"
+                            <x-text-input id="remaining_traffic" name="remaining_traffic" type="text"
+                                          class="mt-1 block w-full"
                                           :value="old('remaining_traffic', $inbound->remaining_traffic)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('remaining_traffic')"/>
                         </div>
@@ -111,6 +112,12 @@
                         <div>
                             <x-input-label for="server_ip" :value="__('*Server IP')"/>
                             <x-select-input id="server_ip" name="server_ip" class="mt-1 block w-full">
+                                @if(!$servers->contains('address', $inbound->server_ip) || is_null($inbound->server_ip))
+                                    <option
+                                        value="" {{ old('server_ip') === null || (!old('server_ip') && $inbound->server_ip === null) ? 'selected' : '' }} >
+                                        -
+                                    </option>
+                                @endif
                                 @foreach ($servers as $server)
                                     <option
                                         value="{{$server->address}}" {{ old('server_ip') === $server->address || (!old('server_ip') && $inbound->server_ip === $server->address) ? 'selected' : '' }} >
@@ -130,7 +137,8 @@
                     <div id="delete_from_old_server_container" class="hidden">
                         <x-input-label for="delete_from_old_server" :value="__('Before adding this inbound
                                 into the new server, it can be deleted from the current server. Do you want to?')"/>
-                        <x-select-input id="delete_from_old_server" name="delete_from_old_server" class="mt-1 me-auto" disabled>
+                        <x-select-input id="delete_from_old_server" name="delete_from_old_server" class="mt-1 me-auto"
+                                        disabled>
                             <option
                                 value="0" {{old('delete_from_old_server') === '0' ? 'selected' : '' }}>
                                 No
@@ -199,8 +207,7 @@
                 if (selectedAddress !== currentServerAddress) {
                     selectInput.classList.remove('hidden');
                     selectInput.classList.add('visible');
-                }
-                else {
+                } else {
                     selectInput.classList.remove('visible');
                     selectInput.classList.add('hidden');
                 }
