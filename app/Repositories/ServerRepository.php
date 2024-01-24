@@ -29,6 +29,11 @@ class ServerRepository implements ServerRepositoryInterface
         return Server::paginate($count);
     }
 
+    public static function count(): int
+    {
+        return Server::count();
+    }
+
     public static function create(string $name, string $address, string $username, int $port, int $udp_port): Server
     {
         return Server::create([

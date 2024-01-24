@@ -43,7 +43,8 @@ function getSystemInfo() {
                 document.getElementById("diskUsage").innerText =
                     systemInfo.diskUsage;
                 document.getElementById("disk").innerText = systemInfo.disk;
-                document.getElementById("upTime").innerText = systemInfo.upTime;
+                document.getElementById("upTimeFull").innerText = systemInfo.upTime;
+                document.getElementById("upTime").innerText = extractTimeComponents(systemInfo.upTime);
             }
         })
         .catch((error) => {
@@ -116,6 +117,55 @@ function createProgressBar(id) {
     bar.text.style.fontSize = "2rem";
 
     return bar;
+}
+
+function extractTimeComponents(text) {
+    // Define regular expressions for weeks, days, hours, and minutes
+    const weeksRegex = /(\d+)\s*weeks?/;
+    const daysRegex = /(\d+)\s*days?/;
+    const hoursRegex = /(\d+)\s*hours?/;
+    const minutesRegex = /(\d+)\s*minutes?/;
+
+    // Initialize variables to store extracted values
+    let weeks = 0, days = 0, hours = 0, minutes = 0;
+
+    // Match and extract weeks
+    const weeksMatch = text.match(weeksRegex);
+    if (weeksMatch) {
+        weeks = parseInt(weeksMatch[1]);
+    }
+
+    // Match and extract days if weeks not present or weeks are zero
+    const daysMatch = text.match(daysRegex);
+    if (daysMatch) {
+        days = parseInt(daysMatch[1]);
+    }
+
+    // Match and extract hours if days not present
+    const hoursMatch = text.match(hoursRegex);
+    if (hoursMatch) {
+        hours = parseInt(hoursMatch[1]);
+    }
+
+    // Match and extract minutes if hours not present
+    const minutesMatch = text.match(minutesRegex);
+    if (minutesMatch) {
+        minutes = parseInt(minutesMatch[1]);
+    }
+
+    // Build the result string based on the extracted values
+    let result = "";
+    if (weeks > 0) {
+        result = `${weeks}00 week${weeks > 1 ? 's' : ''}`;
+    } else if (days > 0) {
+        result = `${days} day${days > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+        result = `${hours} hour${hours > 1 ? 's' : ''}`;
+    } else {
+        result = `${minutes} min${minutes > 1 ? 's' : ''}`;
+    }
+
+    return result;
 }
 
 addEventListener("load", (event) => {
