@@ -87,7 +87,7 @@
         </div>
     </div>
     @push('scripts')
-        <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="{{ asset('js/dashboard.js?v2') }}"></script>
     @endpush
 </x-app-layout>
 
