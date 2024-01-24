@@ -6,7 +6,7 @@
     "scope": "/",
     "start_url": "/",
     "name": "SSH Accounting Panel",
-    "short_name": "SSH Panel",
+    "short_name": "SAP",
     "icons": [
         {
             "src": "/img/icon-192x192.png",
