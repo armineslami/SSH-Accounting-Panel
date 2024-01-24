@@ -20,12 +20,16 @@ class InboundController extends BaseController
     {
         if ($id) {
             $inbound = InboundRepository::byId($id);
+
+            if (!$inbound) {
+                abort(404);
+            }
+
             $servers = ServerRepository::all();
 
             return view(
                 'inbound.update', ['inbound' =>
-                    !$inbound ?:
-                        Utils::convertExpireAtDateToActiveDays($inbound), 'servers' => $servers
+                    Utils::convertExpireAtDateToActiveDays($inbound), 'servers' => $servers
                 ]
             );
         }
