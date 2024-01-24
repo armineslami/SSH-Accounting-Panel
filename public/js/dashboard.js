@@ -156,7 +156,7 @@ function extractTimeComponents(text) {
     // Build the result string based on the extracted values
     let result = "";
     if (weeks > 0) {
-        result = `${weeks}00 week${weeks > 1 ? 's' : ''}`;
+        result = `${weeks} week${weeks > 1 ? 's' : ''}`;
     } else if (days > 0) {
         result = `${days} day${days > 1 ? 's' : ''}`;
     } else if (hours > 0) {
