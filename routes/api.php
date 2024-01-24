@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::post('/<token>/webhook', TelegramController::class)->name('telegram');
 
 

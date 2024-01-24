@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.tooltip {
+    @apply invisible absolute top-0 bottom-0 left-0 right-0;
+}
+
+.has-tooltip:hover .tooltip {
+    @apply visible z-50
+}
