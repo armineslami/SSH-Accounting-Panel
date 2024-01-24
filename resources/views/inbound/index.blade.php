@@ -4,10 +4,17 @@
             <h2 class="my-auto font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Inbounds') }}
             </h2>
-            <form class="my-auto mt-2 md:mt-0" method="get" action="{{ route('inbounds.search') }}" >
+            <form class="relative my-auto mt-2 md:mt-0" method="get" action="{{ route('inbounds.search') }}" >
                 @csrf
                 @method('get')
-                <x-text-input class="w-full text-md" name="query" type="text" placeholder="Search for inbound by username, server name or ip" :value="isset($query) ? $query : null" />
+                <x-text-input class="w-full text-sm md:text-md pe-8" name="query" type="text" placeholder="Search for inbound by username, server name or ip" :value="isset($query) ? $query : null" />
+                @if(isset($search_result))
+                    <span class="absolute right-3 top-1/4 cursor-pointer" onclick="window.location.href = '/inbounds'">
+                        <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6m0 12L6 6"/>
+                        </svg>
+                    </span>
+                @endif
             </form>
         </div>
     </x-slot>

@@ -11,7 +11,7 @@ class InboundRepository implements InboundRepositoryInterface
 {
     public static function byId($id): ?Inbound
     {
-        return Inbound::with("server")->find($id)->first();
+        return Inbound::with("server")->where('id', $id)->get()->first();
     }
 
     public static function all(): Collection
