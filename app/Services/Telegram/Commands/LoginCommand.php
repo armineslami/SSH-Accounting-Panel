@@ -46,7 +46,7 @@ class LoginCommand extends Command
 \n🅿️ *Port*: $server->port
 \n🅿️ *UDP Port*: $server->udp_port
 \n🔋 *Active*: " . ($inbound->is_active == "1" ? "👍🏻" : "👎🏻")
-."\n\n🚦 *Traffic*: " . (!isset($inbound->traffic_limit) ? "♾️" : ($inbound->traffic_limit - $inbound->remaining_traffic)."G / " . $inbound->traffic_limit. "G")
+."\n\n🚦 *Traffic*: " . (!isset($inbound->traffic_limit) ? "♾️" : (round($inbound->traffic_limit - $inbound->remaining_traffic, 2))."G / " . $inbound->traffic_limit. "G")
 ."\n\n⏳ *Remaining Days*: " . ($inbound->active_days == "" ? "♾️" : $inbound->active_days)
 ."\n\n📱 *Max Device*: $inbound->max_login",
                 'reply_markup' => Keyboard::simpleMarkupKeyboard(),
