@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "<span class='text-terminal-info'>Cleaning up your server</span>"
+echo "<span class='text-terminal-info'>Cleaning up the server</span>"
 
 cd ~/ssh-accounting-panel 2>&1 || exit;
 
@@ -22,15 +22,19 @@ fi
 
 cd ~ || exit
 
+echo "<span class='text-terminal-info'>Removing udp service</span>"
+
+systemctl disable ssh-accounting-panel-udp 2>&1
+systemctl stop ssh-accounting-panel-udp 2>&1
+
+echo "<span class='text-terminal-info'>Removing app files</span>"
+
 rm -rf ssh-accounting-panel/* 2>&1
 rm -rf /usr/local/bin/badvpn-udpgw 2>&1
 rm -rf /etc/systemd/system/ssh-accounting-panel-udp.service 2>&1
-systemctl disable ssh-accounting-panel-udp 2>&1
-systemctl stop ssh-accounting-panel-udp 2>&1
-systemctl daemon-reload
-deluser ssh-accounting-panel-udp 2>&1
 
-rm -rf /etc/security/limits.conf 2>&1
-touch /etc/security/limits.conf 2>&1
+systemctl daemon-reload
+
+deluser ssh-accounting-panel-udp 2>&1
 
 echo "<span class='text-terminal-success'>Server is deleted successfully</span>"
