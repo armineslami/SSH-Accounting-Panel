@@ -128,7 +128,7 @@
                 terminalBody.innerHTML = response.event.target.response;
                 setTimeout(() => {
                     terminalBody.scrollTop = terminalBody.scrollHeight;
-                }, 50);
+                }, 100);
             },
         })
             .then(response => {
