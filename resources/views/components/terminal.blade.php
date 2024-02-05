@@ -179,6 +179,6 @@
     }
 
     function escapeMessage() {
-        return "<p class='mt-2 text-terminal-warn'>Press ESC to exit</p>";
+        return "<p class='mt-2 text-terminal-warn'>Click or Press ESC to exit</p>";
     }
 </script>
