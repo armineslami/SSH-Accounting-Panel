@@ -23,7 +23,7 @@ class UpdateInboundRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|regex:/^[a-z0-9]+$/|unique:inbounds,username,'.$this->id.'|string|min:3|max:255',
+            'username' => 'required|regex:/^[a-z0-9]+$/|exists:inbounds,username|string|min:3|max:255',
             'user_password' => 'required|string|min:5|max:255',
             'is_active' => 'required|numeric|in:0,1',
             'traffic_limit' => 'nullable|numeric|min:0|max:1000',
