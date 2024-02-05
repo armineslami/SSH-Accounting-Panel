@@ -8,9 +8,6 @@ if [ -z "$udp_port" ]; then
     exit;
 fi
 
-mv /etc/security/limits.conf /etc/security/limits.conf.backup 2>&1
-touch /etc/security/limits.conf 2>&1
-
 ##############################
 #####  Install Packages  #####
 ##############################
@@ -122,5 +119,7 @@ useradd -m ssh-accounting-panel-udp 2>&1
 systemctl enable ssh-accounting-panel-udp 2>&1
 
 systemctl start ssh-accounting-panel-udp 2>&1
+
+systemctl daemon-reload
 
 echo "<span class='text-terminal-success'>Server is set and ready to use</span>"
