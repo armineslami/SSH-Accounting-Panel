@@ -132,7 +132,7 @@
             },
         })
             .then(response => {
-                console.log("Completed: ", response.data)
+                // console.log("Completed: ", response.data)
 
                 let error = undefined;
                 if (response.status !== 200) {
@@ -155,7 +155,7 @@
                 allowTerminalTerminate();
             })
             .catch(error => {
-                console.error("Error: ", error.response.data);
+                // console.error("Error: ", error.response.data);
 
                 try {
                     const err = JSON.parse(error.response.data)
