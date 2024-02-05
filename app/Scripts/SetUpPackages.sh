@@ -1,45 +1,44 @@
 #!/bin/bash
 
-createResponse() {
-    json_string="{ \"code\": \"$1\", \"message\": \"$2\" }";
-    echo "$json_string"
-}
-
 udp_port=$1
 export HOME=~
 
 if [ -z "$udp_port" ]; then
-    createResponse "0" "Failed to get udp port"
+    echo "<span class='text-terminal-error'>Failed to get udp port</span>"
     exit;
 fi
 
-mv /etc/security/limits.conf /etc/security/limits.conf.backup >/dev/null 2>&1
-touch /etc/security/limits.conf >/dev/null 2>&1
+mv /etc/security/limits.conf /etc/security/limits.conf.backup 2>&1
+touch /etc/security/limits.conf 2>&1
 
 ##############################
 #####  Install Packages  #####
 ##############################
 
+echo "<span class='text-terminal-info'>Installing/Updating packages</span>"
+
 if [ -x "$(command -v apt-get)" ]; then
     # Debian/Ubuntu
-    DEBIAN_FRONTEND=noninteractive apt-get -y update > /dev/null 2>&1
-    apt-get -y install nethogs golang bc coreutils cmake git >/dev/null 2>&1
+    DEBIAN_FRONTEND=noninteractive apt-get -y update 2>&1
+    apt-get -y install nethogs golang bc coreutils cmake git 2>&1
     DEBIAN_FRONTEND=interactive >/dev/null 2>&1
 else
-    createResponse "0" "Unsupported OS"
+    echo "<span class='text-terminal-error'>Unsupported OS</span>"
 fi
 
 #############################
 #####  Nethogs Cron Job #####
 #############################
 
-cd ~/ssh-accounting-panel > /dev/null 2>&1 || exit
+echo "<span class='text-terminal-info'>Adding cron jobs</span>"
 
-chmod +x nethogs.sh > /dev/null 2>&1
+cd ~/ssh-accounting-panel 2>&1 || exit
+
+chmod +x nethogs.sh 2>&1
 
 #wget -O hogs.go https://raw.githubusercontent.com/boopathi/nethogs-parser/master/hogs.go >/dev/null 2>&1
 
-go build -o hogs hogs.go > /dev/null 2>&1
+go build -o hogs hogs.go 2>&1
 
 #sudo rm -f hogs.go
 
@@ -69,16 +68,18 @@ sh "$(pwd)/killExtraSession.sh"
 #####  BadVPN For UDP #####
 ###########################
 
-git clone https://github.com/ambrop72/badvpn.git ~/ssh-accounting-panel/badvpn >/dev/null 2>&1
+echo "<span class='text-terminal-info'>Setting up udp port</span>"
 
-mkdir -p ~/ssh-accounting-panel/badvpn/badvpn-build >/dev/null 2>&1
+git clone https://github.com/ambrop72/badvpn.git ~/ssh-accounting-panel/badvpn 2>&1
+
+mkdir -p ~/ssh-accounting-panel/badvpn/badvpn-build 2>&1
 
 if [ ! -d ~/ssh-accounting-panel/badvpn/badvpn-build ]; then
-    createResponse "0" "Failed to create required directory for badvpn"
+    echo "<span class='text-terminal-error'>Failed to create required directory for badvpn</span>"
     exit;
 fi
 
-cd  ~/ssh-accounting-panel/badvpn/badvpn-build > /dev/null 2>&1 || exit
+cd  ~/ssh-accounting-panel/badvpn/badvpn-build 2>&1 || exit
 
 temp_output=$(mktemp)
 
@@ -93,15 +94,15 @@ cmake_result=$(<"$temp_output")
 rm "$temp_output"
 
 if ! grep -q "Configuring done" <<< "$cmake_result"; then
-    createResponse "0" "Failed to run cmake"
+    echo "<span class='text-terminal-error'>Failed to run cmake</span>"
     exit;
 fi
 
-make >/dev/null 2>&1 &
+make 2>&1 &
 
 wait
 
-cp udpgw/badvpn-udpgw /usr/local/bin >/dev/null 2>&1
+cp udpgw/badvpn-udpgw /usr/local/bin 2>&1
 
 cat >  /etc/systemd/system/ssh-accounting-panel-udp.service << ENDOFFILE
 [Unit]
@@ -116,10 +117,10 @@ User=ssh-accounting-panel-udp
 WantedBy=multi-user.target
 ENDOFFILE
 
-useradd -m ssh-accounting-panel-udp >/dev/null 2>&1
+useradd -m ssh-accounting-panel-udp 2>&1
 
-systemctl enable ssh-accounting-panel-udp >/dev/null 2>&1
+systemctl enable ssh-accounting-panel-udp 2>&1
 
-systemctl start ssh-accounting-panel-udp >/dev/null 2>&1
+systemctl start ssh-accounting-panel-udp 2>&1
 
-createResponse "1" "Server is ready."
+echo "<span class='text-terminal-success'>Server is set and ready to use</span>"

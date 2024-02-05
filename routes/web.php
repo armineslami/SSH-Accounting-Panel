@@ -5,6 +5,7 @@ use App\Http\Controllers\InboundController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TerminalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,6 +49,7 @@ Route::middleware('auth')->group(function () {
 //    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/api/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::post("/api/terminal", TerminalController::class)->name('terminal');
 });
 
 require __DIR__ . '/auth.php';

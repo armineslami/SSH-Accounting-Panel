@@ -1,19 +1,17 @@
 #!/bin/bash
 
-# Create a json string
-createResponse() {
-    json_string="{ \"code\": \"$1\", \"message\": \"$2\" }";
-    echo "$json_string"
-}
-
 # Check if user exists
 if ! grep -q "^$USERNAME:" /etc/passwd; then
-    createResponse "1" "Successful"
+    echo "<span class='text-terminal-error'>Inbound not found</span>"
     exit
 fi
 
+echo "<span class='text-terminal-info'>Logging out the inbound</span>"
+
 # Force logout
 sudo pkill -KILL -u "$USERNAME" > /dev/null 2>&1
+
+echo "<span class='text-terminal-info'>Deleting the inbound</span>"
 
 # Delete the user
 sudo deluser "$USERNAME" > /dev/null 2>&1
@@ -27,4 +25,4 @@ if [ -n "$line_number" ]; then
     sed -i "${line_number}d" "$file_name" > /dev/null 2>&1
 fi
 
-createResponse "1" "Successful"
+echo "<span class='text-terminal-success'>Inbound is deleted successfully</span>"
