@@ -7,17 +7,17 @@
 
     <div class="py-8">
         <div class="px-0 sm:px-8">
-            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">
-                @if (session('status') === 'server-updated')
-                    <span
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition
-                        x-init="setTimeout(() => show = false, 10000)"
-                        class="text-sm text-green-600 dark:text-green-400"
-                    >{{ __('Server Successfully Updated.') }}</span>
-                @endif
-            </div>
+{{--            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">--}}
+{{--                @if (session('status') === 'server-updated')--}}
+{{--                    <span--}}
+{{--                        x-data="{ show: true }"--}}
+{{--                        x-show="show"--}}
+{{--                        x-transition--}}
+{{--                        x-init="setTimeout(() => show = false, 10000)"--}}
+{{--                        class="text-sm text-green-600 dark:text-green-400"--}}
+{{--                    >{{ __('Server Successfully Updated.') }}</span>--}}
+{{--                @endif--}}
+{{--            </div>--}}
 
             <div class="p-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <header>
@@ -43,13 +43,13 @@
 
                         <div>
                             <x-input-label for="username" :value="__('*Username')" />
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" :value="old('username', $server->username)" required readonly/>
+                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-300 dark:text-gray-700" :value="old('username', $server->username)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
                         <div>
                             <x-input-label for="address" :value="__('*Address (IP V4)')" />
-                            <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $server->address)" required autofocus/>
+                            <x-text-input id="address" name="address" type="text" class="mt-1 block w-full  text-gray-300 dark:text-gray-700" :value="old('address', $server->address)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('address')" />
                         </div>
 
@@ -61,8 +61,8 @@
 
                         <div>
                             <x-input-label for="udp_port" :value="__('*UDP Port')"/>
-                            <x-text-input id="udp_port" name="udp_port" type="number" class="mt-1 block w-full"
-                                          :value="old('udp_port', 7300)" disabled autofocus/>
+                            <x-text-input id="udp_port" name="udp_port" type="number" class="mt-1 block w-full  text-gray-300 dark:text-gray-700"
+                                          :value="old('udp_port', 7300)" readonly autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('udp_port')"/>
                         </div>
                     </div>
@@ -101,6 +101,8 @@
                         </div>
                     </form>
                 </x-modal>
+
+                <x-terminal name="terminal" :token="session('terminal_session_token') ?? null" :show="!is_null(session('terminal_session_token'))" focusable/>
             </div>
         </div>
     </div>

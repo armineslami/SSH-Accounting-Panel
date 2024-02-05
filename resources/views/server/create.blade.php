@@ -7,25 +7,25 @@
 
     <div class="py-8">
         <div class="px-0 sm:px-8">
-            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">
-                @if (session('status') === 'server-created')
-                    <span
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition
-                        x-init="setTimeout(() => show = false, 10000)"
-                        class="text-sm text-green-600 dark:text-green-400 me-4"
-                    >{{ __('Server Successfully Created.') }}</span>
-                @endif
-                @if (session('status') === 'server-not-created')
-                    <span
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition
-                        class="text-sm text-red-600 dark:text-red-400 me-4"
-                    >{{ __('Failed to create new server') . (session('message') ? ' : ' .session('message') : '.') }}</span>
-                @endif
-            </div>
+{{--            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">--}}
+{{--                @if (session('status') === 'server-created')--}}
+{{--                    <span--}}
+{{--                        x-data="{ show: true }"--}}
+{{--                        x-show="show"--}}
+{{--                        x-transition--}}
+{{--                        x-init="setTimeout(() => show = false, 10000)"--}}
+{{--                        class="text-sm text-green-600 dark:text-green-400 me-4"--}}
+{{--                    >{{ __('Server Successfully Created.') }}</span>--}}
+{{--                @endif--}}
+{{--                @if (session('status') === 'server-not-created')--}}
+{{--                    <span--}}
+{{--                        x-data="{ show: true }"--}}
+{{--                        x-show="show"--}}
+{{--                        x-transition--}}
+{{--                        class="text-sm text-red-600 dark:text-red-400 me-4"--}}
+{{--                    >{{ __('Failed to create new server') . (session('message') ? ' : ' .session('message') : '.') }}</span>--}}
+{{--                @endif--}}
+{{--            </div>--}}
 
             <div class="p-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <header>
@@ -43,7 +43,7 @@ used to establish a SSH connection to the remote server. When you click the 'cre
 the public key of this app will be copied to your remote server in order to perform future operations like creating inbound,
 without requiring you to enter the password again. This way the password of your server will not be stored on the database.
 Then a folder named " }}<b>{{ "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory which includes
-multiple files required by this panel." }}
+multiple files required by this app." }}
                     </p>
                 </header>
 
@@ -99,20 +99,14 @@ multiple files required by this panel." }}
                         </div>
                     </div>
 
-                    <p class="text-justify text-sm text-gray-900 dark:text-gray-100">
-                        {{ "⚠️ Adding a server may take some time to finish and if you want to make this process shorter,
-you can update packages list and then install the following packages on your server manually:" }}
-                    </p>
-                    <span class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                        {{ "nethogs golang bc coreutils cmake git" }}
-                    </span>
-
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">
                             <x-primary-button>{{ __('Create') }}</x-primary-button>
                         </div>
                     </div>
                 </form>
+
+                <x-terminal name="terminal" :token="session('terminal_session_token') ?? null" :show="!is_null(session('terminal_session_token'))" focusable/>
             </div>
         </div>
     </div>

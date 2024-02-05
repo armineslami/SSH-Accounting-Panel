@@ -11,9 +11,18 @@ export default {
 
     theme: {
         extend: {
+            colors : {
+                "terminal-info": "#38bdf8",
+                "terminal-error": "#ef4444",
+                "terminal-success": "#22c55e",
+                "terminal-warn": "#fbbf24"
+            },
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
             },
+            fontSize: {
+                "2xs": "0.6rem"
+            }
         },
     },
 

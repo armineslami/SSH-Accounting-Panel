@@ -14,6 +14,11 @@ class InboundRepository implements InboundRepositoryInterface
         return Inbound::with("server")->where('id', $id)->get()->first();
     }
 
+    public static function byUsername($username): ?Inbound
+    {
+        return Inbound::with("server")->where('username', $username)->get()->first();
+    }
+
     public static function all(): Collection
     {
         return Inbound::all();

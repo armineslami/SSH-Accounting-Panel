@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 interface InboundRepositoryInterface
 {
     public static function byId($id): ?Inbound;
+    public static function byUsername($username): ?Inbound;
     public static function all(): Collection;
     public static function paginate($count = 20): LengthAwarePaginator;
     public static function count(): int;

@@ -7,22 +7,24 @@ use App\Http\Requests\UpdateInboundRequest;
 use App\Repositories\InboundRepository;
 use App\Repositories\ServerRepository;
 use App\Repositories\SettingRepository;
+use App\Repositories\TerminalSessionRepository;
+use App\Services\Terminal\Command\Command;
 use App\Utils\Utils;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class InboundController extends BaseController
 {
-    public function __invoke($id = null): View
+    public function __invoke($id = null): View|RedirectResponse
     {
         if ($id) {
             $inbound = InboundRepository::byId($id);
 
             if (!$inbound) {
-                abort(404);
+//                abort(404);
+                return Redirect::route('inbounds.index');
             }
 
             $servers = ServerRepository::all();
@@ -48,114 +50,85 @@ class InboundController extends BaseController
 
     public function store(CreateInboundRequest $request): RedirectResponse
     {
-        $request->validated();
+        $validatedRequest   = $request->validated();
+        $server             = ServerRepository::byAddress($request->server_ip);
+        $req                = array_merge(["inbound" => $validatedRequest], ["server" => $server]);
 
-        $server = ServerRepository::byAddress($request->server_ip);
-
-        try {
-            $result = Utils::executeShellCommand(
-                "app/Scripts/Main.sh -action CreateUser -username ".$request->username." -password ".$request->user_password." -is_active ".$request->is_active." -max_login ".$request->max_login. ($request->active_days ? " -active_days ".$request->active_days : ''). ($request->traffic_limit ? " -traffic_limit ".$request->traffic_limit : '')." -server_ip ".$server->address." -server_port ".$server->port." -server_username ".$server->username
-            );
-
-            $redirect = $this->redirectIfFailed(to: 'inbounds.create', status: 'inbound-not-created', response: $result);
-
-            if (!is_null($redirect))
-                return $redirect;
-        } catch (\ErrorException $error) {
-            return Redirect::route('inbounds.create')->with('status', 'inbound-not-created')->withInput();
-        }
-
-        InboundRepository::create(
-            username: $request->username,
-            password: $request->user_password,
-            is_active: $request->is_active,
-            traffic_limit: $request->traffic_limit ?? null,
-            remaining_traffic: $request->traffic_limit ?? null,
-            max_login: $request->max_login,
-            server_ip: $request->server_ip,
-            expires_at: $request->active_days ? Carbon::now()->addDays($request->active_days) : null
+        $terminalSession = TerminalSessionRepository::create(
+            token: Utils::generateRandomString(),
+            followUpToken: null,
+            command: Command::CREATE_INBOUND,
+            request: json_encode($req, true)
         );
 
-        return Redirect::route('inbounds.create')->with('status', 'inbound-created');
+        return Redirect::route('inbounds.create')->withInput()->with([
+            'status', 'terminal-session-created',
+            'terminal_session_token' => $terminalSession->token
+        ]);
     }
 
     public function update(int $id, UpdateInboundRequest $request): RedirectResponse
     {
-        $validated_inbound = $request->validated();
-        $validated_inbound['expires_at'] = Utils::convertActiveDaysToExpireAtDate($request->active_days);
-        if ($validated_inbound['traffic_limit'] < $validated_inbound['remaining_traffic']) {
-            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
-        }
-        else if (isset($validated_inbound['traffic_limit']) && !isset($validated_inbound['remaining_traffic'])) {
-            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
-        }
-        else if (isset($validated_inbound['remaining_traffic']) && !isset($validated_inbound['traffic_limit'])) {
-            $validated_inbound['remaining_traffic'] = $validated_inbound['traffic_limit'];
-        }
+        $validatedRequest           = $request->validated();
+        $inbound                    = InboundRepository::byId($id);
+        $validatedRequest["server"] = $inbound->server;
+        $server                     = ServerRepository::byAddress($request->server_ip);
+        $req                        = array_merge(["inbound" => $validatedRequest], ["server" => $server]);
+        $req["id"]                  = $id;
 
-        $inbound    = InboundRepository::byId($id);
-        $server     = ServerRepository::byAddress($request->server_ip);
-        $action     = $inbound && $inbound->server_ip != $request->server_ip ? "CreateUser" : "UpdateUser";
-
-        try {
-            /**
-             * If the server ip is changed for the inbound, we should create this user on the new server
-             * and delete it from the old server. But if the server ip is not changed, just update the user on
-             * the old server.
-             */
-            if ($request->delete_from_old_server === '1') {
-                $action = "CreateUser";
-                $result = Utils::executeShellCommand(
-                    "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$inbound->server->address." -server_port ".$inbound->server->port." -server_username ".$inbound->server->username
-                );
-
-                $redirect = $this->redirectIfFailed(to: 'inbounds.update', status: 'inbound-not-updated', response: $result, id: $id);
-
-                if (!is_null($redirect))
-                    return $redirect;
-            }
-
-            $result = Utils::executeShellCommand(
-                "app/Scripts/Main.sh -action ".$action." -username ".$request->username." -password ".$request->user_password." -is_active ".$request->is_active." -max_login ".$request->max_login. ($request->active_days ? " -active_days ".$request->active_days : ''). ($request->traffic_limit ? " -traffic_limit ".$request->traffic_limit : '')." -server_ip ".$server->address." -server_port ".$server->port." -server_username ".$server->username
+        /**
+         * If the server ip is changed for the inbound, we should create this user on the new server
+         * and delete it from the old server. But if the server ip is not changed, just update the user on
+         * the old server.
+         */
+        if ($request->delete_from_old_server === '1') {
+            $updateSession = TerminalSessionRepository::create(
+                token: Utils::generateRandomString(),
+                followUpToken: null,
+                command: Command::UPDATE_INBOUND,
+                request: json_encode($req, true)
             );
 
-            $redirect = $this->redirectIfFailed(to: 'inbounds.update', status: 'inbound-not-updated', response: $result, id: $id);
-
-            if (!is_null($redirect))
-                return $redirect;
-
-        } catch (\ErrorException $error) {
-            return Redirect::route('inbounds.update', $id)->with('status', 'inbound-not-updated')->withInput();
+            $terminalSession = TerminalSessionRepository::create(
+                token: Utils::generateRandomString(),
+                followUpToken: $updateSession->token,
+                command: Command::DELETE_INBOUND,
+                request: json_encode($req, true)
+            );
+        }
+        else {
+            $terminalSession = TerminalSessionRepository::create(
+                token: Utils::generateRandomString(),
+                followUpToken: null,
+                command: Command::UPDATE_INBOUND,
+                request: json_encode($req, true)
+            );
         }
 
-        InboundRepository::update(
-            $id,
-            $validated_inbound
-        );
-        return Redirect::route('inbounds.update', $id)->with('status', 'inbound-updated');
+
+        return Redirect::route('inbounds.update', $id)->withInput()->with([
+            'status', 'terminal-session-created',
+            'terminal_session_token' => $terminalSession->token
+        ]);
     }
 
     public function destroy(int $id): RedirectResponse
     {
-        $inbound = InboundRepository::byId($id);
+        $inbound    = InboundRepository::byId($id);
+        $req        = array_merge(["inbound" => $inbound], ["server" => $inbound->server]);
+        $req["id"]  = $id;
 
-        try {
-            $result = Utils::executeShellCommand(
-                "app/Scripts/Main.sh -action DeleteUser -username ".$inbound->username." -server_ip ".$inbound->server->address." -server_port ".$inbound->server->port." -server_username ".$inbound->server->username
-            );
+        $terminalSession = TerminalSessionRepository::create(
+            token: Utils::generateRandomString(),
+            followUpToken: null,
+            command: Command::DELETE_INBOUND,
+            request: json_encode($req, true)
+        );
 
-            $redirect = $this->redirectIfFailed(to: 'inbounds.update', status: 'inbound-not-deleted', response: $result, id: $id);
-
-            if (!is_null($redirect))
-                return $redirect;
-
-        } catch (\ErrorException $error) {
-            return Redirect::route('inbounds.update', $id)->with('status', 'inbound-not-deleted')->withInput();
-        }
-
-        InboundRepository::deleteById($id);
-
-        return Redirect::route('inbounds.index')->with('status', 'inbound-deleted');
+        return Redirect::route('inbounds.update', $id)->withInput()->with([
+            'status', 'terminal-session-created',
+            'terminal_session_token' => $terminalSession->token
+        ]);
     }
 
     public function search(Request $request): View

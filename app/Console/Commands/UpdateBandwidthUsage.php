@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Inbound;
+use App\Models\Server;
+use App\Repositories\InboundRepository;
 use App\Repositories\ServerRepository;
 use App\Utils\Utils;
 use Illuminate\Console\Command;
@@ -39,13 +41,15 @@ class UpdateBandwidthUsage extends Command
         $response = [];
 
         foreach ($servers as $server) {
-            $result = Utils::executeShellCommand(
-                "app/Scripts/Main.sh -action Bandwidth -server_ip " . $server->address . " -server_port " . $server->port . " -server_username " . $server->username
-            );
+            $result = self::bandwidth($server);
+
+            if (!$result) {
+                continue;
+            }
 
             $json = json_decode($result, true);
 
-            if ($result && isset($json['code']) && $json['code'] === '1') {
+            if (isset($json['code']) && $json['code'] === '1') {
                 $response[$server->name]['code'] = $json['code'];
                 $response[$server->name]['message'] = $json['message'];
                 $response[$server->name]['users'] = $json['users'];
@@ -56,7 +60,8 @@ class UpdateBandwidthUsage extends Command
 
         $collection->each(function ($server, $serverName) {
             collect($server['users'])->each(function ($data, $username) {
-                $inbound = Inbound::where("username", $username)->first();
+//                $inbound = Inbound::where("username", $username)->first();
+                $inbound = InboundRepository::byUsername($username);
 
                 /**
                  * If an inbound is found and if it's traffic limit is not null which means unlimited,
@@ -76,19 +81,70 @@ class UpdateBandwidthUsage extends Command
 //                        . "' and remaining is: " . $inbound->remaining_traffic . " GB.";
 
                     // Deactivate the inbound if the remaining traffic is <= 0
-                    if ($inbound->remaining_traffic <= 0) {
+                    if ($inbound->remaining_traffic <= 0 && !is_null($inbound->server)) {
                         $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
-                        $server = ServerRepository::byAddress($inbound->server_ip);
-                        Utils::executeShellCommand(
-                            "app/Scripts/Main.sh -action UpdateUser -username " . $inbound->username .
-                            " -password " . $inbound->password . " -is_active " . $inbound->is_active . " -max_login "
-                            . $inbound->max_login . ($inbound->active_days ? " -active_days " . $inbound->active_days : '') .
-                            ($inbound->traffic_limit ? " -traffic_limit " . $inbound->traffic_limit : '')
-                            . " -server_ip " . $server->address . " -server_port " . $server->port . " -server_username " . $server->username
-                        );
+                        self::updateInbound($inbound, 0);
                     }
                 }
             });
         });
+    }
+
+    private static function bandwidth(Server $server): string|false|null
+    {
+        $script     = self::script(\App\Services\Terminal\Command\Command::BANDWIDTH);
+        $key        = self::key();
+        $ip         = self::ip();
+
+        if (is_null($ip)) {
+            return null;
+        }
+
+        if ($ip == $server->address) {
+            $result = "bash -s < $script 2>&1";
+        }
+        else {
+            $result = shell_exec("sudo ssh -i $key -p $server->port $server->username@$server->address 'bash -s' < $script 2>&1");
+        }
+
+        return $result;
+    }
+
+    private static function updateInbound(Inbound $inbound, int $retryCount): void
+    {
+        $script     = self::script(\App\Services\Terminal\Command\Command::UPDATE_INBOUND);
+        $key        = self::key();
+        $ip         = self::ip();
+
+        if (is_null($ip)) {
+            sleep(5);
+            if ($retryCount < 3) {
+                self::updateInbound($inbound, $retryCount+1);
+            }
+        }
+
+        if ($ip == $inbound->server->address) {
+            $command = "USERNAME={$inbound->username} PASSWORD={$inbound->user_password} IS_ACTIVE={$inbound->is_active} MAX_LOGIN={$inbound->max_login} ACTIVE_DAYS={$inbound->active_days} TRAFFIC_LIMIT={$inbound->traffic_limit} $script 2>&1";
+        }
+        else {
+            $command = "sudo ssh -o StrictHostKeyChecking=accept-new -i {$key} -p {$inbound->server->port} {$inbound->server->username}@{$inbound->server->address} 'export USERNAME={$inbound->username}; export PASSWORD={$inbound->password}; export IS_ACTIVE={$inbound->is_active}; export MAX_LOGIN={$inbound->max_login}; export ACTIVE_DAYS={$inbound->active_days}; export TRAFFIC_LIMIT={$inbound->traffic_limit}; bash -s' < {$script} 2>&1";
+        }
+
+        shell_exec($command);
+    }
+
+    private static function script(string $command): string
+    {
+        return base_path("app/Scripts/".$command.".sh");
+    }
+
+    private static function ip(): string|null|false
+    {
+        return shell_exec("curl -s ipv4.icanhazip.com");
+    }
+
+    private static function key(): string
+    {
+        return base_path("storage/keys/ssh_accounting_panel");
     }
 }
