@@ -94,6 +94,11 @@ class TerminalService
         $scriptDir  = self::scriptDir();
         $key        = self::keyPath();
         $localIp    = self::ipv4();
+
+        if (is_null($request->server)) {
+            return null;
+        }
+
         $serverIp   = $request->server->address;
 
         if (is_null($localIp)) {
