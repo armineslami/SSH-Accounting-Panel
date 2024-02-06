@@ -1,7 +1,7 @@
 let cpuBar = undefined;
 let memoryBar = undefined;
 let swapBar = undefined;
-let disk = undefined;
+let diskBar = undefined;
 
 function getSystemInfo() {
     axios

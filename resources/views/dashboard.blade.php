@@ -71,23 +71,23 @@
                     <div class="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-4">
                         <div class="p-4">
                             <div id="cpuProgressBar"></div>
-                            <p class="pt-12 font-medium text-gray-900 dark:text-gray-100 text-center">CPU</p>
+                            <p class="pt-12 font-bold text-gray-900 dark:text-gray-100 text-center">CPU</p>
                             <p class="pt-2 font-bold text-gray-900 dark:text-gray-100 text-center"><span>-</span></p>
                         </div>
                         <div class="p-4">
                             <div id="memoryProgressBar"></div>
-                            <p class="pt-12 font-light text-gray-900 dark:text-gray-100 text-center">Memory</p>
-                            <p class="pt-2 font-bold text-gray-900 dark:text-gray-100 text-center"><span id="memoryUsage">0</span> / <span id="memory">0</span></p>
+                            <p class="pt-12 font-bold text-gray-900 dark:text-gray-100 text-center">Memory</p>
+                            <p class="pt-2 font-light text-gray-900 dark:text-gray-100 text-center"><span id="memoryUsage">0</span> / <span id="memory">0</span></p>
                         </div>
                         <div class="p-4">
                             <div id="swapProgressBar"></div>
-                            <p class="pt-12 font-medium text-gray-900 dark:text-gray-100 text-center">Swap</p>
-                            <p class="pt-2 font-bold text-gray-900 dark:text-gray-100 text-center"><span id="swapUsage">0</span> / <span id="swap">0</span></p>
+                            <p class="pt-12 font-bold text-gray-900 dark:text-gray-100 text-center">Swap</p>
+                            <p class="pt-2 font-light text-gray-900 dark:text-gray-100 text-center"><span id="swapUsage">0</span> / <span id="swap">0</span></p>
                         </div>
                         <div class="p-4">
                             <div id="diskProgressBar"></div>
-                            <p class="pt-12 font-medium text-gray-900 dark:text-gray-100 text-center">Disk</p>
-                            <p class="pt-2 font-bold text-gray-900 dark:text-gray-100 text-center"><span id="diskUsage">0</span> / <span id="disk">0</span></p>
+                            <p class="pt-12 font-bold text-gray-900 dark:text-gray-100 text-center">Disk</p>
+                            <p class="pt-2 font-light text-gray-900 dark:text-gray-100 text-center"><span id="diskUsage">0</span> / <span id="disk">0</span></p>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
         </div>
     </div>
     @push('scripts')
-        <script src="{{ asset('js/dashboard.js?v2.3') }}"></script>
+        <script src="{{ asset('js/dashboard.js?v2.4') }}"></script>
     @endpush
 </x-app-layout>
 
