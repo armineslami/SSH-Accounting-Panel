@@ -86,6 +86,10 @@ function convertMbToGb(number) {
 }
 
 function createProgressBar(id) {
+    const screenWidth = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+
     let bar = new ProgressBar.SemiCircle(id, {
         strokeWidth: 4,
         color: "#22c55e",
@@ -114,7 +118,7 @@ function createProgressBar(id) {
         },
     });
     bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
-    bar.text.style.fontSize = "2rem";
+    bar.text.style.fontSize = screenWidth < 375 ? "1.3rem" : (screenWidth < 414 ? "1.6rem" : "1.9");
 
     return bar;
 }
