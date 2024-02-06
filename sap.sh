@@ -510,7 +510,9 @@ ENDOFFILE
     grep -wq "alias $cli_command" /root/.bashrc || echo "$alias_command" >> /root/.bashrc
 
     # Apply the changes
-    source /root/.bashrc > /dev/null 2>&1
+#    source /root/.bashrc > /dev/null 2>&1
+    #see: https://askubuntu.com/a/1041348/1710858
+    eval "$(cat /root/.bashrc | tail -n +10)"
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
