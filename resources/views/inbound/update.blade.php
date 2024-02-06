@@ -195,10 +195,11 @@
         addEventListener("load", (event) => {
             const serverAddressElement = document.getElementById("server_ip");
             const selectInput = document.getElementById("delete_from_old_server_container");
-            const currentServerAddress = document.getElementById("current_server_address").textContent;
             const selectedServerAddress = serverAddressElement.value
+            const currentServerAddressElement = document.getElementById("current_server_address");
+            const currentServerAddress = currentServerAddressElement ? currentServerAddressElement.textContent : null;
 
-            if (selectedServerAddress !== currentServerAddress) {
+            if (currentServerAddress && selectedServerAddress !== currentServerAddress) {
                 selectInput.classList.remove('hidden');
                 selectInput.classList.add('visible');
             }
@@ -206,7 +207,7 @@
             serverAddressElement.addEventListener("change", function () {
                 const selectedAddress = this.value;
 
-                if (selectedAddress !== currentServerAddress) {
+                if (currentServerAddress && selectedAddress !== currentServerAddress) {
                     selectInput.classList.remove('hidden');
                     selectInput.classList.add('visible');
                 } else {
