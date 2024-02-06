@@ -46,6 +46,7 @@ function getSystemInfo() {
                 document.getElementById("upTimeFull").innerText = systemInfo.upTime;
                 document.getElementById("upTime").innerText = extractTimeComponents(systemInfo.upTime);
             }
+            cpuBar.animate(100 / 100);
         })
         .catch((error) => {
             // console.error(error);
@@ -86,10 +87,6 @@ function convertMbToGb(number) {
 }
 
 function createProgressBar(id) {
-    const screenWidth = window.innerWidth
-        || document.documentElement.clientWidth
-        || document.body.clientWidth;
-
     let bar = new ProgressBar.SemiCircle(id, {
         strokeWidth: 4,
         color: "#22c55e",
@@ -118,7 +115,7 @@ function createProgressBar(id) {
         },
     });
     bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
-    bar.text.style.fontSize = screenWidth < 375 ? "1.3rem" : (screenWidth < 414 ? "1.6rem" : "1.9");
+    bar.text.style.fontSize = progressbarFontSize();
 
     return bar;
 }
@@ -170,6 +167,21 @@ function extractTimeComponents(text) {
     }
 
     return result;
+}
+
+function progressbarFontSize() {
+    const screenWidth = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+
+    switch (true) {
+        case screenWidth < 375:
+            return "1.3rem";
+        case screenWidth < 414:
+            return "1.6rem";
+        default:
+            return "1.9rem";
+    }
 }
 
 addEventListener("load", (event) => {

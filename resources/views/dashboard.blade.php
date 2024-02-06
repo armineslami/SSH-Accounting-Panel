@@ -91,7 +91,7 @@
         </div>
     </div>
     @push('scripts')
-        <script src="{{ asset('js/dashboard.js?v2.1') }}"></script>
+        <script src="{{ asset('js/dashboard.js?v2.2') }}"></script>
     @endpush
 </x-app-layout>
 
