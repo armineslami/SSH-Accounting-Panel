@@ -46,7 +46,6 @@ function getSystemInfo() {
                 document.getElementById("upTimeFull").innerText = systemInfo.upTime;
                 document.getElementById("upTime").innerText = extractTimeComponents(systemInfo.upTime);
             }
-            cpuBar.animate(100 / 100);
         })
         .catch((error) => {
             // console.error(error);
