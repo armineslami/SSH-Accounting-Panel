@@ -126,14 +126,11 @@
             onDownloadProgress: function (response) {
                 // console.log("Response => ", response);
                 terminalBody.innerHTML = response.event.target.response;
-                setTimeout(() => {
-                    terminalBody.scrollTop = terminalBody.scrollHeight;
-                }, 100);
+                terminalBody.scrollTop = terminalBody.scrollHeight;
             },
         })
             .then(response => {
-                // console.log("Completed: ", response.data)
-
+                // console.log("Completed: ", response)
                 let error = undefined;
                 if (response.status !== 200) {
                     try {
@@ -152,7 +149,10 @@
                 }
 
                 terminalBody.innerHTML += escapeMessage();
+
                 allowTerminalTerminate();
+
+                terminalBody.scrollTop = terminalBody.scrollHeight;
             })
             .catch(error => {
                 // console.error("Error: ", error.response.data);
