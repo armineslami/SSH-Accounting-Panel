@@ -50,7 +50,7 @@
                     @csrf
                     @method('patch')
 
-                    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <div>
                             <x-input-label for="username" :value="__('*Username')"/>
                             <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-300 dark:text-gray-700"
@@ -58,10 +58,18 @@
                             <x-input-error class="mt-2" :messages="$errors->get('username')"/>
                         </div>
 
-                        <div>
+                        <div class="relative">
                             <x-input-label for="user_password" :value="__('*Password')"/>
                             <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full"
                                           :value="old('user_password', $inbound->password)" autofocus/>
+                            <span
+                                class="absolute right-3 top-8 cursor-pointer"
+                                x-data
+                                x-on:click="generate()">
+                                <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
+                                    {{ __('Generate') }}
+                                </span>
+                            </span>
                             <x-input-error class="mt-2" :messages="$errors->get('user_password')"/>
                         </div>
 
@@ -216,5 +224,19 @@
                 }
             });
         });
+
+        function generate() {
+            const length = 8;
+            let result = '';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < length) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+            const passwordInput = document.getElementById("user_password");
+            passwordInput.value = result;
+        }
     </script>
 </x-app-layout>

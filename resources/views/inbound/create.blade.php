@@ -43,14 +43,14 @@
                     @csrf
                     @method('post')
 
-                    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <div>
                             <x-input-label for="username" :value="__('*Username')" />
                             <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" :value="old('username')" required autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
-                        <div class="relative my-auto mt-2 md:mt-0">
+                        <div class="relative">
                             <x-input-label for="user_password" :value="__('*Password')" />
                             <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full pe-20" :value="old('user_password')" required autofocus />
                             <span
