@@ -22,6 +22,6 @@ class DashboardController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(['systemInfo' => SystemInfo::first()]);
+        return response()->json(['systemInfo' => SystemInfo::latest('id')->first()]);
     }
 }

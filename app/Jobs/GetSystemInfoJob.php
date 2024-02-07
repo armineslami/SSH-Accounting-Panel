@@ -32,13 +32,8 @@ class GetSystemInfoJob implements ShouldQueue
         $output = shell_exec($command);
         $systemInfoArray = json_decode($output);
 
-        // Get the only row of data from database
-        $lastSystemInfo = SystemInfo::first();
-
         // Always delete old data because we only need one row of data in the database
-        if ($lastSystemInfo) {
-            $lastSystemInfo->delete();
-        }
+        SystemInfo::truncate();
 
         // Create a new model and add it to the database
         SystemInfo::create([
