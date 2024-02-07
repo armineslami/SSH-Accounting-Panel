@@ -50,9 +50,17 @@
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
-                        <div>
+                        <div class="relative my-auto mt-2 md:mt-0">
                             <x-input-label for="user_password" :value="__('*Password')" />
-                            <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full" :value="old('user_password')" required autofocus />
+                            <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full pe-20" :value="old('user_password')" required autofocus />
+                            <span
+                                class="absolute right-3 top-8 cursor-pointer"
+                                x-data
+                                x-on:click="generate()">
+                                <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
+                                    {{ __('Generate') }}
+                                </span>
+                            </span>
                             <x-input-error class="mt-2" :messages="$errors->get('user_password')" />
                         </div>
 
@@ -107,4 +115,19 @@
             </div>
         </div>
     </div>
+    <script>
+        function generate() {
+            const length = 8;
+            let result = '';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < length) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+            const passwordInput = document.getElementById("user_password");
+            passwordInput.value = result;
+        }
+    </script>
 </x-app-layout>
