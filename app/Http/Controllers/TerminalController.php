@@ -24,11 +24,12 @@ class TerminalController extends Controller
 
         self::run($service, $session);
 
-        if ($service::failed()) {
-            return response()->json([
-                "code" => "0", "message" => "Failed to run the task"
-            ], 422);
-        }
+//        if ($service::failed()) {
+//            return response(status: 422);
+//            return response()->json([
+//                "code" => "0", "message" => "Failed to run the task"
+//            ], 422);
+//        }
 
         exit;
     }
@@ -36,6 +37,9 @@ class TerminalController extends Controller
     private static function run(TerminalService $service, TerminalSession $terminalSession): void
     {
         $service::run($terminalSession);
+
+        if ($service::failed())
+            return;
 
         $followUpSession = $terminalSession->follow_up_token ? TerminalSessionRepository::find($terminalSession->follow_up_token) : null;
 

@@ -106,6 +106,8 @@
 
 </div>
 <script>
+    var failed = false;
+
     addEventListener("load", () => {
         const token = @json($token);
 
@@ -113,8 +115,8 @@
             return;
 
         const terminalBody = document.getElementById('terminal-body');
-
         const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+
         axios({
             method: 'post',
             url: '/api/terminal',
@@ -125,8 +127,19 @@
             },
             onDownloadProgress: function (response) {
                 // console.log("Response => ", response);
-                terminalBody.innerHTML = response.event.target.response;
+                const string = response.event.target.response;
+                terminalBody.innerHTML = string;
                 terminalBody.scrollTop = terminalBody.scrollHeight;
+
+                if (
+                    string.includes("response.event.target.response") ||
+                    string.includes("Operation timed out") ||
+                    string.includes("Connection refused") ||
+                    string.includes("Permission denied") ||
+                    string.includes("Connection test failed")
+                ) {
+                    failed = true;
+                }
             },
         })
             .then(response => {
@@ -137,10 +150,10 @@
                         const res = JSON.parse(response.data)
                         error = "<p class='text-red-500'>" + res.message + "<p>";
                     } catch (err) {
-                        error = "<p class='text-red-500'>Connection failed<p>";
+                        error = "<p class='text-red-500'>Failed to run the task<p>";
                     }
                 }
-                else {
+                else if (!failed) {
                     allowReload();
                 }
 
