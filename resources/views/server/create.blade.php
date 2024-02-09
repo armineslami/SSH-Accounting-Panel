@@ -65,7 +65,7 @@ multiple files required by this app." }}
 
                         <div>
                             <x-input-label for="username" :value="__('*Username (Only root)')"/>
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full"
+                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700"
                                           :value="old('username', 'root')" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')"/>
                         </div>

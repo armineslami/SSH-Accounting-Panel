@@ -53,7 +53,7 @@
                     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <div>
                             <x-input-label for="username" :value="__('*Username')"/>
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-300 dark:text-gray-700"
+                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700"
                                           :value="old('username', $inbound->username)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')"/>
                         </div>

@@ -43,7 +43,7 @@
 
                         <div>
                             <x-input-label for="username" :value="__('*Username')" />
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-300 dark:text-gray-700" :value="old('username', $server->username)" required readonly/>
+                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700" :value="old('username', $server->username)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
