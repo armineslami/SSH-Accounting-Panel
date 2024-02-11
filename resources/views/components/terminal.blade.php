@@ -132,7 +132,7 @@
                 terminalBody.scrollTop = terminalBody.scrollHeight;
 
                 if (
-                    string.includes("response.event.target.response") ||
+                    string.includes("Failed to run the task") ||
                     string.includes("Operation timed out") ||
                     string.includes("Connection refused") ||
                     string.includes("Permission denied") ||
