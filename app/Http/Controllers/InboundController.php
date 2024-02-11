@@ -112,11 +112,11 @@ class InboundController extends BaseController
         ]);
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(int $id, Request $request): RedirectResponse
     {
         $inbound = InboundRepository::byId($id);
 
-        if (is_null($inbound->server)) {
+        if (isset($request->force_delete)) {
             // Only delete the inbound from the database
             InboundRepository::deleteById($id);
             return Redirect::route('inbounds.index')->with("status", "inbound-deleted");
