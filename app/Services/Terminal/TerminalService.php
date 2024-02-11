@@ -35,6 +35,7 @@ class TerminalService
 
         if (is_null($script)) {
             self::$failed = true;
+            echo Message::red("Failed to run the task");
             return self::$failed;
         }
 
@@ -195,7 +196,7 @@ class TerminalService
         echo $text;
 
         if (
-            str_contains($text, "Connection refused") ||
+            str_contains($text, "Failed to run the task") ||
             str_contains($text, "Operation timed out") ||
             str_contains($text, "Connection refused") ||
             str_contains($text, "Permission denied") ||
