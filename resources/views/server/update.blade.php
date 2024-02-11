@@ -14,17 +14,17 @@
 
     <div class="py-8">
         <div class="px-0 sm:px-8">
-{{--            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">--}}
-{{--                @if (session('status') === 'server-updated')--}}
-{{--                    <span--}}
-{{--                        x-data="{ show: true }"--}}
-{{--                        x-show="show"--}}
-{{--                        x-transition--}}
-{{--                        x-init="setTimeout(() => show = false, 10000)"--}}
-{{--                        class="text-sm text-green-600 dark:text-green-400"--}}
-{{--                    >{{ __('Server Successfully Updated.') }}</span>--}}
-{{--                @endif--}}
-{{--            </div>--}}
+            <div class="flex ms-4 sm:ms-0 me-4 sm:me-0 mb-4">
+                @if (session('status') === 'server-updated')
+                    <span
+                        x-data="{ show: true }"
+                        x-show="show"
+                        x-transition
+                        x-init="setTimeout(() => show = false, 10000)"
+                        class="text-sm text-green-600 dark:text-green-400"
+                    >{{ __('Server Successfully Updated.') }}</span>
+                @endif
+            </div>
 
             <div class="p-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <header>
