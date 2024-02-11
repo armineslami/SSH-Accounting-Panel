@@ -95,9 +95,15 @@
 
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             {{ __('Are you sure you want to delete this server?') }}
+                            Use force delete if the server is not reachable.
                         </p>
 
                         <div class="mt-6 flex justify-end">
+                            <label for="force_delete" class="inline-flex items-center me-4">
+                                <input id="force_delete" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="force_delete">
+                                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Force Delete') }}</span>
+                            </label>
+
                             <x-secondary-button x-on:click="$dispatch('close')">
                                 {{ __('Cancel') }}
                             </x-secondary-button>

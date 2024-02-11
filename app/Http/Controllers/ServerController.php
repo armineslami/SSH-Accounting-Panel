@@ -9,6 +9,7 @@ use App\Repositories\TerminalSessionRepository;
 use App\Services\Terminal\Command\Command;
 use App\Utils\Utils;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -66,9 +67,15 @@ class ServerController extends BaseController
         return Redirect::route('servers.update', $id)->with('status', 'server-updated');
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(int $id, Request $request): RedirectResponse
     {
-        $server         = ServerRepository::byId($id);
+        $server = ServerRepository::byId($id);
+
+        if (isset($request->force_delete)) {
+            ServerRepository::deleteById($id);
+            return Redirect::route('servers.index')->with("status", "server-deleted");
+        }
+
         $req["server"]  = $server;
         $req["id"]      = $id;
 
