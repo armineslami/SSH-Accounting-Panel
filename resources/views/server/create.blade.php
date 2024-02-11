@@ -46,11 +46,7 @@
 
                     <p class="mt-4 text-justify text-gray-900 dark:text-gray-100">
                         {{ "If the server you are creating is not the same server of this app, these information will be
-used to establish a SSH connection to the remote server. When you click the 'create' button,
-the public key of this app will be copied to your remote server in order to perform future operations like creating inbound,
-without requiring you to enter the password again. This way the password of your server will not be stored on the database.
-Then a folder named " }}<b>{{ "'ssh-accounting-panel'" }}</b> {{ "will be copied to your server root directory which includes
-multiple files required by this app." }}
+used to copy the public key of this app to your remote server. Therefore the password of your server will not be stored on the database." }}
                     </p>
                 </header>
 
