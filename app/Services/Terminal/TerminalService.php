@@ -200,7 +200,8 @@ class TerminalService
             str_contains($text, "Operation timed out") ||
             str_contains($text, "Connection refused") ||
             str_contains($text, "Permission denied") ||
-            str_contains($text, "Connection test failed")
+            str_contains($text, "Connection test failed") ||
+            str_contains($text, "sudo: a terminal is required")
         ) {
             self::$failed = true;
 //            echo "<p> </p>";
