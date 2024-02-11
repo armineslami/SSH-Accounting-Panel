@@ -85,7 +85,11 @@ class TerminalService
 
     private static function ipv4(): false|null|string
     {
-        return shell_exec("curl -s ipv4.icanhazip.com");
+        $ip = shell_exec("curl -s ipv4.icanhazip.com");
+        if ($ip === null || $ip === false) {
+            return $ip;
+        }
+        return trim($ip);
     }
 
     private static function script(string $command, mixed $request): string|null
