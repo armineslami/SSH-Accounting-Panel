@@ -53,7 +53,7 @@
                                 <thead>
                                 <tr>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">#</th>
-                                    <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Username') }}</th>
+                                    <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left sticky -left-8 z-10 bg-white dark:bg-slate-800">{{ __('Username') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Server') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Active') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Traffic Limit (GB)') }}</th>
@@ -65,9 +65,9 @@
                                 </thead>
                                 <tbody class="bg-white dark:bg-slate-800">
                                 @foreach ($inbounds as $inbound)
-                                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('inbounds.index', ['id' => $inbound->id])}}'">
+                                    <tr class="md:hover:bg-gray-100 md:dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('inbounds.index', ['id' => $inbound->id])}}'">
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $loop->index + 1 + ($inbounds->currentPage() - 1) * $inbounds->perPage() }}</td>
-                                        <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $inbound->username }}</td>
+                                        <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400 sticky -left-8 z-10 bg-white dark:bg-gray-800 md:bg-transparent">{{ $inbound->username }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->server_ip) ? "-" : $inbound->server->name }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 {{ $inbound->is_active == 1 ? 'text-green-500 dark:green-slate-400' : 'text-red-500 dark:red-slate-400' }} ">{{ $inbound->is_active == 1 ? __("YES") : __("NO") }}</td>
                                         <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->traffic_limit) ? "∞" : $inbound->traffic_limit }}</td>
@@ -96,7 +96,7 @@
                                     <thead>
                                     <tr>
                                         <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">#</th>
-                                        <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Username') }}</th>
+                                        <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left sticky -left-8 z-10 bg-white dark:bg-slate-800">{{ __('Username') }}</th>
                                         <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Server') }}</th>
                                         <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Active') }}</th>
                                         <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Traffic Limit (GB)') }}</th>
@@ -108,9 +108,9 @@
                                     </thead>
                                     <tbody class="bg-white dark:bg-slate-800">
                                     @foreach ($search_result as $inbound)
-                                        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('inbounds.index', ['id' => $inbound->id])}}'">
+                                        <tr class="md:hover:bg-gray-100 md:dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('inbounds.index', ['id' => $inbound->id])}}'">
                                             <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $loop->index + 1 + ($search_result->currentPage() - 1) * $search_result->perPage() }}</td>
-                                            <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $inbound->username }}</td>
+                                            <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400 sticky -left-8 z-10 bg-white dark:bg-gray-800 md:bg-transparent">{{ $inbound->username }}</td>
                                             <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->server_ip) ? "-" : $inbound->server->name }}</td>
                                             <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 {{ $inbound->is_active == 1 ? 'text-green-500 dark:green-slate-400' : 'text-red-500 dark:red-slate-400' }} ">{{ $inbound->is_active == 1 ? __("YES") : __("NO") }}</td>
                                             <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ is_null($inbound->traffic_limit) ? "∞" : $inbound->traffic_limit }}</td>
