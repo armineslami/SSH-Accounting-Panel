@@ -135,7 +135,7 @@
                     string.includes("Failed to run the task") ||
                     string.includes("Operation timed out") ||
                     string.includes("Connection refused") ||
-                    string.includes("Permission denied") ||
+                    string.includes("Permission denied, please try again.") ||
                     string.includes("Connection test failed") ||
                     string.includes("sudo: a terminal is required")
                 ) {
