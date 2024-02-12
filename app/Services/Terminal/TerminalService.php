@@ -137,7 +137,7 @@ class TerminalService
                 case Command::UPDATE_INBOUND:
                     return "export USERNAME={$request->inbound->username}; export PASSWORD={$request->inbound->user_password}; export IS_ACTIVE={$request->inbound->is_active}; export MAX_LOGIN={$request->inbound->max_login}; export ACTIVE_DAYS={$request->inbound->active_days}; export TRAFFIC_LIMIT={$request->inbound->traffic_limit}; bash -s < {$script} 2>&1";
                 case Command::DELETE_INBOUND:
-                    return "export USERNAME={$request->inbound->username} bash -s < $script 2>&1";
+                    return "export USERNAME={$request->inbound->username}; bash -s < $script 2>&1";
             }
         }
 
