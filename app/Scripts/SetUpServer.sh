@@ -29,7 +29,11 @@ if [ -n "$server_username" ] && [ -n "$server_ip" ] && [ -n "$server_port" ]; th
     sudo ssh -i ../storage/keys/ssh_accounting_panel -p "$server_port" "$server_username@$server_ip" "bash -s" < "$script" "$server_udp_port" 2>&1
 else
     # Copy files to root directory
-    cp -r "$panel_files_address" ~
+    sudo cp -r "$panel_files_address" ~
+
+    # Set www-data as owner
+    sudo chown -R www-data:www-data ~/ssh-accounting-panel
+    sudo chmod -R 700  ~/ssh-accounting-panel
 
     # Run the SetUpPackages script on the local machine
     bash -s < "$script" "$server_udp_port" 2>&1

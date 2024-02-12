@@ -24,17 +24,17 @@ cd ~ || exit
 
 echo "<span class='text-terminal-info'>Removing udp service</span>"
 
-systemctl disable ssh-accounting-panel-udp 2>&1
-systemctl stop ssh-accounting-panel-udp 2>&1
+sudo systemctl disable ssh-accounting-panel-udp 2>&1
+sudo systemctl stop ssh-accounting-panel-udp 2>&1
 
 echo "<span class='text-terminal-info'>Removing app files</span>"
 
-rm -rf ssh-accounting-panel/* 2>&1
-rm -rf /usr/local/bin/badvpn-udpgw 2>&1
-rm -rf /etc/systemd/system/ssh-accounting-panel-udp.service 2>&1
+sudo rm -rf ssh-accounting-panel 2>&1
+sudo rm -rf /usr/local/bin/badvpn-udpgw 2>&1
+sudo rm -rf /etc/systemd/system/ssh-accounting-panel-udp.service 2>&1
 
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
-deluser ssh-accounting-panel-udp 2>&1
+sudo deluser ssh-accounting-panel-udp 2>&1
 
 echo "<span class='text-terminal-success'>Server is deleted successfully</span>"

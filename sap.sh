@@ -261,6 +261,8 @@ install() {
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/chmod' | sudo EDITOR='tee -a' visudo &
     wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/chown' | sudo EDITOR='tee -a' visudo &
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/crontab' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/nethogs' | sudo EDITOR='tee -a' visudo &
@@ -283,6 +285,18 @@ install() {
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl daemon-reload' | sudo EDITOR='tee -a' visudo &
     wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl restart apache2' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl start ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl stop ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl enable ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl disable ssh-accounting-panel-udp' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/systemctl daemon-reload' | sudo EDITOR='tee -a' visudo &
+    wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/zip' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/sbin/usermod' | sudo EDITOR='tee -a' visudo &
@@ -298,6 +312,8 @@ install() {
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/mkdir' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cmake' | sudo EDITOR='tee -a' visudo &
+    wait
+    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/make' | sudo EDITOR='tee -a' visudo &
     wait
     echo 'www-data ALL=(ALL:ALL) NOPASSWD:/usr/bin/cat' | sudo EDITOR='tee -a' visudo &
     wait
@@ -625,6 +641,8 @@ uninstall() {
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/chmod/d' /etc/sudoers &
     wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/chown/d' /etc/sudoers &
+    wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/crontab/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/nethogs/d' /etc/sudoers &
@@ -647,6 +665,18 @@ uninstall() {
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/bin\/systemctl daemon-reload/d' /etc/sudoers &
     wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl restart apache2/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl start ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl stop ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl enable ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl disable ssh-accounting-panel-udp/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/systemctl daemon-reload/d' /etc/sudoers &
+    wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/zip/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/sbin\/usermod/d' /etc/sudoers &
@@ -662,6 +692,8 @@ uninstall() {
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/mkdir/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/cmake/d' /etc/sudoers &
+    wait
+    sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/make/d' /etc/sudoers &
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/cat/d' /etc/sudoers &
     wait
@@ -739,9 +771,6 @@ update_panel() {
     cd /root || exit;
     mv -f sap.sh /usr/local/bin/ > /dev/null 2>&1
     chmod +x /usr/local/bin/sap.sh
-
-    echo 'www-data ALL=(ALL:ALL) NOPASSWD:/bin/systemctl daemon-reload' | sudo EDITOR='tee -a' visudo &
-    wait
 
     printf "\n${GREEN}The panel updated to v$project_version\n${NC}\n"
 }

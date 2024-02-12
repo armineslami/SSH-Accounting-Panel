@@ -14,7 +14,7 @@ sudo pkill -KILL -u "$USERNAME" > /dev/null 2>&1
 echo "<span class='text-terminal-info'>Deleting the inbound</span>"
 
 # Delete the user
-sudo deluser "$USERNAME" > /dev/null 2>&1
+sudo deluser "$USERNAME" 2>&1
 
 # Remove max login rule
 file_name=~/ssh-accounting-panel/limits.conf
@@ -22,7 +22,7 @@ line_number=$(grep -nw "$USERNAME" "$file_name" | cut -d':' -f1)
 
 if [ -n "$line_number" ]; then
     # Remove the rule line for this user
-    sed -i "${line_number}d" "$file_name" > /dev/null 2>&1
+    sed -i "${line_number}d" "$file_name" 2>&1
 fi
 
 echo "<span class='text-terminal-success'>Inbound is deleted successfully</span>"

@@ -37,9 +37,9 @@ class UpdateBandwidthUsage extends Command
             return;
         }
 
-        // Connect to each server using SSH and run the Bandwidth.sh script
         $response = [];
 
+        // Connect to each server using SSH and run the Bandwidth.sh script
         foreach ($servers as $server) {
             $result = self::bandwidth($server);
 
@@ -101,7 +101,7 @@ class UpdateBandwidthUsage extends Command
         }
 
         if ($ip == $server->address) {
-            $result = "bash -s < $script 2>&1";
+            $result = shell_exec("bash -s < $script 2>&1");
         }
         else {
             $result = shell_exec("sudo ssh -i $key -p $server->port $server->username@$server->address 'bash -s' < $script 2>&1");
@@ -124,7 +124,7 @@ class UpdateBandwidthUsage extends Command
         }
 
         if ($ip == $inbound->server->address) {
-            $command = "USERNAME={$inbound->username} PASSWORD={$inbound->user_password} IS_ACTIVE={$inbound->is_active} MAX_LOGIN={$inbound->max_login} ACTIVE_DAYS={$inbound->active_days} TRAFFIC_LIMIT={$inbound->traffic_limit} $script 2>&1";
+            $command = "export USERNAME={$inbound->username}; export PASSWORD={$inbound->user_password}; export IS_ACTIVE={$inbound->is_active}; export MAX_LOGIN={$inbound->max_login}; export ACTIVE_DAYS={$inbound->active_days}; export TRAFFIC_LIMIT={$inbound->traffic_limit}; bash -s < {$script} 2>&1";
         }
         else {
             $command = "sudo ssh -o StrictHostKeyChecking=accept-new -i {$key} -p {$inbound->server->port} {$inbound->server->username}@{$inbound->server->address} 'export USERNAME={$inbound->username}; export PASSWORD={$inbound->password}; export IS_ACTIVE={$inbound->is_active}; export MAX_LOGIN={$inbound->max_login}; export ACTIVE_DAYS={$inbound->active_days}; export TRAFFIC_LIMIT={$inbound->traffic_limit}; bash -s' < {$script} 2>&1";
@@ -140,7 +140,11 @@ class UpdateBandwidthUsage extends Command
 
     private static function ip(): string|null|false
     {
-        return shell_exec("curl -s ipv4.icanhazip.com");
+        $ip = shell_exec("curl -s ipv4.icanhazip.com");
+        if ($ip === null || $ip === false) {
+            return $ip;
+        }
+        return trim($ip);
     }
 
     private static function key(): string

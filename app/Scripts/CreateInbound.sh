@@ -5,7 +5,7 @@
 #####################
 
 echo "<span class='text-terminal-info'>Creating the inbound</span>"
-sudo adduser --shell /usr/sbin/nologin --no-create-home --disabled-password --gecos "" "$USERNAME" 2>&1
+    sudo adduser --shell /usr/sbin/nologin --no-create-home --disabled-password --gecos "" "$USERNAME" 2>&1
 
 #####################
 ###  Set Password ###

@@ -17,7 +17,7 @@ echo "<span class='text-terminal-info'>Installing/Updating packages</span>"
 if [ -x "$(command -v apt-get)" ]; then
     # Debian/Ubuntu
     DEBIAN_FRONTEND=noninteractive apt-get -y update 2>&1
-    apt-get -y install nethogs golang bc coreutils cmake git 2>&1
+    sudo apt-get -y install nethogs golang bc coreutils cmake git 2>&1
     DEBIAN_FRONTEND=interactive >/dev/null 2>&1
 else
     echo "<span class='text-terminal-error'>Unsupported OS</span>"
@@ -31,7 +31,7 @@ echo "<span class='text-terminal-info'>Adding cron jobs</span>"
 
 cd ~/ssh-accounting-panel 2>&1 || exit
 
-chmod +x nethogs.sh 2>&1
+sudo chmod +x nethogs.sh 2>&1
 
 #wget -O hogs.go https://raw.githubusercontent.com/boopathi/nethogs-parser/master/hogs.go >/dev/null 2>&1
 
@@ -51,7 +51,7 @@ sh "$(pwd)/nethogs.sh"
 #####  Kill Extra Session Cron Job #####
 ########################################
 
-chmod +x killExtraSession.sh
+sudo chmod +x killExtraSession.sh
 
 cron_job="*/1 * * * * sh $(pwd)/killExtraSession.sh"
 
@@ -69,7 +69,7 @@ echo "<span class='text-terminal-info'>Setting up udp port</span>"
 
 git clone https://github.com/ambrop72/badvpn.git ~/ssh-accounting-panel/badvpn 2>&1
 
-mkdir -p ~/ssh-accounting-panel/badvpn/badvpn-build 2>&1
+sudo mkdir -p ~/ssh-accounting-panel/badvpn/badvpn-build 2>&1
 
 if [ ! -d ~/ssh-accounting-panel/badvpn/badvpn-build ]; then
     echo "<span class='text-terminal-error'>Failed to create required directory for badvpn</span>"
@@ -80,7 +80,7 @@ cd  ~/ssh-accounting-panel/badvpn/badvpn-build 2>&1 || exit
 
 temp_output=$(mktemp)
 
-cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 > "$temp_output" 2>&1 &
+sudo cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 > "$temp_output" 2>&1 &
 
 cmake_pid=$!
 
@@ -95,13 +95,13 @@ if ! grep -q "Configuring done" <<< "$cmake_result"; then
     exit;
 fi
 
-make 2>&1 &
+sudo make 2>&1 &
 
 wait
 
-cp udpgw/badvpn-udpgw /usr/local/bin 2>&1
+sudo cp udpgw/badvpn-udpgw /usr/local/bin 2>&1
 
-cat >  /etc/systemd/system/ssh-accounting-panel-udp.service << ENDOFFILE
+sudo bash -c "cat >  /etc/systemd/system/ssh-accounting-panel-udp.service << ENDOFFILE
 [Unit]
 Description=UDP forwarding for badvpn-tun2socks
 After=nss-lookup.target
@@ -112,14 +112,14 @@ User=ssh-accounting-panel-udp
 
 [Install]
 WantedBy=multi-user.target
-ENDOFFILE
+ENDOFFILE"
 
-useradd -m ssh-accounting-panel-udp 2>&1
+sudo useradd -m ssh-accounting-panel-udp 2>&1
 
-systemctl enable ssh-accounting-panel-udp 2>&1
+sudo systemctl enable ssh-accounting-panel-udp 2>&1
 
-systemctl start ssh-accounting-panel-udp 2>&1
+sudo systemctl start ssh-accounting-panel-udp 2>&1
 
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
 echo "<span class='text-terminal-success'>Server is set and ready to use</span>"
