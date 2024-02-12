@@ -7,14 +7,21 @@
             <form class="relative my-auto mt-2 md:mt-0" method="get" action="{{ route('inbounds.search') }}" >
                 @csrf
                 @method('get')
-                <x-text-input class="w-full text-sm md:text-md pe-8" name="query" type="text" placeholder="Search by username, server name or ip" :value="isset($query) ? $query : null" />
+                <x-text-input class="w-full text-sm md:text-md {{ !empty($query) ? 'pe-16' : 'pe-8' }}" name="query" type="text" placeholder="Search by username, server name or ip" :value="isset($query) ? $query : null" />
                 @if(!empty($query))
-                    <span class="absolute right-3 top-1/4 cursor-pointer" onclick="window.location.href = '/inbounds'">
-                        <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <span class="absolute right-10 h-full cursor-pointer" onclick="window.location.href = '/inbounds'">
+                        <svg class="w-4 h-4 text-gray-800 dark:text-white mt-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6m0 12L6 6"/>
                         </svg>
                     </span>
                 @endif
+                <button
+                    type="submit"
+                    class="absolute right-0 p-2 h-full cursor-pointer rounded-e me-1">
+                    <svg class="w-4 h-4 text-gray-800 dark:text-white mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
             </form>
         </div>
     </x-slot>
