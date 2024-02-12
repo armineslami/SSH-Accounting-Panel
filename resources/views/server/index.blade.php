@@ -31,7 +31,7 @@
                             <thead>
                             <tr>
                                 <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">#</th>
-                                <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Name') }}</th>
+                                <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left sticky -left-8 z-10 bg-white dark:bg-slate-800">{{ __('Name') }}</th>
                                 <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Username') }}</th>
                                 <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Address') }}</th>
                                 <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Port') }}</th>
@@ -40,9 +40,9 @@
                             </thead>
                             <tbody class="bg-white dark:bg-slate-800">
                             @foreach ($servers as $server)
-                                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('servers.index', ['id' => $server->id])}}'">
+                                <tr class="md:hover:bg-gray-100 md:dark:hover:bg-gray-700 cursor-pointer" onclick="location.href='{{route('servers.index', ['id' => $server->id])}}'">
                                     <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $loop->index + 1 + ($servers->currentPage() - 1) * $servers->perPage() }}</td>
-                                    <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $server->name }}</td>
+                                    <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400 sticky -left-8 z-10 bg-white dark:bg-gray-800 md:bg-transparent">{{ $server->name }}</td>
                                     <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $server->username }}</td>
                                     <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $server->address }}</td>
                                     <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{{ $server->port }}</td>
