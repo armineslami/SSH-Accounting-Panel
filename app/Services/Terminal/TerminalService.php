@@ -40,10 +40,10 @@ class TerminalService
         }
 
         if (!empty($script)) {
-            //self::execute($script);
+            self::execute($script);
         }
 
-        //self::cleanup();
+        self::cleanup();
 
         if (!self::$failed) {
             self::updateDatabase($command, $request);
