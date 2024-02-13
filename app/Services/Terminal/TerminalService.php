@@ -40,10 +40,10 @@ class TerminalService
         }
 
         if (!empty($script)) {
-            self::execute($script);
+            //self::execute($script);
         }
 
-        self::cleanup();
+        //self::cleanup();
 
         if (!self::$failed) {
             self::updateDatabase($command, $request);
@@ -262,6 +262,10 @@ class TerminalService
 
     private static function createInbound(mixed $inbound): void
     {
+        if (isset($inbound->active_days) && $inbound->active_days <= 0) {
+            $inbound->is_active = "0";
+        }
+
         InboundRepository::create(
             username: $inbound->username,
             password: $inbound->user_password,
@@ -278,6 +282,10 @@ class TerminalService
     {
         $inbound->expires_at    = Utils::convertActiveDaysToExpireAtDate($inbound->active_days);
         $inbound->password      = $inbound->user_password;
+
+        if (isset($inbound->active_days) && $inbound->active_days <= 0) {
+            $inbound->is_active = "0";
+        }
 
         if ($inbound->traffic_limit < $inbound->remaining_traffic) {
             $inbound->remaining_traffic = $inbound->traffic_limit;
