@@ -53,9 +53,18 @@
                     @method('post')
 
                     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        <div>
+                        <div class="relative">
                             <x-input-label for="username" :value="__('*Username')" />
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" :value="old('username')" required autofocus/>
+                            <x-text-input id="username" name="username" placeholder="username" type="text"
+                                          class="mt-1 block w-full" :value="old('username')" required autofocus/>
+                            <span
+                                class="absolute right-3 top-8 cursor-pointer"
+                                x-data
+                                x-on:click="generate(5, 'username')">
+                                <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
+                                    {{ __('Generate') }}
+                                </span>
+                            </span>
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
@@ -65,7 +74,7 @@
                             <span
                                 class="absolute right-3 top-8 cursor-pointer"
                                 x-data
-                                x-on:click="generate()">
+                                x-on:click="generate(8, 'user_password')">
                                 <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
                                     {{ __('Generate') }}
                                 </span>
@@ -125,18 +134,17 @@
         </div>
     </div>
     <script>
-        function generate() {
-            const length = 8;
+        function generate(length, input) {
             let result = '';
-            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789-';
             const charactersLength = characters.length;
             let counter = 0;
             while (counter < length) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
                 counter += 1;
             }
-            const passwordInput = document.getElementById("user_password");
-            passwordInput.value = result;
+            const targetInput = document.getElementById(input);
+            targetInput.value = result;
         }
     </script>
 </x-app-layout>
