@@ -8,6 +8,7 @@ use App\Repositories\InboundRepository;
 use App\Repositories\ServerRepository;
 use App\Utils\Utils;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 
 class UpdateBandwidthUsage extends Command
 {
@@ -63,22 +64,34 @@ class UpdateBandwidthUsage extends Command
 //                $inbound = Inbound::where("username", $username)->first();
                 $inbound = InboundRepository::byUsername($username);
 
-                /**
-                 * If an inbound is found and if it's traffic limit is not null which means unlimited,
-                 * then update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
-                 */
-                if ($inbound && isset($inbound->traffic_limit)) {
-                    // Calculate the bandwidth usage in GB
-                    $bandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
+                if ($inbound) {
+                    /**
+                     * If an inbound is found and if it's traffic limit is not null which means unlimited,
+                     * then update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
+                     */
+                    if (isset($inbound->traffic_limit)) {
+                        // Calculate the bandwidth usage in GB
+                        $bandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
 
-                    // Update the remaining traffic limit of the inbound
-                    $remainingTraffic = $inbound->remaining_traffic - $bandwidth;
-                    $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
-                    $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
+                        // Update the remaining traffic limit of the inbound
+                        $remainingTraffic = $inbound->remaining_traffic - $bandwidth;
+                        $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
+                        $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
+                    }
+
+                    /**
+                     * If remaining day is 0, deactivate the inbound on the database and no need
+                     * to ssh to the server and update the expiry date because user is already expired.
+                     */
+                    if (isset($inbound->expires_at)) {
+                        $expires_at = Carbon::parse($inbound->expires_at)->endOfDay();
+                        $today = Carbon::now()->endOfDay();
+                        $diff = $expires_at->diffInDays($today);
+                        $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
+                        $inbound->is_active = $remainingDays > 0 ? '1' : '0';
+                    }
+
                     $inbound->save();
-
-//                    echo "Bandwidth usage is " . $bandwidth . " GB for user '" . $inbound->username
-//                        . "' and remaining is: " . $inbound->remaining_traffic . " GB.";
 
                     // Deactivate the inbound if the remaining traffic is <= 0
                     if ($inbound->remaining_traffic <= 0 && !is_null($inbound->server)) {
