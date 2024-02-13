@@ -46,31 +46,36 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         <div>
                             <x-input-label for="name" :value="__('*Name')" />
-                            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $server->name)" required autofocus/>
+                            <x-text-input id="name" name="name" placeholder="name" type="text"
+                                          class="mt-1 block w-full" :value="old('name', $server->name)" required autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('name')" />
                         </div>
 
                         <div>
                             <x-input-label for="username" :value="__('*Username')" />
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700" :value="old('username', $server->username)" required readonly/>
+                            <x-text-input id="username" name="username" placeholder="username" type="text"
+                                          class="mt-1 block w-full text-gray-400 dark:text-gray-700" :value="old('username', $server->username)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')" />
                         </div>
 
                         <div>
                             <x-input-label for="address" :value="__('*Address (IP V4)')" />
-                            <x-text-input id="address" name="address" type="text" class="mt-1 block w-full  text-gray-300 dark:text-gray-700" :value="old('address', $server->address)" required readonly/>
+                            <x-text-input id="address" name="address" placeholder="ipv4 e.g. 1.1.1.1" type="text"
+                                          class="mt-1 block w-full  text-gray-300 dark:text-gray-700" :value="old('address', $server->address)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('address')" />
                         </div>
 
                         <div>
                             <x-input-label for="port" :value="__('*Port')" />
-                            <x-text-input id="port" name="port" type="number" class="mt-1 block w-full" :value="old('port', $server->port)" required autofocus/>
+                            <x-text-input id="port" name="port" placeholder="port e.g. 22" type="number"
+                                          class="mt-1 block w-full" :value="old('port', $server->port)" required autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('port')" />
                         </div>
 
                         <div>
                             <x-input-label for="udp_port" :value="__('*UDP Port')"/>
-                            <x-text-input id="udp_port" name="udp_port" type="number" class="mt-1 block w-full  text-gray-300 dark:text-gray-700"
+                            <x-text-input id="udp_port" name="udp_port" placeholder="udp port e.g. 7300" type="number"
+                                          class="mt-1 block w-full  text-gray-300 dark:text-gray-700"
                                           :value="old('udp_port', 7300)" readonly autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('udp_port')"/>
                         </div>

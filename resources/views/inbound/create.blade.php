@@ -70,7 +70,8 @@
 
                         <div class="relative">
                             <x-input-label for="user_password" :value="__('*Password')" />
-                            <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full pe-20" :value="old('user_password')" required autofocus />
+                            <x-text-input id="user_password" name="user_password" placeholder="password" type="text"
+                                          class="mt-1 block w-full pe-20" :value="old('user_password')" required autofocus />
                             <span
                                 class="absolute right-3 top-8 cursor-pointer"
                                 x-data
@@ -93,19 +94,23 @@
 
                         <div>
                             <x-input-label for="traffic_limit" :value="__('*Traffic Limit (GB, Blank = ∞)')" />
-                            <x-text-input id="traffic_limit" name="traffic_limit" type="text" class="mt-1 block w-full" :value="old('traffic_limit', $settings->inbound_traffic_limit)" autofocus/>
+                            <x-text-input id="traffic_limit" name="traffic_limit" placeholder="traffic limit e.g. 10"
+                                          type="text" class="mt-1 block w-full" :value="old('traffic_limit', $settings->inbound_traffic_limit)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('traffic_limit')" />
                         </div>
 
                         <div>
                             <x-input-label for="max_login" :value="__('*Max Login')" />
-                            <x-text-input id="max_login" name="max_login" type="text" class="mt-1 block w-full" :value="old('max_login', $settings->inbound_max_login)" required autofocus />
+                            <x-text-input id="max_login" name="max_login" placeholder="max login e.g. 1" type="text"
+                                          class="mt-1 block w-full" :value="old('max_login', $settings->inbound_max_login)" required autofocus />
                             <x-input-error class="mt-2" :messages="$errors->get('max_login')" />
                         </div>
 
                         <div>
                             <x-input-label for="active_days" :value="__('*Active Days (Blank = ∞)')" />
-                            <x-text-input id="active_days" name="active_days" type="text" class="mt-1 block w-full" :value="old('active_days', $settings->inbound_active_days)" autofocus />
+                            <x-text-input id="active_days" name="active_days" placeholder="active days e.g. 30"
+                                          type="text" class="mt-1 block w-full"
+                                          :value="old('active_days', $settings->inbound_active_days)" autofocus />
                             <x-input-error class="mt-2" :messages="$errors->get('active_days')" />
                         </div>
 

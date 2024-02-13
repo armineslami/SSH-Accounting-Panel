@@ -18,7 +18,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div>
                     <x-input-label for="dropbox_client_id" :value="__('*Client ID')"/>
-                    <x-text-input id="dropbox_client_id" name="dropbox_client_id" type="text"
+                    <x-text-input id="dropbox_client_id" name="dropbox_client_id" placeholder="client id" type="text"
                                   class="mt-1 block w-full"
                                   :value="old('dropbox_client_id', $settings->dropbox_client_id)"
                                   required
@@ -28,7 +28,7 @@
 
                 <div>
                     <x-input-label for="dropbox_client_secret" :value="__('*Client Secret')"/>
-                    <x-text-input id="dropbox_client_secret" name="dropbox_client_secret" type="text"
+                    <x-text-input id="dropbox_client_secret" name="dropbox_client_secret" placeholder="client secret" type="text"
                                   class="mt-1 block w-full"
                                   :value="old('dropbox_client_secret', $settings->dropbox_client_secret)"
                                   required

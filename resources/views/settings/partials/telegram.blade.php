@@ -19,7 +19,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div class="lg:col-span-2">
                     <x-input-label for="bot_token" :value="__('Token')"/>
-                    <x-text-input id="bot_token" name="bot_token" type="text" class="mt-1 block w-full"
+                    <x-text-input id="bot_token" name="bot_token" placeholder="token" type="text"
+                                  class="mt-1 block w-full"
                                   :value="old('bot_token', $settings->bot_token)" autofocus/>
                     <x-input-error id="bot_token_error" class="mt-2" :messages="$errors->get('bot_token')"/>
                 </div>

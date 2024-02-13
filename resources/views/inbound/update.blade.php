@@ -62,19 +62,19 @@
                     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <div>
                             <x-input-label for="username" :value="__('*Username')"/>
-                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700"
+                            <x-text-input id="username" name="username" placeholder="username" type="text" class="mt-1 block w-full text-gray-400 dark:text-gray-700"
                                           :value="old('username', $inbound->username)" required readonly/>
                             <x-input-error class="mt-2" :messages="$errors->get('username')"/>
                         </div>
 
                         <div class="relative">
                             <x-input-label for="user_password" :value="__('*Password')"/>
-                            <x-text-input id="user_password" name="user_password" type="text" class="mt-1 block w-full"
+                            <x-text-input id="user_password" name="user_password" placeholder="password" type="text" class="mt-1 block w-full"
                                           :value="old('user_password', $inbound->password)" autofocus/>
                             <span
                                 class="absolute right-3 top-8 cursor-pointer"
                                 x-data
-                                x-on:click="generate()">
+                                x-on:click="generate(8, 'user_password')">
                                 <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
                                     {{ __('Generate') }}
                                 </span>
@@ -99,21 +99,25 @@
 
                         <div>
                             <x-input-label for="max_login" :value="__('*Max Login')"/>
-                            <x-text-input id="max_login" name="max_login" type="text" class="mt-1 block w-full"
+                            <x-text-input id="max_login" name="max_login" placeholder="max login e.g. 1" type="text"
+                                          class="mt-1 block w-full"
                                           :value="old('max_login', $inbound->max_login)" required autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('max_login')"/>
                         </div>
 
                         <div>
                             <x-input-label for="traffic_limit" :value="__('*Traffic Limit (GB, Blank = ∞)')"/>
-                            <x-text-input id="traffic_limit" name="traffic_limit" type="text" class="mt-1 block w-full"
+                            <x-text-input id="traffic_limit" name="traffic_limit" placeholder="traffic limit e.g. 10"
+                                          type="text" class="mt-1 block w-full"
                                           :value="old('traffic_limit', $inbound->traffic_limit)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('traffic_limit')"/>
                         </div>
 
                         <div>
                             <x-input-label for="remaining_traffic" :value="__('*Remaining Traffic (GB, Blank = ∞)')"/>
-                            <x-text-input id="remaining_traffic" name="remaining_traffic" type="text"
+                            <x-text-input id="remaining_traffic" name="remaining_traffic"
+                                          placeholder="remaining traffic e.g. 2"
+                                          type="text"
                                           class="mt-1 block w-full"
                                           :value="old('remaining_traffic', $inbound->remaining_traffic)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('remaining_traffic')"/>
@@ -121,7 +125,8 @@
 
                         <div>
                             <x-input-label for="active_days" :value="__('*Remaining Days (Blank = ∞)')"/>
-                            <x-text-input id="active_days" name="active_days" type="text" class="mt-1 block w-full"
+                            <x-text-input id="active_days" name="active_days" placeholder="active days e.g. 30"
+                                          type="text" class="mt-1 block w-full"
                                           :value="old('active_days', $inbound->active_days)" autofocus/>
                             <x-input-error class="mt-2" :messages="$errors->get('active_days')"/>
                         </div>
@@ -240,18 +245,17 @@
             });
         });
 
-        function generate() {
-            const length = 8;
+        function generate(length, input) {
             let result = '';
-            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789-';
             const charactersLength = characters.length;
             let counter = 0;
             while (counter < length) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
                 counter += 1;
             }
-            const passwordInput = document.getElementById("user_password");
-            passwordInput.value = result;
+            const targetInput = document.getElementById(input);
+            targetInput.value = result;
         }
     </script>
 </x-app-layout>
