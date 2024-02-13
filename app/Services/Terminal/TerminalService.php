@@ -201,7 +201,8 @@ class TerminalService
             str_contains($text, "Connection refused") ||
             str_contains($text, "Permission denied, please try again.") ||
             str_contains($text, "Connection test failed") ||
-            str_contains($text, "sudo: a terminal is required")
+            str_contains($text, "sudo: a terminal is required") ||
+            str_contains($text, "Inbound not found")
         ) {
             self::$failed = true;
 //            echo "<p> </p>";

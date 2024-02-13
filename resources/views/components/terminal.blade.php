@@ -137,7 +137,8 @@
                     string.includes("Connection refused") ||
                     string.includes("Permission denied, please try again.") ||
                     string.includes("Connection test failed") ||
-                    string.includes("sudo: a terminal is required")
+                    string.includes("sudo: a terminal is required") ||
+                    string.includes("Inbound not found")
                 ) {
                     failed = true;
                 }
