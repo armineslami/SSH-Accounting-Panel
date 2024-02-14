@@ -52,19 +52,21 @@
                     </div>
                     <div id="upTimeFull" class='tooltip bg-white text-xl font-bold text-gray-900 opacity-95 p-4'>-</div>
                 </div>
-                <div class="bg-teal-500 dark:bg-teal-600 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-1 md:mb-0">
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="col-span-2">
-                            <span class="font-bold text-2xl text-gray-100 dark:text-gray-100">{{ config("app.version") }}</span>
-                            <p class="font-light text-sm text-gray-200 dark:text-gray-300">{{ __("Version") }}</p>
-                        </div>
-                        <div class="ml-auto col-span-1">
-                            <svg class="w-10 h-10 text-gray-200 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm9.4-5.5a1 1 0 1 0 0 2 1 1 0 1 0 0-2ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4c0-.6-.4-1-1-1h-2Z" clip-rule="evenodd"/>
-                            </svg>
+                <a href="https://github.com/armineslami/SSH-Accounting-Panel" target="_blank">
+                    <div class="bg-teal-500 dark:bg-teal-600 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-1 md:mb-0">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="col-span-2">
+                                <span class="font-bold text-2xl text-gray-100 dark:text-gray-100">{{ config("app.version") }}</span>
+                                <p class="font-light text-sm text-gray-200 dark:text-gray-300">{{ __("Version") }}</p>
+                            </div>
+                            <div class="ml-auto col-span-1">
+                                <svg class="w-10 h-10 text-gray-200 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm9.4-5.5a1 1 0 1 0 0 2 1 1 0 1 0 0-2ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4c0-.6-.4-1-1-1h-2Z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="">
