@@ -7,7 +7,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Change the default settings of your telegram bot.") }}
+            {{ __("Set the default settings of your telegram bot.") }}
         </p>
     </header>
 
