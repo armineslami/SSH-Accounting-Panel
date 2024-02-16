@@ -9,7 +9,7 @@ FRESH_COMPOSER=0
 
 # Panel info
 project_display_name="SSH Accounting Panel"
-project_version="3.1.0"
+project_version="3.2.0"
 project_name="sap"
 project_source_link="https://github.com/armineslami/SSH-Accounting-Panel.git"
 project_latest_commit_link="https://api.github.com/repos/armineslami/SSH-Accounting-Panel/commits/master"
