@@ -429,12 +429,12 @@ install() {
     domain=""
 
     # Get domain name
-    printf "${BLUE}\nEnter a domain for the panel or leave it empty: ${NC}"
+    printf "${BLUE}Enter a domain for the panel or leave it empty: ${NC}"
     read domain
 
     # Get port number
     while true; do
-        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}\n"
+        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
         read port_num
         port=${port_num:=3010}
 
@@ -774,7 +774,6 @@ uninstall() {
     wait
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/nohup/d' /etc/sudoers &
     wait
-
 
     rm -r "/etc/supervisor/conf.d/$project_name-worker.conf" > /dev/null 2>&1
     sudo supervisorctl reread > /dev/null 2>&1
