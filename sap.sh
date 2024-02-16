@@ -905,11 +905,11 @@ set_port() {
     cd "/var/www/$project_name" || exist
 
     app_url="$domain:$new_port"
-    sed -i "s/APP_URL=[^:]*:/APP_URL=:${new_port}/" .env
+    sed -i "s/\(APP_URL=.*:\)[0-9]\+\(.*\)/\1$new_port\2/" .env
 
     php artisan config:cache
 
-    printf "${GREEN}\nThe panel port changed to $new_port.\n${NC}"
+    printf "${GREEN}\nThe panel port changed to $new_port\n${NC}"
 
     before_show_menu
 }
