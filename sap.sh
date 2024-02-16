@@ -185,9 +185,9 @@ stdout_logfile=/var/www/${project_name}/storage/logs/worker.log
 stopwaitsecs=3600
 ENDOFFILE
 
-    sudo supervisorctl reread
-    sudo supervisorctl update
-    sudo supervisorctl start "$project_name-worker:*"
+    sudo supervisorctl reread > /dev/null 2>&1
+    sudo supervisorctl update > /dev/null 2>&1
+    sudo supervisorctl start "$project_name-worker:*" > /dev/null 2>&1
 }
 
 install() {
