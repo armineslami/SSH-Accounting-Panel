@@ -46,5 +46,7 @@ class GetSystemInfoJob implements ShouldQueue
             'diskUsage' => $systemInfoArray->diskUsage,
             'upTime' => $systemInfoArray->upTime
         ]);
+
+        $this->delete();
     }
 }
