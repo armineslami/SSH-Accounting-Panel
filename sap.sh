@@ -485,7 +485,8 @@ install() {
     # Prepare laravel
     COMPOSER_ALLOW_SUPERUSER=1 composer clear-cache
     COMPOSER_ALLOW_SUPERUSER=1 composer self-update
-    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader --ignore-platform-reqs
+    #COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
+    #--ignore-platform-reqs
 
     npm install
     npm run build
@@ -497,6 +498,8 @@ install() {
     php artisan optimize
     php artisan migrate --force
     php artisan db:seed --force
+
+    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
 
     ####################
     ### Apache Setup ###
