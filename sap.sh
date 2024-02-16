@@ -174,7 +174,7 @@ install_worker() {
     cat > "$config" <<ENDOFFILE
 [program:${project_name}-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/${project_name}/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/${project_name}/artisan queue:work database --sleep=3 --tries=1 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
