@@ -120,6 +120,12 @@ is_uninstalled() {
     fi
 }
 
+get_ip_address() {
+#    ip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+    ip=$(curl -s ipv4.icanhazip.com)
+    echo "$ip"
+}
+
 install_packages() {
     local package_manager
     package_manager=$(get_package_manager_name)
@@ -449,7 +455,7 @@ install() {
 
     # Set the APP_URL in the .env
     if [ -z "$domain" ]; then
-        domain=$(curl -s ipv4.icanhazip.com)
+        domain=$(get_ip_address)
     fi
     app_url="$domain:$port"
     sed -i "s/APP_URL=.*/APP_URL=${app_url}/" .env
@@ -592,7 +598,7 @@ ENDOFFILE
 
     # Get the public ip address of the server if no domain is given
     if [ -z "$domain" ]; then
-        domain=$(curl -s ipv4.icanhazip.com)
+        domain=$(get_ip_address)
     fi
 
     # Done
@@ -859,7 +865,7 @@ show_config() {
     fi
 
     if [ -z "$apache_domain" ]; then
-        apache_domain=$(curl -s ipv4.icanhazip.com)
+        apache_domain=$(get_ip_address)
     fi
 
     printf "
@@ -948,7 +954,7 @@ set_domain() {
     app_url_domain=$new_domain
 
     if [ -z "$new_domain" ]; then
-        app_url_domain=$(curl -s ipv4.icanhazip.com)
+        app_url_domain=$(get_ip_address)
     fi
 
     sed -i "s/APP_URL=[^:]*:/APP_URL=${app_url_domain}:/g" .env
