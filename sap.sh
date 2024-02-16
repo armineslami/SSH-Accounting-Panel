@@ -151,6 +151,9 @@ install_worker() {
         rm -r $config
     fi
 
+    if [ ! -f "$log" ]; then
+        touch $log;
+    fi
     chown -R www-data:www-data $log
     chmod -R 644 $log
 
@@ -897,11 +900,11 @@ set_port() {
     cd "/var/www/$project_name" || exist
 
     app_url="$domain:$new_port"
-    sed -i "s/APP_URL=.*:/APP_URL=:${new_port}/g" .env
+    sed -i "s/APP_URL=[^:]*:/APP_URL=:${new_port}/" .env
 
     php artisan config:cache
 
-    printf "${GREEN}\nThe panel port changed to $port.\n${NC}"
+    printf "${GREEN}\nThe panel port changed to $new_port.\n${NC}"
 
     before_show_menu
 }
