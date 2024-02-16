@@ -144,7 +144,7 @@ install_packages() {
             add_support_for_ondrej_repo_in_none_tls_dist
         fi
         sudo "$package_manager" update -y
-        sudo "$package_manager" -y install php8.2 php8.2-cli php8.2-mysql php8.2-xml php8.2-dom php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools supervisor
+        sudo "$package_manager" -y install php php-cli php-mysql php-mbstring php-xml php-curl php-zip php-curl php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools supervisor
 #        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
 #        sudo "$package_manager" -y install nodejs npm
         sudo snap install node --classic --channel=21
