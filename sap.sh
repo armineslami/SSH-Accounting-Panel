@@ -146,7 +146,7 @@ install_packages() {
         sudo "$package_manager" update -y
         sudo "$package_manager" -y install php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools supervisor
         curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-        sudo "$package_manager" -y install "$node_packages"
+        sudo "$package_manager" -y install nodejs npm
         sudo DEBIAN_FRONTEND=interactive
     # couldn't find package manger of the OS
     else

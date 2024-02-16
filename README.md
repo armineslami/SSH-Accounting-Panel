@@ -11,7 +11,6 @@ SSH Accounting Panel
 </h2>
 
 
-
 ## About
 
 This panel provides you an easy way to create ssh accounts on your servers and use them for tunneling.
