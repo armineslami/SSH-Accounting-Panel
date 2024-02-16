@@ -116,21 +116,9 @@ is_uninstalled() {
     fi
 }
 
-install() {
-    current_directory=$(pwd)
-
-    cd /root || exit
-
-    check_for_none_lts
-
+install_packages() {
     local package_manager
     package_manager=$(get_package_manager_name)
-
-    ############################
-    ### Package Installation ###
-    ############################
-
-    printf "${GREEN}\nInstalling required packages ...\n${NC}\n"
 
      # Install required packages based on OS
     if [ "$package_manager" = "apt-get"  ]; then
@@ -151,6 +139,22 @@ install() {
         printf "${RED}\nError: Unsupported distribution or package manager!.\n${NC}\n"
         exit 1
     fi
+}
+
+install() {
+    current_directory=$(pwd)
+
+    cd /root || exit
+
+    check_for_none_lts
+
+    ############################
+    ### Package Installation ###
+    ############################
+
+    printf "${GREEN}\nInstalling required packages ...\n${NC}\n"
+
+    install_packages
 
     #############################
     ### Composer Installation ###
