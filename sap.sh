@@ -777,9 +777,9 @@ uninstall() {
 
 
     rm -r "/etc/supervisor/conf.d/$project_name-worker.conf" > /dev/null 2>&1
-    sudo supervisorctl reread
-    sudo supervisorctl update
-    sudo supervisorctl restart all
+    sudo supervisorctl reread > /dev/null 2>&1
+    sudo supervisorctl update > /dev/null 2>&1
+    sudo supervisorctl restart all > /dev/null 2>&1
 
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 }
