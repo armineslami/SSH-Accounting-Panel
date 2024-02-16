@@ -94,6 +94,8 @@
 
             @include("settings.partials.dropbox")
 
+            @include("settings.partials.pusher")
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0 md:gap-4">
                 @include("settings.partials.backup")
 

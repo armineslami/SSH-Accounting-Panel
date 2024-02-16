@@ -8,6 +8,7 @@ use App\Http\Requests\DropboxLinkRequest;
 use App\Http\Requests\ImportBackupRequest;
 use App\Http\Requests\UpdateAppSettingsRequest;
 use App\Http\Requests\UpdateInboundSettingsRequest;
+use App\Http\Requests\UpdatePusherSettingsRequest;
 use App\Http\Requests\UpdateTelegramSettingsRequest;
 use App\Repositories\InboundRepository;
 use App\Repositories\SettingRepository;
@@ -202,6 +203,13 @@ class SettingController extends Controller
         ]);
 
         return Redirect::route('settings.edit')->with('status', 'dropbox-unlinked');
+    }
+
+    public function updatePusher(UpdatePusherSettingsRequest $request): RedirectResponse
+    {
+        SettingRepository::update(SettingRepository::first(), $request->validated());
+
+        return Redirect::route('settings.edit')->with('status', 'settings-updated');
     }
 
     public function downloadBackup(): BinaryFileResponse

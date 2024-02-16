@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class UpdateAppSettingsRequest extends FormRequest
+class UpdatePusherSettingsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,11 @@ class UpdateAppSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "app_inbound_bandwidth_check_interval" => "required|numeric|in:30,60,360,1440",
-            "app_update_check_interval" => "required|string|in:day,week,month,never"
+            'pusher_id' => 'nullable|string|max:255',
+            'pusher_key' => 'nullable|string|max:255',
+            'pusher_secret' => 'nullable|string|max:255',
+            'pusher_cluster' => 'nullable|string|max:10',
+            'pusher_port' => 'nullable|numeric|min:1|max:65535',
         ];
     }
 }

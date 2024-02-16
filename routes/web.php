@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/settings/dropbox/link', [SettingController::class, 'linkDropbox'])->name('settings.dropbox.link');
     Route::get('/settings/dropbox/callback', [SettingController::class, 'callbackDropbox'])->name('settings.dropbox.callback');
     Route::patch('/settings/dropbox/unlink', [SettingController::class, 'unlinkDropbox'])->name('settings.dropbox.unlink');
+    Route::patch('/settings/pusher', [SettingController::class, 'updatePusher'])->name('settings.updatePusher');
     Route::patch('/settings/backup/download', [SettingController::class, 'downloadBackup'])->name('settings.backup.download');
     Route::post('/settings/backup/import', [SettingController::class, 'importBackup'])->name('settings.backup.import');
 

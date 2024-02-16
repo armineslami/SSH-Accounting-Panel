@@ -23,6 +23,11 @@ class Setting extends Model
         'dropbox_refresh_token',
         'dropbox_token_expire_date',
         'app_inbound_bandwidth_check_interval',
-        'app_update_check_interval'
+        'app_update_check_interval',
+        'pusher_id',
+        'pusher_key',
+        'pusher_secret',
+        'pusher_cluster',
+        'pusher_port'
     ];
 }

@@ -23,6 +23,13 @@ class AppService
         if (self::$settings) {
             // Set telegram bot token
             config(["telegram.bots.sap.token" => self::$settings->bot_token]);
+
+            // Set pusher configs
+            config(["broadcasting.pusher.key" => self::$settings->pusher_key]);
+            config(["broadcasting.pusher.secret" => self::$settings->pusher_secret]);
+            config(["broadcasting.pusher.app_id" => self::$settings->pusher_id]);
+            config(["broadcasting.pusher.options.cluster" => self::$settings->pusher_cluster]);
+            config(["broadcasting.pusher.options.port" => self::$settings->pusher_port]);
         }
     }
 
