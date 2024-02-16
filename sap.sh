@@ -483,7 +483,10 @@ install() {
 
 
     # Prepare laravel
+    COMPOSER_ALLOW_SUPERUSER=1 composer clear-cache
+    COMPOSER_ALLOW_SUPERUSER=1 composer self-update
     COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
+
     npm install
     npm run build
     php artisan key:generate
