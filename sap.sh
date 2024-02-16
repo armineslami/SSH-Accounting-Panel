@@ -178,7 +178,7 @@ autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
-user=forge
+user=www-data
 numprocs=8
 redirect_stderr=true
 stdout_logfile=/var/www/${project_name}/storage/logs/worker.log
@@ -434,7 +434,7 @@ install() {
 
     # Get port number
     while true; do
-        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
+        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}\n"
         read port_num
         port=${port_num:=3010}
 
