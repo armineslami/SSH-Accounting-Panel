@@ -429,7 +429,7 @@ install() {
     domain=""
 
     # Get domain name
-    printf "${BLUE}Enter a domain for the panel or leave it empty: ${NC}"
+    printf "${BLUE}\nEnter a domain for the panel or leave it empty: ${NC}"
     read domain
 
     # Get port number
