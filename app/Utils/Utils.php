@@ -52,4 +52,49 @@ class Utils
         }
         return $randomString;
     }
+
+    public static function compareVersions($version1, $version2): int
+    {
+        $parts1 = explode('.', $version1);
+        $parts2 = explode('.', $version2);
+
+        // Compare major version
+        if ($parts1[0] > $parts2[0]) {
+            return 1;
+        } elseif ($parts1[0] < $parts2[0]) {
+            return -1;
+        }
+
+        // Compare minor version
+        if ($parts1[1] > $parts2[1]) {
+            return 1;
+        } elseif ($parts1[1] < $parts2[1]) {
+            return -1;
+        }
+
+        // Compare patch version
+        if ($parts1[2] > $parts2[2]) {
+            return 1;
+        } elseif ($parts1[2] < $parts2[2]) {
+            return -1;
+        }
+
+        // Versions are equal
+        return 0;
+    }
+
+    public static function getCookieExpiryDate(string $interval): int
+    {
+        return match ($interval) {
+            "day"   => \Carbon\Carbon::now()->addDay()->timestamp,
+            "week"  => Carbon::now()->addWeek()->timestamp,
+            "month" => Carbon::now()->addMonth()->timestamp,
+            default => Carbon::now()->addYears(10)->timestamp,
+        };
+    }
+
+    public static function getAppLatestVersion(): false|null|string
+    {
+        return shell_exec("curl  'https://api.github.com/repos/armineslami/SSH-Accounting-Panel/tags' | jq -r '.[0].name'");
+    }
 }

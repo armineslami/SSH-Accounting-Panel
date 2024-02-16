@@ -21,7 +21,7 @@
                     <x-input-label for="bot_token" :value="__('Token')"/>
                     <x-text-input id="bot_token" name="bot_token" placeholder="token" type="text"
                                   class="mt-1 block w-full"
-                                  :value="old('bot_token', $settings->bot_token)" autofocus/>
+                                  :value="old('bot_token', $settings->bot_token)" />
                     <x-input-error id="bot_token_error" class="mt-2" :messages="$errors->get('bot_token')"/>
                 </div>
 

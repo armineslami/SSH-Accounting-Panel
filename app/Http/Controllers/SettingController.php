@@ -6,12 +6,14 @@ use App\Http\Requests\CreateInboundRequest;
 use App\Http\Requests\DropboxCallbackRequest;
 use App\Http\Requests\DropboxLinkRequest;
 use App\Http\Requests\ImportBackupRequest;
+use App\Http\Requests\UpdateAppSettingsRequest;
 use App\Http\Requests\UpdateInboundSettingsRequest;
 use App\Http\Requests\UpdateTelegramSettingsRequest;
 use App\Repositories\InboundRepository;
 use App\Repositories\SettingRepository;
 use App\Services\Backup\BackupService;
 use App\Services\Dropbox\DropboxService;
+use App\Services\Setting\SettingService;
 use App\Services\Telegram\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +29,15 @@ class SettingController extends Controller
     {
         $settings = SettingRepository::first();
         return view('settings.edit', ['settings' => $settings]);
+    }
+
+    public function updateApp(UpdateAppSettingsRequest $request): RedirectResponse
+    {
+        SettingService::updateCookie($request->app_update_check_interval);
+
+        SettingRepository::update(SettingRepository::first(), $request->validated());
+
+        return Redirect::route('settings.edit')->with('status', 'settings-updated');
     }
 
     public function updateInbound(UpdateInboundSettingsRequest $request): RedirectResponse

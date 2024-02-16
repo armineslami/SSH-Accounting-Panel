@@ -21,8 +21,7 @@
                     <x-text-input id="dropbox_client_id" name="dropbox_client_id" placeholder="client id" type="text"
                                   class="mt-1 block w-full"
                                   :value="old('dropbox_client_id', $settings->dropbox_client_id)"
-                                  required
-                                  autofocus/>
+                                  required />
                     <x-input-error id="dropbox_client_id_error" class="mt-2" :messages="$errors->get('dropbox_client_id')"/>
                 </div>
 
@@ -31,8 +30,7 @@
                     <x-text-input id="dropbox_client_secret" name="dropbox_client_secret" placeholder="client secret" type="text"
                                   class="mt-1 block w-full"
                                   :value="old('dropbox_client_secret', $settings->dropbox_client_secret)"
-                                  required
-                                  autofocus/>
+                                  required />
                     <x-input-error id="dropbox_client_secret_error" class="mt-2" :messages="$errors->get('dropbox_client_secret')"/>
                 </div>
 

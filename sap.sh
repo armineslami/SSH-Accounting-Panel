@@ -4,6 +4,8 @@
 ### Variables ###
 #################
 
+DEV=0
+
 # Panel info
 project_display_name="SSH Accounting Panel"
 project_version="3.1.0"
@@ -21,7 +23,7 @@ YELLOW='\033[1;33m'
 NC="\033[0m" # No Color
 
 # Required packages
-packages="php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools"
+packages="php8.2 php8.2-cli php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php-curl openssl cron apache2 libapache2-mod-php certbot python3-certbot-apache mariadb-server sshpass openssh-client openssh-server unzip jq curl net-tools supervisor"
 node_packages="nodejs npm"
 
 #################
@@ -141,6 +143,37 @@ install_packages() {
     fi
 }
 
+install_worker() {
+    log="/var/www/$project_name/storage/logs/worker.log"
+    config="/etc/supervisor/conf.d/$project_name-worker.conf"
+
+    if test -f "$config"; then
+        rm -r $config
+    fi
+
+    chown -R www-data:www-data $log
+    chmod -R 644 $log
+
+    cat > "$config" <<ENDOFFILE
+[program:${project_name}-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/${project_name}/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=forge
+numprocs=8
+redirect_stderr=true
+stdout_logfile=/var/www/${project_name}/storage/logs/worker.log
+stopwaitsecs=3600
+ENDOFFILE
+
+    sudo supervisorctl reread
+    sudo supervisorctl update
+    sudo supervisorctl start "$project_name-worker:*"
+}
+
 install() {
     current_directory=$(pwd)
 
@@ -185,7 +218,13 @@ install() {
     git init
     git config --global --add safe.directory /root/sap
     git remote add origin "$project_source_link"
-    git pull origin master
+
+    if [ $DEV == 1 ]; then
+        printf "${YELLOW}\n###########################\n\nEntering To Dev Mode\n\n###########################\n${NC}\n"
+        git pull origin dev
+    else
+        git pull origin master
+    fi
 
     # Create a file that holds the sha of latest commit
     curl -s "$project_latest_commit_link" | jq -r .sha > version.info
@@ -371,13 +410,38 @@ install() {
 
     printf "${GREEN}\nSetting up the framework ...\n${NC}\n"
 
+    domain=""
+
+    # Get domain name
+    printf "${BLUE}\nEnter a domain for the panel or leave it empty: ${NC}"
+    read domain
+
+    # Get port number
+    while true; do
+        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
+        read port_num
+        port=${port_num:=3010}
+
+        if netstat -tuln | grep -q ":$port\b"; then
+            printf "${YELLOW}\nPort ${port} is in use. Choose another port.\n${NC}\n"
+        else
+            break;
+        fi
+    done
+
+    install_worker
+
     # Go the project directory
     cd "/var/www/$project_name" || exit
 
     # Create a .env file using the sample file
     cp .env.example .env
 
-    # Set the DB_PASSWORD inside the .env
+    # Set the APP_URL in the .env
+    app_url="$domain:$port"
+    sed -i "s/APP_URL=.*/APP_URL=${app_url}/" .env
+
+    # Set the DB_PASSWORD in the .env
     sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${db_password}/" .env
 
     # Get the database name from the .env
@@ -419,25 +483,7 @@ install() {
     printf "${GREEN}\nSetting up the apache ...\n${NC}"
 
     apache_project_path="/var/www/$project_name"
-    domain=""
     config_file="/etc/apache2/sites-available/$project_name.conf"
-
-    # Get domain name
-    printf "${BLUE}\nEnter a domain for the panel or leave it empty: ${NC}"
-    read domain
-
-    # Get port number
-    while true; do
-        printf "${BLUE}\nEnter a port number for the panel [default: 3010]: ${NC}"
-        read port_num
-        port=${port_num:=3010}
-
-        if netstat -tuln | grep -q ":$port\b"; then
-            printf "${YELLOW}\nPort ${port} is in use. Choose another port.\n${NC}\n"
-        else
-            break;
-        fi
-    done
 
     # Create Apache configuration file
     cat >  "$config_file" << ENDOFFILE
@@ -710,6 +756,12 @@ uninstall() {
     sudo sed -i '/www-data ALL=(ALL:ALL) NOPASSWD:\/usr\/bin\/nohup/d' /etc/sudoers &
     wait
 
+
+    rm -r "/etc/supervisor/conf.d/$project_name-worker.conf" > /dev/null 2>&1
+    sudo supervisorctl reread
+    sudo supervisorctl update
+    sudo supervisorctl restart all
+
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 }
 
@@ -731,6 +783,10 @@ update() {
 
 update_panel() {
     printf "${BLUE}\nUpdating the panel ...\n${NC}\n"
+
+    install_packages
+
+    install_worker
 
     cd "/var/www/$project_name" || exist;
 
@@ -838,6 +894,13 @@ set_port() {
     sudo a2ensite "$project_name".conf > /dev/null 2>&1
     sudo systemctl restart apache2
 
+    cd "/var/www/$project_name" || exist
+
+    app_url="$domain:$new_port"
+    sed -i "s/APP_URL=.*:/APP_URL=:${new_port}/g" .env
+
+    php artisan config:cache
+
     printf "${GREEN}\nThe panel port changed to $port.\n${NC}"
 
     before_show_menu
@@ -853,7 +916,6 @@ set_domain() {
     # If domain is empty remove the ServerName
     if [ -z "$new_domain" ]; then
         sudo sed -i "/ServerName/d" "$apache_conf"
-        exit 0
     else
         if grep -q "ServerName" "$apache_conf"; then
             # Add a new ServerName because none is set
@@ -867,6 +929,18 @@ set_domain() {
 
     sudo a2ensite "$project_name".conf > /dev/null 2>&1
     sudo systemctl restart apache2
+
+    cd "/var/www/$project_name" || exist
+
+    app_url_domain=$new_domain
+
+    if [ -z "$new_domain" ]; then
+        app_url_domain=$(curl -s ipv4.icanhazip.com)
+    fi
+
+    sed -i "s/APP_URL=[^:]*:/APP_URL=${app_url_domain}:/g" .env
+
+    php artisan config:cache
 
     if [ -n "$new_domain" ]; then
         printf "${GREEN}\nThe panel domain changed to $new_domain.\n${NC}"
@@ -1030,7 +1104,7 @@ ${GREEN}SAP menu${NC}
   ${GREEN}8.${NC} Install SSL Certificate
 "
 
-    echo && read -p "Please enter a valid number [0-6]: " num
+    echo && read -p "Please enter a valid number [0-8]: " num
 
     case "${num}" in
         0)
@@ -1061,7 +1135,7 @@ ${GREEN}SAP menu${NC}
             is_installed && install_ssl_certificate
             ;;
         *)
-            printf "${RED}\nError: Please enter a valid number [0-7]: \n${NC}\n"
+            printf "${RED}\nError: Please enter a valid number [0-8]: \n${NC}\n"
             show_menu
             ;;
     esac
@@ -1083,6 +1157,9 @@ main() {
         show_menu
     elif [ "$action" = "update" ]; then
         update_panel
+    elif [ "$action" = "dev" ]; then
+        DEV=1
+        install
     else
         printf "${RED}Error: Invalid action${NC}\n"
     fi

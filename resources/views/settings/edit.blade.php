@@ -86,6 +86,8 @@
                 @endif
             </div>
 
+            @include("settings.partials.panel")
+
             @include("settings.partials.inbound")
 
             @include("settings.partials.telegram")

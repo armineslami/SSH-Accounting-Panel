@@ -21,6 +21,8 @@ class Setting extends Model
         'dropbox_client_secret',
         'dropbox_token',
         'dropbox_refresh_token',
-        'dropbox_token_expire_date'
+        'dropbox_token_expire_date',
+        'app_inbound_bandwidth_check_interval',
+        'app_update_check_interval'
     ];
 }

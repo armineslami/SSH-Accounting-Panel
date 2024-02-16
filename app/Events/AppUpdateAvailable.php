@@ -14,13 +14,15 @@ class AppUpdateAvailable implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $version;
+    public array $cookie;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $version)
+    public function __construct(string $version, array $cookie)
     {
         $this->version = $version;
+        $this->cookie = $cookie;
     }
 
     /**
