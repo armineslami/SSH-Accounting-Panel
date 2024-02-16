@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TelegramController;
+use App\Http\Controllers\TerminalController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,4 +23,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/<token>/webhook', TelegramController::class)->name('telegram');
 
+Route::middleware("auth:sanctum")->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::post("/terminal", TerminalController::class)->name('terminal');
+});
 

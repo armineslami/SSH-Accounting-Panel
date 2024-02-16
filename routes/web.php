@@ -5,7 +5,6 @@ use App\Http\Controllers\InboundController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\TerminalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
 
     Route::get('/inbounds/create', [InboundController::class, 'create'])->name('inbounds.create');
@@ -36,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/servers/{id}', [ServerController::class, 'destroy'])->name('servers.destroy');
 
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
+    Route::patch('/settings/app', [SettingController::class, 'updateApp'])->name('settings.updateApp');
     Route::patch('/settings/inbound', [SettingController::class, 'updateInbound'])->name('settings.updateInbound');
     Route::patch('/settings/telegram', [SettingController::class, 'updateTelegram'])->name('settings.updateTelegram');
     Route::patch('/settings/dropbox/link', [SettingController::class, 'linkDropbox'])->name('settings.dropbox.link');
@@ -45,11 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/backup/import', [SettingController::class, 'importBackup'])->name('settings.backup.import');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/api/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::post("/api/terminal", TerminalController::class)->name('terminal');
 });
 
 require __DIR__ . '/auth.php';
