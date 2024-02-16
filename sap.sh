@@ -424,7 +424,7 @@ install() {
     ### Laravel Setup ###
     #####################
 
-    printf "${GREEN}\nSetting up the framework ...\n${NC}\n"
+    printf "${GREEN}\nSetting up the framework ...\n${NC}"
 
     domain=""
 
