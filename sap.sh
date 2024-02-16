@@ -129,7 +129,10 @@ install_packages() {
         # Debian/Ubuntu
         sudo DEBIAN_FRONTEND=noninteractive "$package_manager" -y update
         sudo "$package_manager" install -y software-properties-common
-        sudo add-apt-repository ppa:ondrej/php -y
+        if ! grep -q "^deb.*ondrej/php" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+            # Repository not found, add it
+            sudo add-apt-repository ppa:ondrej/php -y
+        fi
         if [ "$is_none_tls" == "yes" ]; then
             add_support_for_ondrej_repo_in_none_tls_dist
         fi
