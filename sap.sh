@@ -73,12 +73,14 @@ add_support_for_ondrej_repo_in_none_tls_dist() {
 
         if [ "$codename" == "lunar" ]; then
             source_list=/etc/apt/sources.list.d/ondrej-ubuntu-php-lunar.list
+            # Replace 'lunar' with 'jammy' in the file
+            sudo sed -i 's/lunar/jammy/g' "$source_list" > /dev/null 2>&1
         elif [ "$codename" == "mantic" ]; then
             source_list=/etc/apt/sources.list.d/ondrej-ubuntu-php-mantic.list
+            # Replace 'mantic' with 'jammy' in the file
+            sudo sed -i 's/mantic/jammy/g' "$source_list" > /dev/null 2>&1
         fi
 
-        # Replace 'lunar' with 'jammy' in the file
-        sudo sed -i 's/lunar/jammy/g' "$source_list" > /dev/null 2>&1
         sudo touch /etc/apt/preferences.d/ondrejphp
         sudo tee /etc/apt/preferences.d/ondrejphp >/dev/null <<EOF
 Package: libgd3
