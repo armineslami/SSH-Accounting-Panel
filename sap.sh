@@ -485,7 +485,7 @@ install() {
     # Prepare laravel
     COMPOSER_ALLOW_SUPERUSER=1 composer clear-cache
     COMPOSER_ALLOW_SUPERUSER=1 composer self-update
-    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader
+    COMPOSER_ALLOW_SUPERUSER=1 composer update --optimize-autoloader --ignore-platform-reqs
 
     npm install
     npm run build
