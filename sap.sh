@@ -157,6 +157,8 @@ install_worker() {
     chown -R www-data:www-data $log
     chmod -R 644 $log
 
+    touch $config
+
     cat > "$config" <<ENDOFFILE
 [program:${project_name}-worker]
 process_name=%(program_name)s_%(process_num)02d
@@ -441,6 +443,9 @@ install() {
     cp .env.example .env
 
     # Set the APP_URL in the .env
+    if [ -z "$domain" ]; then
+        domain=$(curl -s ipv4.icanhazip.com)
+    fi
     app_url="$domain:$port"
     sed -i "s/APP_URL=.*/APP_URL=${app_url}/" .env
 
