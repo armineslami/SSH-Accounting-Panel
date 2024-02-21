@@ -12,7 +12,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <p class="text-sm leading-6 text-gray-900">
-                <strong class="font-semibold">Update Available</strong><svg viewBox="0 0 2 2" class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true"><circle cx="1" cy="1" r="1" /></svg>Version <span id="update-banner-version"></span> of panel is available on GitHub
+                <strong class="font-semibold">Update Available</strong><svg viewBox="0 0 2 2" class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true"><circle cx="1" cy="1" r="1" /></svg>Version <span id="update-banner-version"></span> of the panel is available on the GitHub
             </p>
             <a
                 onclick="setTimeout(() => closeUpdateBanner(), 1000)"
