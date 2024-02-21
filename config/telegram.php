@@ -4,6 +4,7 @@ use App\Services\Telegram\Commands\HelpCommand;
 use App\Services\Telegram\Commands\LoginCommand;
 use App\Services\Telegram\Commands\StartCommand;
 use App\Services\Telegram\Http\ProxyHttpClient;
+use Illuminate\Support\Facades\App;
 
 return [
     /*
@@ -83,7 +84,7 @@ return [
     | Default: GuzzlePHP
     |
     */
-    'http_client_handler' => env("APP_ENV", "") === "local" ? new ProxyHttpClient() : null,
+    'http_client_handler' => env("APP_ENV", "") === "local" && !App::runningInConsole() ? new ProxyHttpClient() : null,
 
     /*
     |--------------------------------------------------------------------------
