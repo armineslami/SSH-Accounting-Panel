@@ -13,7 +13,7 @@
         @csrf
         @method('patch')
         <div class="">
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div>
                     <x-input-label for="app_inbound_bandwidth_check_interval" :value="__('*Inbound Bandwidth Check Interval')" />
                     <x-select-input id="app_inbound_bandwidth_check_interval"
