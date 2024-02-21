@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateAppSettingsRequest;
 use App\Http\Requests\UpdateInboundSettingsRequest;
 use App\Http\Requests\UpdatePusherSettingsRequest;
 use App\Http\Requests\UpdateTelegramSettingsRequest;
+use App\Jobs\UpdatePusherJob;
 use App\Repositories\InboundRepository;
 use App\Repositories\SettingRepository;
 use App\Services\Backup\BackupService;
@@ -208,7 +209,7 @@ class SettingController extends Controller
     public function updatePusher(UpdatePusherSettingsRequest $request): RedirectResponse
     {
         SettingRepository::update(SettingRepository::first(), $request->validated());
-
+        UpdatePusherJob::dispatch();
         return Redirect::route('settings.edit')->with('status', 'settings-updated');
     }
 
