@@ -97,4 +97,17 @@ class Utils
     {
         return shell_exec("curl  'https://api.github.com/repos/armineslami/SSH-Accounting-Panel/tags' | jq -r '.[0].name'");
     }
+
+    public static function putPermanentEnv($key, $value): void
+    {
+        $path = app()->environmentFilePath();
+
+        file_put_contents(
+            $path,
+            preg_replace(
+                "/^{$key}.*$/m", "{$key}={$value}",
+                file_get_contents($path)
+            )
+        );
+    }
 }
