@@ -84,7 +84,7 @@ return [
     | Default: GuzzlePHP
     |
     */
-    'http_client_handler' => env("APP_ENV", "") === "local" ? new ProxyHttpClient() : null,
+    'http_client_handler' => env("APP_ENV", "") === "local" && !app()->runningInConsole() ? new ProxyHttpClient() : null,
 
     /*
     |--------------------------------------------------------------------------
