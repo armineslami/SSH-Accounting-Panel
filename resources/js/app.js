@@ -8,12 +8,14 @@ window.ProgressBar = ProgressBar;
 
 Alpine.start();
 
-Echo.private('App').listen(
-    'AppUpdateAvailable', function(data) {
-        // console.log(data);
-        showUpdateBanner(data.version);
-        setCookie(data.cookie.name, data.version, data.cookie.expire_date)
-});
+if (typeof Echo !== 'undefined') {
+    Echo.private('App').listen(
+        'AppUpdateAvailable', function (data) {
+            // console.log(data);
+            showUpdateBanner(data.version);
+            setCookie(data.cookie.name, data.version, data.cookie.expire_date)
+        });
+}
 
 function showUpdateBanner(version) {
     const versionElement = document.getElementById("update-banner-version");
