@@ -21,7 +21,7 @@ class ConfigProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (App::environment() != 'testing') {
+        if (App::environment() != 'testing' && !app()->runningInConsole()) {
             $settings = SettingRepository::first();
 
             config(["telegram.bots.sap.token" => $settings->bot_token]);
