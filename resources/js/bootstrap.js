@@ -30,13 +30,19 @@ window.Pusher = Pusher;
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: document.querySelector('meta[name="pusher-key"]').content,
-    cluster: document.querySelector('meta[name="pusher-cluster"]').content ?? 'mt1',
-    wsHost: `ws-${document.querySelector('meta[name="pusher-cluster"]').content}.pusher.com`,
-    wsPort: document.querySelector('meta[name="pusher-port"]').content ?? 80,
-    wssPort: document.querySelector('meta[name="pusher-port"]').content ?? 443,
-    forceTLS: true,
-    enabledTransports: ['ws', 'wss'],
-});
+const pusherKey = document.querySelector('meta[name="pusher-key"]').content;
+const pusherCluster = document.querySelector('meta[name="pusher-cluster"]').content ?? 'mt1'
+const pusherPort = document.querySelector('meta[name="pusher-port"]').content;
+
+if (pusherKey) {
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: pusherKey,
+        cluster: pusherCluster,
+        wsHost: `ws-${pusherCluster}.pusher.com`,
+        wsPort:  pusherPort ?? 80,
+        wssPort: pusherPort ?? 443,
+        forceTLS: true,
+        enabledTransports: ['ws', 'wss'],
+    });
+}
