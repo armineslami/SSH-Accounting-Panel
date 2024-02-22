@@ -31,7 +31,7 @@ class CheckForUpdate
             return;
         }
 
-        $cookieName = env("APP_UPDATE_CHECK_COOKIE_NAME", "latest-version");
+        $cookieName = config("app.update_check_cookie");
 
         if (isset($_COOKIE[$cookieName]) || $settings->app_update_check_interval === "never") {
             return;

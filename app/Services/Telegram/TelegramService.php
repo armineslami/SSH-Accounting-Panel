@@ -61,8 +61,8 @@ class TelegramService
 
     protected function createWebhookUrl(string $host, string $port): string
     {
-        return env("APP_ENV", "") === "local" ?
-            env("TELEGRAM_WEBHOOK_ADDRESS") . "/api/<token>/webhook" :
+        return config("app.env") === "local" ?
+            config("app.telegram_webhook_address") . "/api/<token>/webhook" :
             $host . ":" . $port . "/api/<token>/webhook";
     }
 

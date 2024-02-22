@@ -8,7 +8,7 @@ class SettingService
 {
     public static function updateCookie(string $cookieExpireDate): void
     {
-        $cookieName = env("APP_UPDATE_CHECK_COOKIE_NAME", "latest-version");
+        $cookieName = config("app.update_check_cookie");
         if (isset($_COOKIE[$cookieName])) {
             $cookieVersion = $_COOKIE[$cookieName];
             setcookie($cookieName, $cookieVersion, Utils::getCookieExpiryDate($cookieExpireDate), "/");

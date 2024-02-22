@@ -199,4 +199,7 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'update_check_cookie' => env('APP_UPDATE_CHECK_COOKIE_NAME', 'latest-version'),
+
+    'telegram_webhook_address' => env('TELEGRAM_WEBHOOK_ADDRESS', '')
 ];
