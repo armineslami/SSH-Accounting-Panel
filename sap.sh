@@ -187,6 +187,7 @@ numprocs=8
 redirect_stderr=true
 stdout_logfile=/var/www/${project_name}/storage/logs/worker.log
 stopwaitsecs=3600
+startsecs=0
 ENDOFFILE
 
     sudo supervisorctl reread > /dev/null 2>&1
