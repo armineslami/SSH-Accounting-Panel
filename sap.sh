@@ -401,7 +401,10 @@ install() {
     # Try to login into mysql without a password
     result=$(check_mysql_connection)
 
-    if [[ $result == *"Access denied"* ]]; then
+    if [[ $result == *"Can't connect to local server through socket"* ]]; then
+        printf "${RED}\nCan not connect to the mysql. Make sure it's running${NC}\n"
+        exit;
+    elif [[ $result == *"Access denied"* ]]; then
         # root user has a password
         message="Enter the password of the 'root' user of the mysql service: "
         while true; do
