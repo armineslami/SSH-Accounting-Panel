@@ -91,6 +91,8 @@ EOF
 }
 
 check_mysql_connection() {
+    systemctl restart mysql
+
     if [ -z "$1" ]; then
         result=$(mysql -u root -e "SELECT 1" 2>&1)
     else
