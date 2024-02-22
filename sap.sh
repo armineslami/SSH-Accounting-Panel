@@ -463,6 +463,9 @@ install() {
     # Create a .env file using the sample file
     cp .env.example .env
 
+    chown -R www-data:www-data .env
+    chmod 755 .env
+
     # Set the APP_URL in the .env
     if [ -z "$domain" ]; then
         domain=$(get_ip_address)
