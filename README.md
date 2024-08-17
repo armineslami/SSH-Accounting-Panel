@@ -17,6 +17,8 @@ This panel provides you an easy way to create ssh accounts on your servers and u
 You can either create accounts on your local machine or on the remote servers. The panel also provides you
 a cli command called `sap` to interact with it through the terminal.
 
+<p align="center"><a href="#"><img src="./media/dashboard.png" alt="Dashboard Screenshot"></a></p>
+
 ## Features
 
 - Add/Update/Delete inbounds
