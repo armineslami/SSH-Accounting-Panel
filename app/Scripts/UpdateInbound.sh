@@ -1,10 +1,17 @@
 #!/bin/bash
 
+echo "<span class='text-terminal-info'>Updating the inbound</span>"
+
+# Check if user exists
+if ! grep -q "^$USERNAME:" /etc/passwd; then
+    # Since user does not exists on the server, create a new one
+    sudo adduser --shell /usr/sbin/nologin --no-create-home --disabled-password --gecos "" "$USERNAME" 2>&1
+fi
+
 #####################
 ###  Set Password ###
 #####################
 
-echo "<span class='text-terminal-info'>Updating the inbound</span>"
 echo "$USERNAME":"$PASSWORD" | sudo chpasswd 2>&1
 
 #####################
