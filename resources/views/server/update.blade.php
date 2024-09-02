@@ -81,6 +81,15 @@
                         </div>
                     </div>
 
+                    <div>
+                        <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                            {{ __('Outline Api Url') }}
+                        </label>
+                        <p class="text-gray-900 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 border-l-4 border-indigo-500 dark:border-indigo-600 rounded m-1 p-3">
+                            {{ $server->outline_api_url }}
+                        </p>
+                    </div>
+
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">
                             <x-danger-button class="me-4" x-data=""
