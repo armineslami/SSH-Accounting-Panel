@@ -800,6 +800,12 @@ uninstall() {
     sudo supervisorctl update > /dev/null 2>&1
     sudo supervisorctl restart all > /dev/null 2>&1
 
+    # Remove outline containers
+    docker rm -f shadowbox watchtower > /dev/null 2>&1
+    docker system prune -a > /dev/null 2>&1
+    rm -rf "/root/shadowbox" > /dev/null 2>&1
+    rm -rf "/opt/outline" > /dev/null 2>&1
+
     printf "${GREEN}\nUninstallation is completed.\n${NC}\n"
 }
 
