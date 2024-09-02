@@ -53,7 +53,7 @@
                                 <thead>
                                 <tr>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">#</th>
-                                    <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left sticky -left-8 z-10 bg-white dark:bg-slate-800">{{ __('Username') }}</th>
+                                    <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left sticky -left-8 z-10 bg-white dark:bg-gray-800 md:bg-transparent">{{ __('Username') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Server') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Active') }}</th>
                                     <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ __('Traffic Limit (GB)') }}</th>
