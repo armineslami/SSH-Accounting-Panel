@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Inbound extends Model
 {
@@ -86,5 +87,10 @@ class Inbound extends Model
     {
         // Modify the value before saving it
         $this->attributes['remaining_traffic'] = isset($value) ? number_format($value, 2) : null;
+    }
+
+    public function outline(): HasOne
+    {
+        return $this->hasOne(Outline::class);
     }
 }

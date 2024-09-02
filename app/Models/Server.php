@@ -15,7 +15,8 @@ class Server extends Model
         'username',
         'address',
         'port',
-        'udp_port'
+        'udp_port',
+        'outline_api_url'
     ];
 
     /**

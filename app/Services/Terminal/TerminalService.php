@@ -20,6 +20,8 @@ class TerminalService
 
     private static bool $failed = false;
 
+    private static array $temp = [];
+
     public static function setup(): void
     {
         self::turnOffBuffer();
@@ -207,6 +209,14 @@ class TerminalService
             self::$failed = true;
 //            echo "<p> </p>";
         }
+        // Look for a string like: outline access key: https://ip:port/XXXXXXXX
+        else if (str_contains($text, "outline access key:")) {
+            // extract api url from a the string
+            preg_match('/https?:\/\/[^\s]+/', $text, $matches);
+            if (isset($matches[0])) {
+                self::$temp['outline_api_url'] = $matches[0];
+            }
+        }
     }
 
     private static function cleanup(): void
@@ -252,7 +262,8 @@ class TerminalService
             $server->address,
             $server->username,
             $server->port,
-            $server->udp_port
+            $server->udp_port,
+            self::$temp['outline_api_url'] ?? null
         );
     }
 

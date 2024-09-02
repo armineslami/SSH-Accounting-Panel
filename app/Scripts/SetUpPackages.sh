@@ -122,4 +122,17 @@ sudo systemctl start ssh-accounting-panel-udp 2>&1
 
 sudo systemctl daemon-reload
 
+###########################
+#####     Outline     #####
+###########################
+
+if ! (docker ps -a --filter "name=shadowbox" | grep -q shadowbox) && ! (docker ps -a --filter "name=watchtower" | grep -q watchtower); then
+    yes | sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-apps/master/server_manager/install_scripts/install_server.sh)"
+fi
+
+echo "<span class='text-terminal-info'>Outline apu url:</span>"
+apiUrl=$(grep "apiUrl" /opt/outline/access.txt | cut -d: -f 2-)
+echo "outline access key: $apiUrl"
+echo ""
+
 echo "<span class='text-terminal-success'>Server is set and ready to use</span>"
