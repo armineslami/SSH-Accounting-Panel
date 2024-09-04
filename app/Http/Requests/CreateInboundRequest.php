@@ -30,6 +30,7 @@ class CreateInboundRequest extends FormRequest
             'max_login' => 'required|numeric|min:1|max:1000',
             'active_days' => 'nullable|numeric|min:0|max:3650',
             'server_ip' => 'required|ipv4|',
+            'outline' => 'in:on,off'
         ];
     }
 

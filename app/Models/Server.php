@@ -26,4 +26,9 @@ class Server extends Model
     {
         return $this->hasMany(Inbound::class, 'server_ip', 'address');
     }
+
+    public function outlines(): HasMany
+    {
+        return $this->hasMany(Outline::class);
+    }
 }

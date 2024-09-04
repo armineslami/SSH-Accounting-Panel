@@ -2,9 +2,11 @@
 
 namespace App\Services\Terminal;
 
+use App\Models\Inbound;
 use App\Models\TerminalSession;
 use App\Repositories\InboundRepository;
 use App\Repositories\ServerRepository;
+use App\Services\Outline\OutlineService;
 use App\Services\Terminal\Command\Command;
 use App\Services\Terminal\Message\Message;
 use App\Utils\Utils;
@@ -210,8 +212,8 @@ class TerminalService
 //            echo "<p> </p>";
         }
         // Look for a string like: outline access key: https://ip:port/XXXXXXXX
-        else if (str_contains($text, "outline access key:")) {
-            // extract api url from a the string
+        else if (str_contains($text, "API URL:")) {
+            // extract api url from the string
             preg_match('/https?:\/\/[^\s]+/', $text, $matches);
             if (isset($matches[0])) {
                 self::$temp['outline_api_url'] = $matches[0];
@@ -224,7 +226,6 @@ class TerminalService
         if (isset(self::$process)) {
             try {
                 proc_close(self::$process);
-
             }
             catch (\Exception $error) {}
 
@@ -242,12 +243,16 @@ class TerminalService
                 self::deleteServer($request->id);
                 break;
             case Command::CREATE_INBOUND:
-                self::createInbound($request->inbound);
+                $inbound = self::createInbound($request->inbound);
+                if (isset($request->inbound->outline))
+                    OutlineService::create($inbound);
                 break;
             case Command::UPDATE_INBOUND:
-                self::updateInbound($request->id, $request->inbound);
+                $inbound = self::updateInbound($request->id, $request->inbound);
+                OutlineService::update($inbound, isset($request->inbound->outline));
                 break;
             case Command::DELETE_INBOUND:
+                OutlineService::delete($request->id);
                 self::deleteInbound($request->id);
                 break;
             default:
@@ -272,13 +277,13 @@ class TerminalService
         ServerRepository::deleteById($id);
     }
 
-    private static function createInbound(mixed $inbound): void
+    private static function createInbound(mixed $inbound): Inbound
     {
         if (isset($inbound->active_days) && $inbound->active_days <= 0) {
             $inbound->is_active = "0";
         }
 
-        InboundRepository::create(
+        return InboundRepository::create(
             username: $inbound->username,
             password: $inbound->user_password,
             is_active: $inbound->is_active,
@@ -290,7 +295,7 @@ class TerminalService
         );
     }
 
-    private static function updateInbound(int $id, mixed $inbound): void
+    private static function updateInbound(int $id, mixed $inbound): Inbound
     {
         $inbound->expires_at    = Utils::convertActiveDaysToExpireAtDate($inbound->active_days);
         $inbound->password      = $inbound->user_password;
@@ -313,6 +318,8 @@ class TerminalService
             $id,
             (array)$inbound
         );
+
+        return InboundRepository::byId($id);
     }
 
     private static function deleteInbound(int $id): void

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Outline extends Model
 {
@@ -15,10 +16,16 @@ class Outline extends Model
         'key_name',
         'key',
         'inbound_id',
+        'server_id'
     ];
 
     public function inbound(): BelongsTo
     {
         return $this->belongsTo(Inbound::class);
+    }
+
+    public function server(): BelongsTo
+    {
+        return $this->BelongsTo(Server::class);
     }
 }

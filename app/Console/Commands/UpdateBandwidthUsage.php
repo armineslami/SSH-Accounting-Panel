@@ -5,7 +5,9 @@ namespace App\Console\Commands;
 use App\Models\Inbound;
 use App\Models\Server;
 use App\Repositories\InboundRepository;
+use App\Repositories\OutlineRepository;
 use App\Repositories\ServerRepository;
+use App\Services\Outline\OutlineService;
 use App\Utils\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -63,6 +65,7 @@ class UpdateBandwidthUsage extends Command
             collect($server['users'])->each(function ($data, $username) {
 //                $inbound = Inbound::where("username", $username)->first();
                 $inbound = InboundRepository::byUsername($username);
+                $outline = OutlineRepository::byInboundId($inbound->id);
 
                 if ($inbound) {
                     /**
@@ -70,13 +73,21 @@ class UpdateBandwidthUsage extends Command
                      * then update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
                      */
                     if (isset($inbound->traffic_limit)) {
-                        // Calculate the bandwidth usage in GB
-                        $bandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
+                        // Calculate SSH bandwidth usage in GB
+                        $sshBandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
+
+                        // Calculate Outline bandwidth usage in GB
+                        $outlineBandwidth = !is_null($outline) ? OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id) : 0;
 
                         // Update the remaining traffic limit of the inbound
-                        $remainingTraffic = $inbound->remaining_traffic - $bandwidth;
+                        $remainingTraffic = $inbound->remaining_traffic - ($sshBandwidth + $outlineBandwidth);
                         $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
                         $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
+
+                        // Update outline
+                        if (!is_null($outline)) {
+                            OutlineService::updateDataLimit($inbound->server->address, $outline->outline_id, $inbound->remaining_traffic);
+                        }
                     }
 
                     /**
@@ -89,6 +100,13 @@ class UpdateBandwidthUsage extends Command
                         $diff = $expires_at->diffInDays($today);
                         $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
                         $inbound->is_active = $remainingDays > 0 ? '1' : '0';
+                        if ($remainingDays <= 0) {
+                            $outline = OutlineRepository::byInboundId($inbound->id);
+                            if (!is_null($outline)) {
+                                OutlineService::updateDataLimit($inbound->server->address, $outline->outline_id, 0);
+                            }
+                        }
+
                     }
 
                     $inbound->save();

@@ -127,6 +127,28 @@
                         </div>
                     </div>
 
+                    <div x-data="{ show: {{ is_null(old('outline')) ? 'false' : 'true'  }} }">
+                        <x-input-label :value="__('More Protocols')" />
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            {{ __("You can add more vpn configs for the user alongside the default SSH config:") }}
+                        </p>
+
+                        <label for="outline" class="inline-flex items-center mt-4">
+                            <input
+                                x-model="show"
+                                class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                id="outline" name="outline" type="checkbox" >
+                            <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Outline') }}</span>
+                            <x-input-error class="mt-2" :messages="$errors->get('outline')" />
+                        </label>
+
+                        <div id="outline_warning" x-show="show" class="mt-2 text-sm text-gray-900 dark:text-gray-100">
+                            <p class="text-justify">
+                                ⚠️ Max Login won't work for Outline connections.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">
                             <x-primary-button>{{ __('Create') }}</x-primary-button>
@@ -155,6 +177,12 @@
             }
             const targetInput = document.getElementById(input);
             targetInput.value = result;
+        }
+
+        function toggleVisibility(elementId) {
+            const element = document.getElementById(elementId);
+            console.log(element);
+            element.classList.toggle('hidden');
         }
     </script>
 </x-app-layout>

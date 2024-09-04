@@ -173,6 +173,49 @@
                         <x-input-error class="mt-2" :messages="$errors->get('delete_from_old_server')"/>
                     </div>
 
+                    <div x-data="{ show: {{ is_null(old('outline')) && is_null($inbound->outline) ? 'false' : 'true'  }} }">
+                        <x-input-label :value="__('More Protocols')" />
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            {{ __("You can add more vpn configs for the user alongside the default SSH config:") }}
+                        </p>
+
+                        <label for="outline" class="inline-flex items-center mt-4">
+                            <input
+                                x-model="show"
+                                class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                id="outline" name="outline" type="checkbox">
+                            <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Outline') }}</span>
+                            <x-input-error class="mt-2" :messages="$errors->get('outline')" />
+                        </label>
+
+                        <div id="outline_warning" x-show="show" class="mt-2 text-sm text-gray-900 dark:text-gray-100">
+                            <p class="text-justify">
+                                ⚠️ Max Login won't work for Outline connections.
+                            </p>
+                        </div>
+                    </div>
+
+                    @if(!is_null($inbound->outline))
+                        <div>
+                            <label class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                                {{ __('Outline Access Key') }}
+                            </label>
+                            <div class="relative grid grid-cols-12 bg-gray-100 dark:bg-gray-900 border-l-4 border-indigo-500 dark:border-indigo-600 rounded m-1 p-3">
+                                <p class="col-span-11 truncate text-gray-900 dark:text-gray-300">
+                                    {{ $inbound->outline->key }}
+                                </p>
+                                <span
+                                    class="flex items-center justify-center cursor-pointer col-span-1"
+                                    x-data
+                                    x-on:click="copy('{{ $inbound->outline->key }}')">
+                                <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
+                                    {{ __('Copy') }}
+                                </span>
+                            </span>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">
                             <x-danger-button class="me-4" x-data=""
@@ -261,6 +304,37 @@
             }
             const targetInput = document.getElementById(input);
             targetInput.value = result;
+        }
+
+        function toggleVisibility(elementId) {
+            const element = document.getElementById(elementId);
+            console.log(element);
+            element.classList.toggle('hidden');
+        }
+
+        function copy(text) {
+            if (window.clipboardData && window.clipboardData.setData) {
+                // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+                return window.clipboardData.setData("Text", text);
+
+            }
+            else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                var textarea = document.createElement("textarea");
+                textarea.textContent = text;
+                textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+                }
+                catch (ex) {
+                    console.warn("Copy to clipboard failed.", ex);
+                    // return prompt("Copy to clipboard: Ctrl+C, Enter", text);
+                }
+                finally {
+                    document.body.removeChild(textarea);
+                }
+            }
         }
     </script>
 </x-app-layout>

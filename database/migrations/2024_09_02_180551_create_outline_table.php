@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('key_name')->nullable();
             $table->string('key');
             $table->unsignedBigInteger('inbound_id')->unique();
+            $table->unsignedBigInteger('server_id');
             $table->timestamps();
 
             $table->foreign('inbound_id')->references('id')->on('inbounds')->onDelete('cascade');
+            $table->foreign('server_id')->references('id')->on('servers')->onDelete('cascade');
         });
     }
 

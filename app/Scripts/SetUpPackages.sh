@@ -130,9 +130,9 @@ if ! (docker ps -a --filter "name=shadowbox" | grep -q shadowbox) && ! (docker p
     yes | sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-apps/master/server_manager/install_scripts/install_server.sh)"
 fi
 
-echo "<span class='text-terminal-info'>Outline apu url:</span>"
+echo "<span class='text-terminal-info'>Outline API URL</span>"
 apiUrl=$(grep "apiUrl" /opt/outline/access.txt | cut -d: -f 2-)
-echo "outline access key: $apiUrl"
+echo "API URL: $apiUrl"
 echo ""
 
 echo "<span class='text-terminal-success'>Server is set and ready to use</span>"

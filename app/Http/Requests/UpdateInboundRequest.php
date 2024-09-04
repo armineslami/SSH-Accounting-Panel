@@ -31,7 +31,8 @@ class UpdateInboundRequest extends FormRequest
             'max_login' => 'required|numeric|min:1|max:1000',
             'active_days' => 'nullable|numeric|min:0|max:3650',
             'server_ip' => 'required|ipv4|',
-            'delete_from_old_server' => 'nullable|numeric|in:0,1'
+            'delete_from_old_server' => 'nullable|numeric|in:0,1',
+            'outline' => 'in:on,off',
         ];
     }
 
