@@ -39,8 +39,8 @@ sudo deluser ssh-accounting-panel-udp 2>&1
 
 docker rm -f shadowbox watchtower 2>&1
 yes | docker system prune -a 2>&1
-rm -rf "/root/shadowbox" 2>&1
-rm -rf "/opt/outline" 2>&1
+sudo rm -rf "/root/shadowbox" 2>&1
+sudo rm -rf "/opt/outline" 2>&1
 echo ""
 
 echo "<span class='text-terminal-success'>Server is deleted successfully</span>"
