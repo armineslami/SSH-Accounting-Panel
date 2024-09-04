@@ -5,6 +5,17 @@ namespace App\Services\Telegram;
 use Exception;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
+/**
+ * Use {@link http://pinggy.io} to run local tunnel for telegram webhook.
+ *
+ * To See last message of bot, send GET request to {@link https://api.telegram.org/botXXXXXXXXXXXXXXXX/getWebhookInfo}
+ *
+ * Configs are in {@link .env}, {@link config/telegram.php} & {@link ProxyHttpClient}.
+ *
+ * By default, configs are set to use a proxy on 127.0.0.1:7070 for local development. To change this
+ * update http_client_handler in {@link config/telegram.php}.
+ */
+
 class TelegramService
 {
     private string|null $error;
