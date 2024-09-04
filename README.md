@@ -13,7 +13,7 @@ SSH Accounting Panel
 
 ## About
 
-This app provides you an easy way to create vpn accounts including ssh and outline protocols on your server.
+This app provides you an easy way to create and manage vpn accounts including ssh and outline protocols on your server.
 You can either create accounts on your local machine or on the remote servers. The app also provides you
 a cli command called `sap` to interact with it through the terminal.
 
@@ -33,7 +33,11 @@ a cli command called `sap` to interact with it through the terminal.
 - Add SSL certificate to your domain
 - Telegram bot support
 - Dropbox daily backup support
-- Outline VPN support
+
+## Supported Protocols
+
+- SSH (Direct)
+- Outline (Shadowsocks)
 
 ## Supported OS
 
