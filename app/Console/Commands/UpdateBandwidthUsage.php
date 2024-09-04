@@ -65,12 +65,13 @@ class UpdateBandwidthUsage extends Command
             collect($server['users'])->each(function ($data, $username) {
 //                $inbound = Inbound::where("username", $username)->first();
                 $inbound = InboundRepository::byUsername($username);
-                $outline = OutlineRepository::byInboundId($inbound->id);
 
                 if ($inbound) {
+                    $outline = OutlineRepository::byInboundId($inbound->id);
+
                     /**
-                     * If an inbound is found and if it's traffic limit is not null which means unlimited,
-                     * then update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
+                     * If an inbound is found and if it's traffic limit is not null, it means traffic is limited
+                     * so update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
                      */
                     if (isset($inbound->traffic_limit)) {
                         // Calculate SSH bandwidth usage in GB
@@ -83,11 +84,6 @@ class UpdateBandwidthUsage extends Command
                         $remainingTraffic = $inbound->remaining_traffic - ($sshBandwidth + $outlineBandwidth);
                         $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
                         $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
-
-                        // Update outline
-                        if (!is_null($outline)) {
-                            OutlineService::updateDataLimit($inbound->server->address, $outline->outline_id, $inbound->remaining_traffic);
-                        }
                     }
 
                     /**
@@ -100,21 +96,17 @@ class UpdateBandwidthUsage extends Command
                         $diff = $expires_at->diffInDays($today);
                         $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
                         $inbound->is_active = $remainingDays > 0 ? '1' : '0';
-                        if ($remainingDays <= 0) {
-                            $outline = OutlineRepository::byInboundId($inbound->id);
-                            if (!is_null($outline)) {
-                                OutlineService::updateDataLimit($inbound->server->address, $outline->outline_id, 0);
-                            }
-                        }
-
                     }
 
                     $inbound->save();
 
-                    // Deactivate the inbound if the remaining traffic is <= 0
-                    if ($inbound->remaining_traffic <= 0 && !is_null($inbound->server)) {
+                    // Deactivate the inbound on the server if it's not active
+                    if ($inbound->is_active === '0' && !is_null($inbound->server)) {
                         $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
                         self::updateInbound($inbound, 0);
+                        if (!is_null($outline)) {
+                            OutlineService::delete($inbound->id);
+                        }
                     }
                 }
             });
