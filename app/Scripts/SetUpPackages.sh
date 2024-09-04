@@ -131,7 +131,7 @@ if ! (docker ps -a --filter "name=shadowbox" | grep -q shadowbox) && ! (docker p
 fi
 
 echo "<span class='text-terminal-info'>Outline API URL</span>"
-apiUrl=$(grep "apiUrl" /opt/outline/access.txt | cut -d: -f 2-)
+apiUrl=$(sudo grep "apiUrl" /opt/outline/access.txt | cut -d: -f 2-)
 echo "API URL: $apiUrl"
 echo ""
 
