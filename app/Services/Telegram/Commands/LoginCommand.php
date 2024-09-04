@@ -52,7 +52,7 @@ class LoginCommand extends Command
 ."\n\n📱 *Max Device*: $inbound->max_login
 \n🔑 *Outline Key*: `$outline`",
                 'reply_markup' => Keyboard::simpleMarkupKeyboard(),
-                'parse_mode' => 'MarkdownV2'
+                'parse_mode' => 'markdown'
             ]);
         }
         else {
