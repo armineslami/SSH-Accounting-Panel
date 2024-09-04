@@ -5,7 +5,7 @@ SSH Accounting Panel
 <br/>
 <br/>
 <p>
-<a href=""><img src="https://img.shields.io/badge/v3.2.0-blue?label=release" alt="Latest Version"></a>
+<a href=""><img src="https://img.shields.io/badge/v3.3.0-blue?label=release" alt="Latest Version"></a>
 <a href=""><img src="https://img.shields.io/badge/MIT-%2397ca00?label=licence" alt="License"></a>
 </p>
 </h2>
@@ -13,8 +13,8 @@ SSH Accounting Panel
 
 ## About
 
-This panel provides you an easy way to create ssh accounts on your servers and use them for tunneling.
-You can either create accounts on your local machine or on the remote servers. The panel also provides you
+This app provides you an easy way to create vpn accounts including ssh and outline protocols on your server.
+You can either create accounts on your local machine or on the remote servers. The app also provides you
 a cli command called `sap` to interact with it through the terminal.
 
 <p align="center"><a href="#"><img src="./media/dashboard.png" alt="Dashboard Screenshot"></a></p>
@@ -33,6 +33,7 @@ a cli command called `sap` to interact with it through the terminal.
 - Add SSL certificate to your domain
 - Telegram bot support
 - Dropbox daily backup support
+- Outline VPN support
 
 ## Supported OS
 
