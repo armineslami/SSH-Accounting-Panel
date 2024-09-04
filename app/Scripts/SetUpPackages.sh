@@ -127,7 +127,7 @@ sudo systemctl daemon-reload
 ###########################
 
 if ! (docker ps -a --filter "name=shadowbox" | grep -q shadowbox) && ! (docker ps -a --filter "name=watchtower" | grep -q watchtower); then
-    yes | sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-apps/master/server_manager/install_scripts/install_server.sh)"
+    yes | sudo bash -c "$(wget -qO- https://raw.githubusercontent.com/Jigsaw-Code/outline-apps/master/server_manager/install_scripts/install_server.sh)" 2>&1
 fi
 
 echo "<span class='text-terminal-info'>Outline API URL</span>"
