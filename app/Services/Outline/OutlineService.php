@@ -39,19 +39,28 @@ class OutlineService
         // Create new key with name set to username
         $key = $api->addKey($inbound->username);
 
-        // Set key data limit to 0 bytes if inbound is not active
-        if ($inbound->is_active === '0') {
-            $api->setKeyDataLimit($key->getId(), 0);
-        }
-        // Set key data limit in bytes equal to traffic limit
-        else {
-            if (isset($inbound->traffic_limit)) {
-                $api->setKeyDataLimit($key->getId(), $inbound->traffic_limit * 1000 * 1000 * 1000);
-            }
-            else {
-                $api->unsetKeyDataLimit($key->getId());
-            }
-        }
+//        // Set key data limit to 0 bytes if inbound is not active
+//        if ($inbound->is_active === '0') {
+//            /**
+//             * I'm setting data limit to 0 instead of using $api->deleteKey($key->getId())
+//             * because I don't want the key to be changed if user gets activated in the future.
+//             */
+//            $api->setKeyDataLimit($key->getId(), 0);
+//        }
+//        else {
+////            if (isset($inbound->traffic_limit)) {
+////                // Set key data limit in bytes equal to traffic limit
+////                $api->setKeyDataLimit($key->getId(), $inbound->traffic_limit * 1000 * 1000 * 1000);
+////            }
+////            else {
+////                $api->unsetKeyDataLimit($key->getId());
+////            }
+//            /**
+//             * Remove any limitation for the key.
+//             * {@link UpdateBandwidthUsage} will take care of bandwidth usage update.
+//             */
+//            $api->unsetKeyDataLimit($key->getId());
+//        }
 
         // Add the new outline to the database
         self::addToDatabase($inbound->id, $inbound->server->id, $key);
@@ -68,25 +77,30 @@ class OutlineService
 
         if (!is_null($outline)) { // Outline found
             // If outline is not set, delete the current outline connection
-            if (!$hasOutline) {
+            if (!$hasOutline || $inbound->is_active === '0') {
                 $api->deleteKey($outline->outline_id);
                 OutlineRepository::deleteById($outline->id);
             }
-            else if ($inbound->is_active === '0') {
-                $api->setKeyDataLimit($outline->outline_id, 0);
-            }
-            else  {
-                if (isset($inbound->traffic_limit)) {
-                    $api->setKeyDataLimit($outline->outline_id, $inbound->traffic_limit * 1000 * 1000 * 1000);
-                }
-                else {
-                    $api->unsetKeyDataLimit($outline->outline_id);
-                }
-            }
+//            else if ($inbound->is_active === '0') {
+//                $api->setKeyDataLimit($outline->outline_id, 0);
+//            }
+//            else  {
+////                if (isset($inbound->traffic_limit)) {
+////                    $api->setKeyDataLimit($outline->outline_id, $inbound->traffic_limit * 1000 * 1000 * 1000);
+////                }
+////                else {
+////                    $api->unsetKeyDataLimit($outline->outline_id);
+////                }
+//                /**
+//                 * Remove any limitation for the key.
+//                 * {@link UpdateBandwidthUsage} will take care of bandwidth usage update.
+//                 */
+//                $api->unsetKeyDataLimit($outline->outline_id);
+//            }
 
             return $api->getKeyById($outline->outline_id);
         }
-        else if ($hasOutline) {
+        else if ($hasOutline && $inbound->is_active === '1') {
             // Delete any existing key which its name is equal to the inbound username
             try {
                 $keysList = $api->getKeys();
@@ -102,13 +116,13 @@ class OutlineService
             // Create new key with name set to username
             $key = $api->addKey($inbound->username);
 
-            if ($inbound->is_active === '0') {
-                $api->setKeyDataLimit($key->getId(), 0);
-            }
-            // Set key data limit in bytes equal to traffic limit
-            else if (isset($inbound->traffic_limit)) {
-                $api->setKeyDataLimit($key->getId(), $inbound->traffic_limit * 1000 * 1000 * 1000);
-            }
+//            if ($inbound->is_active === '0') {
+//                $api->setKeyDataLimit($key->getId(), 0);
+//            }
+//            // Set key data limit in bytes equal to traffic limit
+//            else if (isset($inbound->traffic_limit)) {
+//                $api->setKeyDataLimit($key->getId(), $inbound->traffic_limit * 1000 * 1000 * 1000);
+//            }
 
             // Add the new outline to the database
             self::addToDatabase($inbound->id, $inbound->server->id, $key);
