@@ -9,6 +9,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * To make this broadcasting work on local development, use `php artisan queue:work`
+ */
+
 class AppUpdateAvailable implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
