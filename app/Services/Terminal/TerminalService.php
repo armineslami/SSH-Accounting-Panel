@@ -244,7 +244,7 @@ class TerminalService
                 break;
             case Command::CREATE_INBOUND:
                 $inbound = self::createInbound($request->inbound);
-                if (isset($request->inbound->outline))
+                if (isset($request->inbound->outline) && $inbound->is_active === '1')
                     OutlineService::create($inbound);
                 break;
             case Command::UPDATE_INBOUND:
