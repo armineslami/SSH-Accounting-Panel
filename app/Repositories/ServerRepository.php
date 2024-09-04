@@ -34,7 +34,7 @@ class ServerRepository implements ServerRepositoryInterface
         return Server::count();
     }
 
-    public static function create(string $name, string $address, string $username, int $port, int $udp_port, string $outline_api_url): Server
+    public static function create(string $name, string $address, string $username, int $port, int $udp_port, ?string $outline_api_url): Server
     {
         return Server::create([
             'name' => $name,
