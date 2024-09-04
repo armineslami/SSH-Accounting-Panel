@@ -38,6 +38,7 @@ class LoginCommand extends Command
 
             $server  = ServerRepository::byAddress($inbound->server_ip);
             $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
+            $outline = isset($inbound->outline) ? $inbound->outline->key : "❌";
 
             $this->replyWithMessage([
                 'text' => "❗ *Account Info* ❗️
@@ -48,7 +49,8 @@ class LoginCommand extends Command
 \n🔋 *Active*: " . ($inbound->is_active == "1" ? "👍🏻" : "👎🏻")
 ."\n\n🚦 *Traffic*: " . (!isset($inbound->traffic_limit) ? "♾️" : (round($inbound->traffic_limit - $inbound->remaining_traffic, 2))."G / " . $inbound->traffic_limit. "G")
 ."\n\n⏳ *Remaining Days*: " . ($inbound->active_days == "" ? "♾️" : $inbound->active_days)
-."\n\n📱 *Max Device*: $inbound->max_login",
+."\n\n📱 *Max Device*: $inbound->max_login
+\n🔑 *Outline Key*: $outline",
                 'reply_markup' => Keyboard::simpleMarkupKeyboard(),
                 'parse_mode' => 'markdown'
             ]);
