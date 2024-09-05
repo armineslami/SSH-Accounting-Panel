@@ -30,13 +30,23 @@
 
             <div class="p-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <header>
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        {{ __('Update Server') }}
-                    </h2>
+                    <div class="flex justify-between">
+                        <div>
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                {{ __('Update Server') }}
+                            </h2>
 
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        {{ __("Change server settings.") }}
-                    </p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                {{ __("Change server settings.") }}
+                            </p>
+                        </div>
+
+                        <a class="ms-auto" href="{{route('servers.create')}}">
+                            <x-secondary-button>
+                                {{ __('Create Server') }}
+                            </x-secondary-button>
+                        </a>
+                    </div>
                 </header>
 
                 <form method="post" action="{{ route('servers.update', $server->id) }}" class="mt-6 space-y-6">
