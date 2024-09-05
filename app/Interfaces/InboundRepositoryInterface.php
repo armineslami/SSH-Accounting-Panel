@@ -18,5 +18,5 @@ interface InboundRepositoryInterface
                                   $expires_at = null): Inbound;
     public static function update(int $id, mixed $inbound): bool;
     public static function deleteById(int $id): int;
-    public static function search(?string $query): LengthAwarePaginator;
+    public static function search(?string $query, int $paginate): LengthAwarePaginator;
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateServerRequest;
 use App\Http\Requests\UpdateServerRequest;
 use App\Repositories\ServerRepository;
+use App\Repositories\SettingRepository;
 use App\Repositories\TerminalSessionRepository;
 use App\Services\Terminal\Command\Command;
 use App\Utils\Utils;
@@ -27,7 +28,7 @@ class ServerController extends BaseController
             return view('server.update', ['server' => $server]);
         }
 
-        $servers = ServerRepository::paginate(20);
+        $servers = ServerRepository::paginate(SettingRepository::first()->app_paginate_number);
         return view('server.index', ['servers' => $servers]);
     }
 

@@ -71,6 +71,14 @@
                     </x-select-input>
                     <x-input-error class="mt-2" :messages="$errors->get('app_update_check_interval')" />
                 </div>
+
+                <div>
+                    <x-input-label for="app_paginate_number" :value="__('*Pagination Count')"/>
+                    <x-text-input id="app_paginate_number" name="app_paginate_number" placeholder="paginate number e.g. 20" type="number"
+                                  class="mt-1 block w-full"
+                                  :value="old('app_paginate_number', $settings->app_paginate_number)" required />
+                    <x-input-error class="mt-2" :messages="$errors->get('app_paginate_number')"/>
+                </div>
             </div>
 
             <div class="flex items-center gap-4 mt-8">
