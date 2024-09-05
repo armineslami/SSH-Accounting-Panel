@@ -21,6 +21,7 @@ if [ -x "$(command -v apt-get)" ]; then
     DEBIAN_FRONTEND=interactive >/dev/null 2>&1
 else
     echo "<span class='text-terminal-error'>Unsupported OS</span>"
+    exit
 fi
 
 #############################

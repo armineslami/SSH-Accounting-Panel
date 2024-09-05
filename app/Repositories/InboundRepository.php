@@ -60,13 +60,13 @@ class InboundRepository implements InboundRepositoryInterface
         return Inbound::destroy($id);
     }
 
-    public static function search(?string $query): LengthAwarePaginator
+    public static function search(?string $query, int $paginate): LengthAwarePaginator
     {
         return Inbound::where("username", 'LIKE', '%' . $query . '%')
             ->orWhereHas('server', function ($serverQuery) use ($query) {
                 $serverQuery->where('name', 'LIKE', '%' . $query . '%')
                     ->orWhere('address', 'LIKE', '%' . $query . '%');
             })
-            ->paginate();
+            ->paginate($paginate);
     }
 }

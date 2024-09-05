@@ -24,7 +24,8 @@ class UpdateAppSettingsRequest extends FormRequest
     {
         return [
             "app_inbound_bandwidth_check_interval" => "required|numeric|in:30,60,360,1440",
-            "app_update_check_interval" => "required|string|in:day,week,month,never"
+            "app_update_check_interval" => "required|string|in:day,week,month,never",
+            "app_paginate_number" => "required|numeric|min:0|max:100"
         ];
     }
 }

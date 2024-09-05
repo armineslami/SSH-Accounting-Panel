@@ -24,6 +24,7 @@ class Setting extends Model
         'dropbox_token_expire_date',
         'app_inbound_bandwidth_check_interval',
         'app_update_check_interval',
+        'app_paginate_number',
         'pusher_id',
         'pusher_key',
         'pusher_secret',

@@ -138,7 +138,10 @@
                     string.includes("Permission denied, please try again.") ||
                     string.includes("Connection test failed") ||
                     string.includes("sudo: a terminal is required") ||
-                    string.includes("Inbound not found")
+                    string.includes("Inbound not found") ||
+                    string.includes("Missing arguments") ||
+                    string.includes("Failed to set up the server") ||
+                    string.includes("Unsupported OS")
                 ) {
                     failed = true;
                 }

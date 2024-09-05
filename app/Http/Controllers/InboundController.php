@@ -36,7 +36,7 @@ class InboundController extends BaseController
             );
         }
 
-        $inbounds = InboundRepository::paginate(20);
+        $inbounds = InboundRepository::paginate(SettingRepository::first()->app_paginate_number);
 
         return view('inbound.index', ['inbounds' => $inbounds]);
     }
@@ -140,7 +140,7 @@ class InboundController extends BaseController
 
     public function search(Request $request): View
     {
-        $result = InboundRepository::search(query: $request->input('query'));
+        $result = InboundRepository::search(query: $request->input('query'), paginate: SettingRepository::first()->app_paginate_number);
         return view('inbound.index', ['search_result' => $result, 'query' => $request->input('query')]);
     }
 }
