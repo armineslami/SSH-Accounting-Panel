@@ -95,7 +95,11 @@ class UpdateBandwidthUsage extends Command
                         $today = Carbon::now()->endOfDay();
                         $diff = $expires_at->diffInDays($today);
                         $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
-                        $inbound->is_active = $remainingDays > 0 ? '1' : '0';
+
+                        // IF the inbound is not already deactivated, set its activation based on the remaining days
+                        if ($inbound->is_active !== '0') {
+                            $inbound->is_active = $remainingDays > 0 ? '1' : '0';
+                        }
                     }
 
                     $inbound->save();
