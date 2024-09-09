@@ -78,7 +78,10 @@ class OutlineService
         if (!is_null($outline)) { // Outline found
             // If outline is not set, delete the current outline connection
             if (!$hasOutline || $inbound->is_active === '0') {
-                $api->deleteKey($outline->outline_id);
+                try {
+                    $api->deleteKey($outline->outline_id);
+                }
+                catch (\Exception $e) {}
                 OutlineRepository::deleteById($outline->id);
             }
 //            else if ($inbound->is_active === '0') {
@@ -136,8 +139,16 @@ class OutlineService
     public static function delete(int $inboundId): void
     {
         $inbound = InboundRepository::byId($inboundId);
-        $api = self::createClient($inbound->server->address);
-        $api->deleteKey($inbound->outline->outline_id);
+
+        if (isset($inbound->server)) {
+            try {
+                $api = self::createClient($inbound->server->address);
+                $api->deleteKey($inbound->outline->outline_id);
+            }
+            catch (\Exception $e) {}
+        }
+
+        OutlineRepository::deleteById($inbound->outline->id);
     }
 
     public static function updateDataLimit(string $serverAddress, int $outlineId, int $traffic): void
