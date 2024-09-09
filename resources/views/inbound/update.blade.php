@@ -58,8 +58,11 @@
                        </div>
 
                         <a class="ms-auto" href="{{route('inbounds.create')}}">
-                            <x-secondary-button>
+                            <x-secondary-button class="hidden sm:block">
                                 {{ __('Create Inbound') }}
+                            </x-secondary-button>
+                            <x-secondary-button class="block sm:hidden">
+                                {{ __('New') }}
                             </x-secondary-button>
                         </a>
                     </div>
@@ -211,11 +214,11 @@
                                 {{ __('Outline Access Key') }}
                             </label>
                             <div class="relative grid grid-cols-12 bg-gray-100 dark:bg-gray-900 border-l-4 border-indigo-500 dark:border-indigo-600 rounded m-1 p-3">
-                                <p class="col-span-11 truncate text-gray-900 dark:text-gray-300">
+                                <p class="col-span-10 md:col-span-11 truncate text-gray-900 dark:text-gray-300">
                                     {{ $inbound->outline->key }}
                                 </p>
                                 <span
-                                    class="flex items-center justify-center cursor-pointer col-span-1"
+                                    class="flex items-center justify-center cursor-pointer col-span-2 md:col-span-1"
                                     x-data
                                     x-on:click="copy('{{ $inbound->outline->key }}')">
                                 <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
@@ -228,7 +231,7 @@
 
                     <div class="flex items-center gap-4">
                         <div class="ms-auto">
-                            <x-danger-button class="me-4" x-data=""
+                            <x-danger-button x-data=""
                                              x-on:click.prevent="$dispatch('open-modal', 'confirm-inbound-deletion')"
                             >{{ __('Delete Inbound') }}</x-danger-button>
                             <x-primary-button>{{ __('Update') }}</x-primary-button>
