@@ -16,7 +16,8 @@ class Outline extends Model
         'key_name',
         'key',
         'inbound_id',
-        'server_id'
+        'server_id',
+        'traffic_usage'
     ];
 
     public function inbound(): BelongsTo
