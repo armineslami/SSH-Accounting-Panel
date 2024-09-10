@@ -77,13 +77,24 @@ class UpdateBandwidthUsage extends Command
                         // Calculate SSH bandwidth usage in GB
                         $sshBandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
 
-                        // Calculate Outline bandwidth usage in GB
-                        $outlineBandwidth = !is_null($outline) ? OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id) : 0;
+                        /**
+                         * Outline api only returns total used traffic and there is no api to set it to 0 when usage
+                         * is calculated. For ssh bandwidth this is done by deleting log files.
+                         * To make this happen for outline, the total usage is stored in the database and each time
+                         * a new total usage is fetched using {@link OutlineService::getUsedTrafficForKeyInGB}. Then
+                         * to calculate the new bandwidth usage, database last value is subtracted from the total usage.
+                         */
+                        $outlineTotalBandwidth = !is_null($outline) ? OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id) : 0;
+                        $outlineBandwidth = $outlineTotalBandwidth - $outline->traffic_usage;
 
                         // Update the remaining traffic limit of the inbound
                         $remainingTraffic = $inbound->remaining_traffic - ($sshBandwidth + $outlineBandwidth);
                         $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
                         $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
+
+                        // Update outline traffic usage in the database
+                        $outline->traffic_usage = $outlineTotalBandwidth;
+                        $outline->save();
                     }
 
                     /**
