@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="inline-block">
-            <a href="{{ route('servers.index') }}" class="flex flex-row">
+            <a href="javascript:history.back()" class="flex flex-row">
             <span class="me-2 sm:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-900 dark:text-gray-100">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
