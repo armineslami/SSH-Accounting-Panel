@@ -10,6 +10,7 @@ use App\Repositories\ServerRepository;
 use App\Services\Outline\OutlineService;
 use App\Utils\Utils;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
 class UpdateBandwidthUsage extends Command
@@ -40,6 +41,12 @@ class UpdateBandwidthUsage extends Command
             return;
         }
 
+        self::calculateSshTraffic($servers);
+        self::calculateOutlineTraffic($servers);
+    }
+
+    private static function calculateSshTraffic(Collection $servers): void
+    {
         $response = [];
 
         // Connect to each server using SSH and run the Bandwidth.sh script
@@ -63,12 +70,10 @@ class UpdateBandwidthUsage extends Command
 
         $collection->each(function ($server, $serverName) {
             collect($server['users'])->each(function ($data, $username) {
-//                $inbound = Inbound::where("username", $username)->first();
+
                 $inbound = InboundRepository::byUsername($username);
 
                 if ($inbound) {
-                    $outline = OutlineRepository::byInboundId($inbound->id);
-
                     /**
                      * If an inbound is found and if it's traffic limit is not null, it means traffic is limited
                      * so update its traffic limit. Also deactivate the inbound if remaining traffic is <= 0.
@@ -76,25 +81,7 @@ class UpdateBandwidthUsage extends Command
                     if (isset($inbound->traffic_limit)) {
                         // Calculate SSH bandwidth usage in GB
                         $sshBandwidth = round(($data['download'] + $data['upload']) / 1024, 2);
-
-                        /**
-                         * Outline api only returns total used traffic and there is no api to set it to 0 when usage
-                         * is calculated. For ssh bandwidth this is done by deleting log files.
-                         * To make this happen for outline, the total usage is stored in the database and each time
-                         * a new total usage is fetched using {@link OutlineService::getUsedTrafficForKeyInGB}. Then
-                         * to calculate the new bandwidth usage, database last value is subtracted from the total usage.
-                         */
-                        $outlineTotalBandwidth = !is_null($outline) ? OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id) : 0;
-                        $outlineBandwidth = $outlineTotalBandwidth - $outline->traffic_usage;
-
-                        // Update the remaining traffic limit of the inbound
-                        $remainingTraffic = $inbound->remaining_traffic - ($sshBandwidth + $outlineBandwidth);
-                        $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
-                        $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
-
-                        // Update outline traffic usage in the database
-                        $outline->traffic_usage = $outlineTotalBandwidth;
-                        $outline->save();
+                        $inbound = self::updateInboundRemainingTraffic($inbound, $sshBandwidth);
                     }
 
                     /**
@@ -102,15 +89,7 @@ class UpdateBandwidthUsage extends Command
                      * to ssh to the server and update the expiry date because user is already expired.
                      */
                     if (isset($inbound->expires_at)) {
-                        $expires_at = Carbon::parse($inbound->expires_at)->endOfDay();
-                        $today = Carbon::now()->endOfDay();
-                        $diff = $expires_at->diffInDays($today);
-                        $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
-
-                        // IF the inbound is not already deactivated, set its activation based on the remaining days
-                        if ($inbound->is_active !== '0') {
-                            $inbound->is_active = $remainingDays > 0 ? '1' : '0';
-                        }
+                        $inbound = self::checkInboundExpiry($inbound);
                     }
 
                     $inbound->save();
@@ -119,13 +98,76 @@ class UpdateBandwidthUsage extends Command
                     if ($inbound->is_active === '0' && !is_null($inbound->server)) {
                         $inbound = Utils::convertExpireAtDateToActiveDays($inbound);
                         self::updateInbound($inbound, 0);
-                        if (!is_null($outline)) {
+                    }
+                }
+            });
+        });
+    }
+
+    private static function calculateOutlineTraffic(Collection $servers): void
+    {
+        foreach ($servers as $server) {
+            $inbounds = $server->inbounds();
+            $inbounds->each(function ($inbound, $index) {
+                if (isset($inbound->traffic_limit) && isset($inbound->outline) && isset($inbound->server->address)) {
+
+                    $outline = OutlineRepository::byInboundId($inbound->id);
+
+                    if (!is_null($outline)) {
+                        /**
+                         * Outline api only returns total used traffic and there is no api to set it to 0 when usage
+                         * is calculated. For ssh bandwidth this is done by deleting log files.
+                         * To make this happen for outline, the total usage is stored in the database and each time
+                         * a new total usage is fetched using {@link OutlineService::getUsedTrafficForKeyInGB}. Then
+                         * to calculate the new bandwidth usage, database last value is subtracted from the total usage.
+                         */
+                        $outlineTotalBandwidth = OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id);
+                        $outlineBandwidth = $outlineTotalBandwidth - $outline->traffic_usage;
+                        $inbound = self::updateInboundRemainingTraffic($inbound, $outlineBandwidth);
+                        $outline->traffic_usage = $outlineTotalBandwidth;
+
+                        /**
+                         * If remaining day is 0, deactivate the inbound on the database.
+                         */
+                        if (isset($inbound->expires_at)) {
+                            $inbound = self::checkInboundExpiry($inbound);
+                        }
+
+                        $inbound->save();
+                        $outline->save();
+
+                        if ($inbound->is_active === '0' && !is_null($inbound->server)) {
                             OutlineService::delete($inbound->id);
                         }
                     }
                 }
             });
-        });
+        }
+    }
+
+    private static function updateInboundRemainingTraffic(Inbound $inbound, float $bandwidthUsage): Inbound
+    {
+        // Update the remaining traffic limit of the inbound
+        $remainingTraffic = $inbound->remaining_traffic - $bandwidthUsage;
+        $inbound->remaining_traffic = $remainingTraffic > 0 ? $remainingTraffic : 0;
+        $inbound->is_active = $inbound->remaining_traffic > 0 ? '1' : '0';
+
+        return $inbound;
+    }
+
+    private static function checkInboundExpiry($inbound): Inbound
+    {
+        $expires_at = Carbon::parse($inbound->expires_at)->endOfDay();
+        $today = Carbon::now()->endOfDay();
+        $diff = $expires_at->diffInDays($today);
+        $remainingDays = $today->greaterThan($expires_at) ? 0 : $diff;
+
+        // If the inbound is not already deactivated, set its activation based on the remaining days
+        if ($inbound->is_active !== '0') {
+            $inbound->is_active = $remainingDays > 0 ? '1' : '0';
+        }
+
+        return $inbound;
     }
 
     private static function bandwidth(Server $server): string|false|null
