@@ -13,10 +13,6 @@
     <link rel="manifest" href="{{ url('manifest.json') }}"  media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">
     <link rel="manifest" href="{{ url('manifest.dark.json') }}" media="(prefers-color-scheme: dark)">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
     <!-- PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
