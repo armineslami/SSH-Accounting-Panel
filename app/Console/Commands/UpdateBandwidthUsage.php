@@ -109,7 +109,7 @@ class UpdateBandwidthUsage extends Command
         foreach ($servers as $server) {
             $inbounds = $server->inbounds();
             $inbounds->each(function ($inbound, $index) {
-                if (isset($inbound->traffic_limit) && isset($inbound->outline) && isset($inbound->server->address)) {
+                if (isset($inbound->outline) && isset($inbound->server->address)) {
 
                     $outline = OutlineRepository::byInboundId($inbound->id);
 
@@ -123,17 +123,13 @@ class UpdateBandwidthUsage extends Command
                          */
                         $outlineTotalBandwidth = OutlineService::getUsedTrafficForKeyInGB($inbound->server->address, $outline->outline_id);
                         $outlineBandwidth = $outlineTotalBandwidth - $outline->traffic_usage;
-                        $inbound = self::updateInboundRemainingTraffic($inbound, $outlineBandwidth);
-                        $outline->traffic_usage = $outlineTotalBandwidth;
 
-                        /**
-                         * If remaining day is 0, deactivate the inbound on the database.
-                         */
-                        if (isset($inbound->expires_at)) {
-                            $inbound = self::checkInboundExpiry($inbound);
+                        if (isset($inbound->traffic_limit)) {
+                            $inbound = self::updateInboundRemainingTraffic($inbound, $outlineBandwidth);
                         }
 
-                        $inbound->save();
+                        $outline->traffic_usage = $outlineTotalBandwidth;
+
                         $outline->save();
 
                         if ($inbound->is_active === '0' && !is_null($inbound->server)) {
@@ -141,6 +137,15 @@ class UpdateBandwidthUsage extends Command
                         }
                     }
                 }
+
+                /**
+                 * If remaining day is 0, deactivate the inbound on the database.
+                 */
+                if (isset($inbound->expires_at)) {
+                    $inbound = self::checkInboundExpiry($inbound);
+                }
+
+                $inbound->save();
             });
         }
     }
