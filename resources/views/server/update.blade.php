@@ -107,10 +107,13 @@
                                     class="flex items-center justify-center cursor-pointer col-span-2 md:col-span-1"
                                     x-data
                                     x-on:click="copy('{{ $server->outline_api_url }}')">
-                                <span class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
-                                    {{ __('Copy') }}
+                                    <span id="copy-text" class="text-2xs uppercase text-gray-900 dark:text-gray-100 select-none">
+                                        {{ __('Copy') }}
+                                    </span>
+                                    <svg id="copy-icon" class="hidden w-6 h-6 text-gray-900 dark:text-gray-100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                                    </svg>
                                 </span>
-                            </span>
                             </div>
                         </div>
                     @endif
@@ -163,6 +166,17 @@
 
     <script>
         function copy(text) {
+            const checkIcon = document.getElementById("copy-icon");
+            const copyText  = document.getElementById("copy-text");
+
+            checkIcon.classList.toggle('hidden');
+            copyText.classList.toggle('hidden');
+
+            setTimeout(() => {
+                checkIcon.classList.toggle('hidden');
+                copyText.classList.toggle('hidden');
+            }, 1000);
+
             if (window.clipboardData && window.clipboardData.setData) {
                 // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
                 return window.clipboardData.setData("Text", text);
