@@ -2,6 +2,7 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 import ProgressBar from 'progressbar.js'
+import PullToRefresh from './PullToRefresh';
 
 window.Alpine = Alpine;
 window.ProgressBar = ProgressBar;
@@ -31,3 +32,9 @@ function setCookie(cookieName, cookieValue, expirationDays) {
     const expires = "expires="+d.toUTCString();
     document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
 }
+
+/**
+ * Pull to refresh implementation
+ *
+ */
+new PullToRefresh(true);

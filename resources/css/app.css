@@ -9,3 +9,44 @@
 .has-tooltip:hover .tooltip {
     @apply visible z-50
 }
+
+/** Pull to refresh styles **/
+
+body {
+    overscroll-behavior-y: auto;
+}
+
+.pull-to-refresh {
+    width: 100%;
+    height: 0;
+    padding: 0;
+    visibility: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.pull-to-refresh.visible {
+    visibility: visible;
+}
+
+.pull-to-refresh-icon {
+    opacity: 0;
+    transform: rotate(-180deg);
+    /*background: rgb(165, 180, 252, 0.5);*/
+    background: light-dark(rgb(165, 180, 252, 0.5), rgb(99, 102, 241, 0.5));
+    padding: 0;
+    border-radius: 100%;
+}
+
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.rotate {
+    animation: rotate360 2s linear infinite;
+}
